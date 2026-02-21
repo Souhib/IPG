@@ -1,0 +1,101 @@
+# Dokploy deployment for IBG
+# Domains configured via Dokploy UI:
+#   - app.ibg.ae         -> frontend (port 80)
+#   - api.ibg.ae         -> backend (port 5000)
+
+services:
+  # ─── Databases (internal only) ───────────────────────────────
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ibg
+      POSTGRES_USER: ibg
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ibg"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+    restart: always
+
+  # ─── Backend API ─────────────────────────────────────────────
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ibg:${DB_PASSWORD}@db:5432/ibg
+      REDIS_OM_URL: redis://redis:6379
+
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ENCRYPTION_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-15}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+
+      FRONTEND_URL: ${FRONTEND_URL:-https://app.ibg.ae}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://app.ibg.ae,https://api.ibg.ae}
+
+      LOGFIRE_TOKEN: ${LOGFIRE_TOKEN:-}
+
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      IBG_ENV: ${IBG_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "5000"
+    networks:
+      - internal
+      - dokploy-network
+    restart: always
+
+  # ─── Frontend SPA ────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_URL: ${VITE_API_URL:-https://api.ibg.ae}
+    depends_on:
+      - backend
+    expose:
+      - "80"
+    networks:
+      - internal
+      - dokploy-network
+    restart: always
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  internal:
+    driver: bridge
+  dokploy-network:
+    external: true

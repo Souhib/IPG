@@ -1,0 +1,179 @@
+# CLAUDE.md - IBG Frontend
+
+## Overview
+
+React 19 SPA for the IBG (Islamic Board Games) platform. Uses TanStack Router for file-based routing, TanStack Query for server state, Tailwind CSS v4 with shadcn/ui components, and Socket.IO for real-time multiplayer games.
+
+## Development Commands
+
+```bash
+cd front
+
+# Start dev server
+bun dev                     # http://localhost:3000
+
+# Generate API client from backend OpenAPI spec
+bun run generate            # Requires backend running on :5000
+
+# Code quality
+bun run lint                # oxlint
+bun run lint:fix            # Auto-fix
+bun run format              # oxfmt
+bun run format:check        # Check only
+bun run typecheck           # TypeScript strict
+
+# Testing
+bun run test                # Vitest once
+bun run test:watch          # Watch mode
+bun run test:coverage       # With coverage
+bun run test:ui             # Vitest UI
+```
+
+## Tech Stack
+
+- **Runtime**: Bun
+- **Framework**: React 19 + TypeScript
+- **Routing**: TanStack Router (file-based)
+- **State**: TanStack Query (React Query) for server state
+- **Styling**: Tailwind CSS v4 + shadcn/ui (new-york style)
+- **Forms**: React Hook Form + Zod validation
+- **API**: Kubb-generated hooks from OpenAPI spec + ky HTTP client
+- **Real-time**: Socket.IO client for multiplayer games
+- **i18n**: i18next (English + Arabic with RTL support)
+- **Testing**: Vitest + Testing Library + MSW
+
+## Project Structure
+
+```
+src/
+├── api/
+│   ├── client.ts            # ky HTTP client with JWT interceptors
+│   └── generated/           # Kubb auto-generated (DO NOT EDIT)
+├── components/
+│   ├── ui/                  # shadcn/ui primitives
+│   ├── layout/              # MainNav, Footer
+│   ├── ErrorBoundary.tsx
+│   └── NotFound.tsx
+├── hooks/
+│   ├── use-socket.ts        # Socket.IO connection hook
+│   └── index.ts
+├── i18n/
+│   ├── index.ts             # i18next config
+│   └── locales/             # en.json, ar.json
+├── lib/
+│   ├── utils.ts             # cn() utility
+│   ├── socket.ts            # Socket.IO client singleton
+│   └── auth.ts              # Token storage helpers
+├── providers/
+│   ├── AuthProvider.tsx     # JWT auth state + token refresh
+│   ├── QueryProvider.tsx    # React Query client
+│   ├── ThemeProvider.tsx    # Light/dark mode
+│   └── index.ts
+├── routes/                  # TanStack Router file-based
+│   ├── __root.tsx           # Root layout (providers, nav, footer)
+│   ├── index.tsx            # Home page (game selection)
+│   ├── leaderboard.tsx      # Global leaderboard
+│   ├── _auth.tsx            # Protected route layout
+│   ├── _auth/
+│   │   ├── rooms/
+│   │   │   ├── index.tsx    # Room list
+│   │   │   ├── create.tsx   # Create room
+│   │   │   └── $roomId.tsx  # Room lobby (Socket.IO)
+│   │   ├── game/
+│   │   │   ├── undercover.$gameId.tsx  # Undercover game UI
+│   │   │   └── codenames.$gameId.tsx   # Codenames game UI
+│   │   ├── profile.tsx      # User profile + stats
+│   │   └── achievements.tsx # Achievement badges
+│   └── auth/
+│       ├── login.tsx        # Login form
+│       └── register.tsx     # Register form
+├── index.css                # Tailwind v4 + theme CSS variables
+└── main.tsx                 # App entry point
+```
+
+## Key Patterns
+
+### API Integration (Kubb)
+Auto-generated React Query hooks from backend OpenAPI spec:
+```typescript
+import { useGetUsersApiV1UsersGet } from "@/api/generated/hooks"
+
+function MyComponent() {
+  const { data, isLoading } = useGetUsersApiV1UsersGet()
+}
+```
+
+**Never edit files in `src/api/generated/`.** Regenerate with `bun run generate`.
+
+### Socket.IO (Real-time Games)
+```typescript
+import { useSocket } from "@/hooks/use-socket"
+
+function GameComponent() {
+  const { emit, on, isConnected } = useSocket()
+
+  useEffect(() => {
+    const off = on("game_state", (data) => { ... })
+    return () => off()
+  }, [on])
+
+  emit("vote", { game_id: "...", voted_for: "..." })
+}
+```
+
+### File-Based Routing
+- `__root.tsx` - Root layout (double underscore)
+- `_auth.tsx` - Protected layout (single underscore, redirects to login)
+- `$param.tsx` - Dynamic parameters
+- `index.tsx` - Index route for directory
+
+### Authentication
+- JWT stored in localStorage (`ibg-token`, `ibg-refresh-token`, `ibg-token-expiry`)
+- Auto-refresh 1 minute before expiry
+- 401 responses clear auth state and redirect to login
+- Socket.IO sends token in connection handshake
+
+### Styling
+```typescript
+import { cn } from "@/lib/utils"
+
+<div className={cn("base-class", isActive && "active-class")} />
+```
+
+### Error Handling
+API errors have `error_key` for i18n and `frontend_message` as fallback:
+```typescript
+import { getApiErrorMessage } from "@/api/client"
+
+try {
+  await apiClient({ ... })
+} catch (err) {
+  const message = getApiErrorMessage(err, "Fallback message")
+}
+```
+
+## i18n
+
+Supports English (LTR) and Arabic (RTL). The root layout auto-detects RTL languages and sets `dir="rtl"`.
+
+```typescript
+import { useTranslation } from "react-i18next"
+
+const { t } = useTranslation()
+t("games.undercover.name")  // "Undercover" or "المتخفي"
+```
+
+Translation files in `src/i18n/locales/`.
+
+## Theme
+
+Single theme with light/dark mode support via CSS variables. Uses emerald green primary with gold accent colors. Theme toggle via `useTheme()` provider.
+
+## Environment
+
+```env
+VITE_API_URL=http://localhost:5000    # Backend API URL
+VITE_WS_URL=http://localhost:5000     # Socket.IO WebSocket URL
+```
+
+Vite dev server proxies `/api` and `/socket.io` to the backend.

@@ -1,108 +1,127 @@
+# IBG - Islamic Board Games
 
-# Islamic Board Game (IBG) 🕌
+Real-time multiplayer platform for Islamized versions of popular party games. Learn about Islamic words, prophets, and concepts while playing with friends.
 
-## Project Description 📜
+## Games
 
-Islamic Board Game (IBG) aims to reproduce popular games like Undercover and Codenames with an Islamic twist. The goal is to create an engaging way for people to learn about Islamic words and concepts while playing.
+**Undercover** (3-12 players) - Social deduction game where players receive Islamic terms. Undercover agents get a slightly different word and must blend in. Civilians vote to find them.
 
-### Game Descriptions
+**Codenames** (4-10 players) - Two teams compete to identify their agents on a 5x5 board of Islamic terms. Spymasters give one-word clues, operatives guess.
 
-- **Undercover**: Undercover is a social deduction game where players are assigned roles secretly. Some players are undercover agents, while others are regular citizens. The objective of the game is for the undercover agents to blend in and avoid detection, while the citizens try to uncover and identify the undercover agents.
-
-- **Codenames**: Codenames is a word-based party game where players are divided into two teams. Each team has a spymaster who gives one-word clues to help their team guess the words associated with their agents on the board. The challenge is to avoid guessing the words associated with the opposing team and the deadly assassin word.
-
-## Project Structure 📂
-
-The project is organized as follows:
-
-### ibg Folder
-
-- **api** 📑
-  - **controllers**: Contains all the logic and queries to the PostgreSQL database.
-  - **models**: Includes all FastAPI input and output models as well as the database models.
-  - **routers**: Contains the routes for the FastAPI app.
-
-- **socketio** ⚡
-  - **controllers**: Contains all the logic and queries to the PostgreSQL and Redis databases.
-  - **models**: Includes all Redis OM models.
-  - **routers**: Contains all the routes to call the Socket.IO app.
-
-### tests Folder 🧪
-
-- Mirrors the structure of the `ibg` folder.
-- Contains tests for routes, models, and controllers within `api` and `socketio`.
-
-## Backend 🖥️
-
-- **FastAPI**: Handles the main API logic.
-- **Socket.IO**: Manages real-time communication, mounted on the FastAPI app.
-- **SQLModel**: Used as the ORM for database interactions.
-- **Redis OM Python**: Interacts with Redis to manage active rooms and games.
-
-### Databases 🗄️
-
-- **PostgreSQL**: Stores users, rooms, games, room events, and game events.
-- **Redis**: Stores active rooms and games to handle game logic efficiently.
-
-## Frontend 🌐
-
-- **Next.js**: The frontend framework used for building the user interface.
-
-## Deployment Plan 🚀
-
-### AWS Services ☁️
-
-- **AWS Lambda**: Deploy the FastAPI app (including the mounted Socket.IO app).
-- **AWS RDS**: Use for PostgreSQL database.
-- **AWS Amplify**: Deploy the frontend.
-- **AWS SNS and SES**: Send emails and SMS notifications.
-
-### Infrastructure 🏗️
-
-- **CI/CD**: Plan to use GitHub Actions for continuous integration and deployment.
-
-## Getting Started 🏁
-
-### Prerequisites
-
-- Python 3.10+
-- Docker
-- Docker Compose
-
-### Installation ⚙️
-
-1. **Clone the repository**:
-    ```bash
-    git clone git@github.com:Souhib/IBG_API.git
-    cd islamic-board-game
-    ```
-
-2. **Build and run with Docker Compose**:
-    ```bash
-    docker-compose up --build
-    ```
-
-### Running the Application ▶️
-
-- The application will be available at:
-    - FastAPI: `http://localhost:8000`
-    - Socket.IO: `http://localhost:8000/socketio`
-
-### Running Tests ✔️
+## Quick Start
 
 ```bash
-cd tests
-pytest
+# Start all services with Docker
+docker compose up -d
+
+# Or run locally:
+
+# Backend (requires Python 3.12+ and uv)
+cd backend
+uv run python main.py              # http://localhost:5000
+
+# Frontend (requires Bun)
+cd front
+bun install
+bun dev                             # http://localhost:3000
 ```
 
-## Contributing 🤝
+## Project Structure
 
-Contributions are welcome! Please fork the repository and submit a pull request for review.
+```
+IBG/
+├── backend/                    # FastAPI + Socket.IO
+│   ├── ibg/
+│   │   ├── api/               # REST API (controllers, models, schemas, routes)
+│   │   ├── socketio/          # Real-time game events (Socket.IO)
+│   │   ├── app.py             # FastAPI app factory
+│   │   ├── database.py        # Async SQLAlchemy engine
+│   │   ├── dependencies.py    # DI with Annotated + Depends
+│   │   └── settings.py        # Multi-env pydantic-settings
+│   ├── tests/
+│   ├── scripts/               # Fake data generation
+│   └── main.py
+├── front/                     # React 19 SPA
+│   ├── src/
+│   │   ├── api/               # ky HTTP client + Kubb generated hooks
+│   │   ├── components/        # UI components (shadcn/ui)
+│   │   ├── hooks/             # Socket.IO, auth hooks
+│   │   ├── i18n/              # English + Arabic translations
+│   │   ├── providers/         # Auth, Query, Theme providers
+│   │   └── routes/            # TanStack Router (file-based)
+│   └── vite.config.ts
+├── docker-compose.yml          # Local development
+├── docker-compose.dokploy.yml  # Production (Dokploy)
+└── .github/workflows/          # CI/CD pipeline
+```
 
-## License 📄
+## Tech Stack
 
-This project is licensed under the MIT License.
+| Layer | Technology |
+|-------|-----------|
+| Backend | FastAPI, SQLModel, SQLAlchemy (async), python-socketio |
+| Database | PostgreSQL (prod), SQLite (dev) |
+| Cache/State | Redis (aredis_om for game state) |
+| Auth | JWT (python-jose, bcrypt) |
+| Frontend | React 19, TanStack Router/Query, Tailwind v4, shadcn/ui |
+| Real-time | Socket.IO (server + client) |
+| API Codegen | Kubb (OpenAPI -> React Query hooks) |
+| i18n | i18next (English + Arabic with RTL) |
+| Testing | pytest (backend), Vitest (frontend) |
+| Deployment | Docker + Dokploy (Oracle VPS) |
 
-## Contact 📬
+## Development
 
-For questions or suggestions, please open an issue in the repository.
+### Backend
+
+```bash
+cd backend
+
+uv run python main.py                    # Start server on :5000
+uv run poe lint                          # Ruff lint
+uv run poe format                        # Ruff format
+uv run poe check                         # All checks
+uv run poe test                          # pytest with coverage
+```
+
+### Frontend
+
+```bash
+cd front
+
+bun dev                                  # Dev server on :3000
+bun run generate                         # Generate API client (backend must be running)
+bun run lint                             # oxlint
+bun run typecheck                        # TypeScript
+bun run test                             # Vitest
+```
+
+### Fake Data
+
+```bash
+cd backend
+
+# Populate database with test users, games, words, achievements
+PYTHONPATH=. uv run python scripts/generate_fake_data.py --create-db
+
+# Reset database
+PYTHONPATH=. uv run python scripts/generate_fake_data.py --delete
+```
+
+### Test Accounts
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@test.com | admin123 |
+| User | user@test.com | user1234 |
+| Player | player@test.com | player123 |
+
+## API Documentation
+
+- Scalar UI: http://localhost:5000/scalar
+- OpenAPI JSON: http://localhost:5000/openapi.json
+- Health check: http://localhost:5000/health
+
+## License
+
+MIT

@@ -1,0 +1,76 @@
+# IBG - Local Development Docker Compose
+# Usage: docker compose up -d
+
+services:
+  # ─── Database ─────────────────────────────────────────────
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ibg
+      POSTGRES_PASSWORD: ibg
+      POSTGRES_DB: ibg
+    ports:
+      - "54331:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ibg"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── Redis (with RedisInsight) ────────────────────────────
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "63791:6379"
+      - "8011:8001"  # RedisInsight UI
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+  # ─── Backend API ──────────────────────────────────────────
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "5051:5000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ibg:ibg@db:5432/ibg
+      REDIS_OM_URL: redis://redis:6379
+      ENVIRONMENT: development
+      IBG_ENV: development
+      JWT_SECRET_KEY: dev-secret-key-change-me
+      CORS_ORIGINS: "*"
+      LOG_LEVEL: DEBUG
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  # ─── Frontend SPA ─────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_URL: http://localhost:5051
+    ports:
+      - "3051:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:

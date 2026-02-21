@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+
+# Environment
+.env
+.env.development
+.env.production
+.env.local
+.env.*.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage
+
+# Misc
+*.local
+*.tsbuildinfo
+
+# Generated
+src/routeTree.gen.ts
+src/api/generated

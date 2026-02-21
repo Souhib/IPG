@@ -11,6 +11,12 @@ database.db
 test.db
 .logfire
 
+# Environment files with secrets
+.env.development
+.env.production
+.env.local
+.env.*.local
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml

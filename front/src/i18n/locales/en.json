@@ -1,0 +1,127 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "or": "or"
+  },
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "leaderboard": "Leaderboard"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "loginTitle": "Welcome back",
+    "loginDescription": "Enter your credentials to continue",
+    "registerTitle": "Create an account",
+    "registerDescription": "Join IBG and play with your friends",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot password?"
+  },
+  "home": {
+    "title": "Islamic Board Games",
+    "subtitle": "Play Islamized versions of your favorite party games with friends",
+    "playNow": "Play Now",
+    "createRoom": "Create Room",
+    "joinRoom": "Join Room"
+  },
+  "games": {
+    "undercover": {
+      "name": "Undercover",
+      "description": "Find the undercover agent among your friends! Each player gets a word, but the undercover player gets a different one.",
+      "roles": {
+        "civilian": "Civilian",
+        "undercover": "Undercover",
+        "mrWhite": "Mr. White"
+      }
+    },
+    "codenames": {
+      "name": "Codenames",
+      "description": "Two teams compete to find their agents using one-word clues. The spymaster gives clues, and operatives guess!",
+      "roles": {
+        "spymaster": "Spymaster",
+        "operative": "Operative"
+      },
+      "teams": {
+        "red": "Red Team",
+        "blue": "Blue Team"
+      }
+    }
+  },
+  "room": {
+    "create": "Create Room",
+    "join": "Join Room",
+    "roomCode": "Room Code",
+    "password": "Room Password",
+    "players": "Players",
+    "waitingForPlayers": "Waiting for players...",
+    "startGame": "Start Game",
+    "leave": "Leave Room",
+    "host": "Host",
+    "minPlayers": "Minimum {{count}} players required"
+  },
+  "game": {
+    "vote": "Vote",
+    "skip": "Skip",
+    "eliminated": "Eliminated",
+    "alive": "Alive",
+    "yourRole": "Your Role",
+    "yourWord": "Your Word",
+    "gameOver": "Game Over",
+    "winner": "Winner",
+    "playAgain": "Play Again"
+  },
+  "stats": {
+    "title": "Statistics",
+    "gamesPlayed": "Games Played",
+    "gamesWon": "Games Won",
+    "winRate": "Win Rate",
+    "currentStreak": "Current Streak",
+    "longestStreak": "Longest Streak"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "unlocked": "Unlocked",
+    "inProgress": "In Progress",
+    "locked": "Locked"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "player": "Player",
+    "wins": "Wins",
+    "games": "Games"
+  },
+  "errors": {
+    "api": {
+      "userNotFound": "User not found.",
+      "userAlreadyExists": "An account with this email already exists.",
+      "invalidCredentials": "Please check your email and password.",
+      "invalidToken": "Invalid authentication token.",
+      "roomNotFound": "Room not found.",
+      "roomAlreadyExists": "This room already exists.",
+      "userNotInRoom": "You are not in this room.",
+      "userAlreadyInRoom": "You are already in a room.",
+      "wrongRoomPassword": "Incorrect room password.",
+      "gameNotFound": "Game not found.",
+      "resourceNotFound": "Resource not found."
+    }
+  }
+}

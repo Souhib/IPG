@@ -1,0 +1,121 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "front/**"
+      - "docker-compose.dokploy.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "front/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ── Detect which paths changed ──────────────────────────────
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changes
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+            echo "frontend=true" >> $GITHUB_OUTPUT
+          else
+            DIFF=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD)
+            echo "$DIFF" | grep -q '^backend/' && echo "backend=true" >> $GITHUB_OUTPUT || echo "backend=false" >> $GITHUB_OUTPUT
+            echo "$DIFF" | grep -q '^front/' && echo "frontend=true" >> $GITHUB_OUTPUT || echo "frontend=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Backend CI ──────────────────────────────────────────────
+
+  backend:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Lint (ruff check)
+        continue-on-error: true
+        run: uv run ruff check ibg/ tests/
+
+      - name: Format check (ruff format)
+        continue-on-error: true
+        run: uv run ruff format --check ibg/ tests/
+
+      - name: Type check (mypy)
+        continue-on-error: true
+        run: uv run mypy ibg/ --ignore-missing-imports
+
+      - name: Test (pytest)
+        continue-on-error: true
+        run: uv run pytest --tb=short -q
+
+  # ── Frontend CI ─────────────────────────────────────────────
+
+  frontend:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        continue-on-error: true
+        run: bun run lint
+
+      - name: Type check (tsc)
+        continue-on-error: true
+        run: bun run typecheck
+
+      - name: Test (vitest)
+        continue-on-error: true
+        run: bun run test

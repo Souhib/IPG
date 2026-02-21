@@ -1,0 +1,112 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "close": "إغلاق",
+    "or": "أو"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "rooms": "الغرف",
+    "profile": "الملف الشخصي",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "leaderboard": "لوحة المتصدرين"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "username": "اسم المستخدم",
+    "loginTitle": "مرحباً بعودتك",
+    "loginDescription": "أدخل بياناتك للمتابعة",
+    "registerTitle": "إنشاء حساب جديد",
+    "registerDescription": "انضم إلى IBG والعب مع أصدقائك",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "forgotPassword": "نسيت كلمة المرور؟"
+  },
+  "home": {
+    "title": "ألعاب لوحية إسلامية",
+    "subtitle": "العب نسخاً إسلامية من ألعابك الحفلية المفضلة مع أصدقائك",
+    "playNow": "العب الآن",
+    "createRoom": "إنشاء غرفة",
+    "joinRoom": "انضم لغرفة"
+  },
+  "games": {
+    "undercover": {
+      "name": "المتخفي",
+      "description": "اعثر على العميل المتخفي بين أصدقائك! كل لاعب يحصل على كلمة، لكن اللاعب المتخفي يحصل على كلمة مختلفة.",
+      "roles": {
+        "civilian": "مدني",
+        "undercover": "متخفي",
+        "mrWhite": "السيد وايت"
+      }
+    },
+    "codenames": {
+      "name": "أسماء رمزية",
+      "description": "فريقان يتنافسان للعثور على عملائهم باستخدام تلميحات بكلمة واحدة.",
+      "roles": {
+        "spymaster": "رئيس الجواسيس",
+        "operative": "عميل"
+      },
+      "teams": {
+        "red": "الفريق الأحمر",
+        "blue": "الفريق الأزرق"
+      }
+    }
+  },
+  "room": {
+    "create": "إنشاء غرفة",
+    "join": "انضم لغرفة",
+    "roomCode": "رمز الغرفة",
+    "password": "كلمة مرور الغرفة",
+    "players": "اللاعبون",
+    "waitingForPlayers": "في انتظار اللاعبين...",
+    "startGame": "ابدأ اللعبة",
+    "leave": "مغادرة الغرفة",
+    "host": "المضيف",
+    "minPlayers": "يلزم {{count}} لاعبين كحد أدنى"
+  },
+  "game": {
+    "vote": "صوّت",
+    "skip": "تخطي",
+    "eliminated": "تم إقصاؤه",
+    "alive": "على قيد الحياة",
+    "yourRole": "دورك",
+    "yourWord": "كلمتك",
+    "gameOver": "انتهت اللعبة",
+    "winner": "الفائز",
+    "playAgain": "العب مرة أخرى"
+  },
+  "stats": {
+    "title": "الإحصائيات",
+    "gamesPlayed": "الألعاب المُلعبة",
+    "gamesWon": "الألعاب المربوحة",
+    "winRate": "نسبة الفوز",
+    "currentStreak": "سلسلة الانتصارات الحالية",
+    "longestStreak": "أطول سلسلة انتصارات"
+  },
+  "achievements": {
+    "title": "الإنجازات",
+    "unlocked": "مفتوح",
+    "inProgress": "قيد التقدم",
+    "locked": "مقفل"
+  },
+  "leaderboard": {
+    "title": "لوحة المتصدرين",
+    "rank": "الترتيب",
+    "player": "اللاعب",
+    "wins": "الانتصارات",
+    "games": "الألعاب"
+  }
+}

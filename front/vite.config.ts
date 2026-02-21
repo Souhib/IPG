@@ -1,0 +1,101 @@
+import path from 'node:path'
+import tailwindcss from '@tailwindcss/vite'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import viteCompression from 'vite-plugin-compression'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    TanStackRouterVite({
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
+      routeFileIgnorePrefix: '-',
+      quoteStyle: 'single',
+      autoCodeSplitting: true,
+    }),
+    react(),
+    tailwindcss(),
+    // Gzip compression
+    viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240,
+      deleteOriginFile: false,
+    }),
+    // Brotli compression
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 10240,
+      deleteOriginFile: false,
+    }),
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5001',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://127.0.0.1:5001',
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+    hmr: {
+      overlay: true,
+    },
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-router',
+      '@tanstack/react-query',
+      'motion/react',
+      'lucide-react',
+      'socket.io-client',
+    ],
+  },
+  build: {
+    target: 'es2020',
+    chunkSizeWarningLimit: 800,
+    sourcemap: 'hidden',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+
+          if (/\/node_modules\/react\//.test(id) || id.includes('/react-dom/')) return 'react-vendor'
+          if (id.includes('@tanstack/react-router') || id.includes('@tanstack/react-query')) return 'router-vendor'
+          if (id.includes('/motion/') || id.includes('framer-motion')) return 'motion'
+          if (id.includes('@radix-ui')) return 'radix-ui'
+          if (id.includes('socket.io-client')) return 'socket-vendor'
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2,
+      },
+      format: {
+        comments: false,
+      },
+    },
+  },
+})

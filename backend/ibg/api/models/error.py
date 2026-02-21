@@ -1,0 +1,22 @@
+# Re-export all errors from schemas for backward compatibility
+from ibg.api.schemas.error import (  # noqa: F401
+    BaseError,
+    CantVoteBecauseYouDeadError,
+    CantVoteForDeadPersonError,
+    CantVoteForYourselfError,
+    ErrorRoomIsNotActive,
+    GameNotFoundError,
+    NoTurnInsideGameError,
+    RoomAlreadyExistsError,
+    RoomNotFoundError,
+    TermPairAlreadyExistsError,
+    TermPairNotFoundError,
+    UserAlreadyExistsError,
+    UserAlreadyInRoomError,
+    UserNotFoundError,
+    UserNotInRoomError,
+    WordAlreadyExistsError,
+    WordNotFoundErrorId,
+    WordNotFoundErrorName,
+    WrongRoomPasswordError,
+)
