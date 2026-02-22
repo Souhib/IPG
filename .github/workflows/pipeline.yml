@@ -12,10 +12,14 @@ on:
     paths:
       - "backend/**"
       - "front/**"
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: pipeline
+  cancel-in-progress: false
+
+env:
+  DEPLOY_DIR: /etc/dokploy/compose/<REDACTED_DOKPLOY_ID>/code
 
 jobs:
   # ── Detect which paths changed ──────────────────────────────
@@ -39,8 +43,8 @@ jobs:
             echo "frontend=true" >> $GITHUB_OUTPUT
           else
             DIFF=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD)
-            echo "$DIFF" | grep -q '^backend/' && echo "backend=true" >> $GITHUB_OUTPUT || echo "backend=false" >> $GITHUB_OUTPUT
-            echo "$DIFF" | grep -q '^front/' && echo "frontend=true" >> $GITHUB_OUTPUT || echo "frontend=false" >> $GITHUB_OUTPUT
+            echo "$DIFF" | grep -q '^backend/\|^docker-compose.dokploy.yml' && echo "backend=true" >> $GITHUB_OUTPUT || echo "backend=false" >> $GITHUB_OUTPUT
+            echo "$DIFF" | grep -q '^front/\|^docker-compose.dokploy.yml' && echo "frontend=true" >> $GITHUB_OUTPUT || echo "frontend=false" >> $GITHUB_OUTPUT
           fi
 
   # ── Backend CI ──────────────────────────────────────────────
@@ -48,7 +52,7 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    if: needs.changes.outputs.backend == 'true' && github.event_name == 'pull_request'
     defaults:
       run:
         working-directory: backend
@@ -91,7 +95,7 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.frontend == 'true' && github.event_name == 'pull_request'
     defaults:
       run:
         working-directory: front
@@ -119,3 +123,84 @@ jobs:
       - name: Test (vitest)
         continue-on-error: true
         run: bun run test
+
+  # ── Deploy to VPS ───────────────────────────────────────────
+
+  deploy:
+    runs-on: self-hosted
+    needs: changes
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Sync code to deploy directory
+        run: |
+          sudo mkdir -p ${{ env.DEPLOY_DIR }}
+          sudo rsync -a --delete \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='node_modules' \
+            --exclude='__pycache__' \
+            --exclude='.git' \
+            --exclude='e2e' \
+            ./ ${{ env.DEPLOY_DIR }}/
+
+      - name: Build backend image
+        if: needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml build backend
+
+      - name: Build frontend image
+        if: needs.changes.outputs.frontend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml build frontend
+
+      - name: Deploy backend
+        if: needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml up -d --no-deps backend
+
+      - name: Deploy frontend
+        if: needs.changes.outputs.frontend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml up -d --no-deps frontend
+
+      - name: Ensure databases are running
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml up -d db redis
+
+      - name: Health check
+        if: needs.changes.outputs.backend == 'true'
+        run: |
+          echo "Waiting for backend to start..."
+          sleep 10
+          for i in $(seq 1 6); do
+            if curl -sf http://localhost:33648/health > /dev/null 2>&1; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Attempt $i/6 failed, waiting 10s..."
+            sleep 10
+          done
+          echo "Health check failed after 60s"
+          exit 1
+
+      # ── Failure diagnostics ─────────────────────────────────
+      - name: Show backend logs on failure
+        if: failure() && needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml logs --tail=50 backend
+
+      - name: Show frontend logs on failure
+        if: failure() && needs.changes.outputs.frontend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml logs --tail=50 frontend
+
+      - name: Cleanup old images
+        if: always()
+        run: docker image prune -f
