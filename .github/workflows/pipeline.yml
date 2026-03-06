@@ -84,7 +84,7 @@ jobs:
 
       - name: Type check (mypy)
         continue-on-error: true
-        run: uv run mypy ibg/ --ignore-missing-imports
+        run: uv run mypy ipg/ --ignore-missing-imports
 
       - name: Test (pytest)
         continue-on-error: true
@@ -149,6 +149,12 @@ jobs:
             --exclude='.git' \
             --exclude='e2e' \
             ./ ${{ env.DEPLOY_DIR }}/
+
+      - name: Reset database (one-time IBG→IPG migration)
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          docker compose -f docker-compose.dokploy.yml down db 2>/dev/null || true
+          docker volume rm code_postgres_data 2>/dev/null || true
 
       - name: Build backend image
         if: needs.changes.outputs.backend == 'true'
