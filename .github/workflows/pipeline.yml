@@ -7,6 +7,7 @@ on:
       - "backend/**"
       - "front/**"
       - "docker-compose.dokploy.yml"
+      - ".github/workflows/**"
   pull_request:
     branches: [main]
     paths:
@@ -162,6 +163,34 @@ jobs:
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
         run: docker compose -f docker-compose.dokploy.yml build --no-cache frontend
 
+      - name: Ensure infrastructure is running
+        if: needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: docker compose -f docker-compose.dokploy.yml up -d db pgbouncer redis
+
+      - name: Wait for PgBouncer health
+        if: needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          echo "Waiting for PgBouncer to be healthy..."
+          for i in $(seq 1 12); do
+            if docker compose -f docker-compose.dokploy.yml exec -T pgbouncer pg_isready -h 127.0.0.1 -p 6432 > /dev/null 2>&1; then
+              echo "PgBouncer is healthy"
+              # Check Redis (non-blocking — only for Socket.IO pub/sub)
+              if docker compose -f docker-compose.dokploy.yml exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; then
+                echo "Redis is healthy"
+              else
+                echo "WARNING: Redis is not healthy. Socket.IO cross-worker pub/sub will be degraded."
+              fi
+              exit 0
+            fi
+            echo "Attempt $i/12: PgBouncer not ready, waiting 5s..."
+            sleep 5
+          done
+          echo "PgBouncer not healthy after 60s"
+          docker compose -f docker-compose.dokploy.yml ps
+          exit 1
+
       - name: Deploy backend
         if: needs.changes.outputs.backend == 'true'
         working-directory: ${{ env.DEPLOY_DIR }}
@@ -171,10 +200,6 @@ jobs:
         if: needs.changes.outputs.frontend == 'true'
         working-directory: ${{ env.DEPLOY_DIR }}
         run: docker compose -f docker-compose.dokploy.yml up -d --no-deps frontend
-
-      - name: Ensure databases are running
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: docker compose -f docker-compose.dokploy.yml up -d db redis
 
       - name: Health check
         if: needs.changes.outputs.backend == 'true'
@@ -197,6 +222,15 @@ jobs:
         if: failure() && needs.changes.outputs.backend == 'true'
         working-directory: ${{ env.DEPLOY_DIR }}
         run: docker compose -f docker-compose.dokploy.yml logs --tail=50 backend
+
+      - name: Show infrastructure logs on failure
+        if: failure() && needs.changes.outputs.backend == 'true'
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          echo "=== PgBouncer ===" && docker compose -f docker-compose.dokploy.yml logs --tail=20 pgbouncer
+          echo "=== Redis ===" && docker compose -f docker-compose.dokploy.yml logs --tail=20 redis
+          echo "=== DB ===" && docker compose -f docker-compose.dokploy.yml logs --tail=20 db
+          echo "=== Container status ===" && docker compose -f docker-compose.dokploy.yml ps
 
       - name: Show frontend logs on failure
         if: failure() && needs.changes.outputs.frontend == 'true'
