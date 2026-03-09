@@ -45,8 +45,6 @@ import sys
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-import pycountry
-from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -64,7 +62,8 @@ from ipg.api.models.undercover import TermPair, Word
 from ipg.database import create_app_engine, create_db_and_tables
 from ipg.settings import Settings
 
-fake = Faker()
+# Lazy imports for dev-only dependencies (not in production image)
+fake = None  # type: ignore[assignment]
 
 
 # ── Test user accounts ──────────────────────────────────────────────────────
@@ -353,6 +352,8 @@ async def create_random_users(session: AsyncSession, count: int) -> list[User]:
     Returns:
         List of created User objects.
     """
+    import pycountry
+
     country_codes = [c.alpha_3 for c in pycountry.countries]
     users = []
 
@@ -879,7 +880,14 @@ def parse_args() -> argparse.Namespace:
 
 async def main() -> None:
     """Main entry point for the fake data generation script."""
+    global fake
     args = parse_args()
+
+    # Import dev-only dependencies only when needed (not in production image)
+    if args.create_db:
+        from faker import Faker
+
+        fake = Faker()
 
     settings = Settings()  # type: ignore[call-arg]
     engine = await create_app_engine(settings)
