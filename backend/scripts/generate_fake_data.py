@@ -6,8 +6,9 @@ This script can be used to:
 2. Delete all data from the database (drop and recreate tables)
 3. Seed Undercover word pairs (30+ Islamic term pairs)
 4. Seed Codenames word packs (100+ Islamic terms in categories)
-5. Seed achievement definitions
-6. Create UserStats entries for test users
+5. Seed achievement/challenge definitions
+6. Create UserStats, UserAchievements, UserChallenges for test users
+7. Create friendships and chat messages
 
 Usage:
     # Create database tables and generate fake data
@@ -42,21 +43,23 @@ import asyncio
 import random
 import string
 import sys
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.controllers.achievement import AchievementController
 from ipg.api.controllers.challenge import ChallengeController
 from ipg.api.controllers.shared import get_password_hash
+from ipg.api.models.challenge import ChallengeDefinition, ChallengeType, UserChallenge
 from ipg.api.models.chat import ChatMessage
 from ipg.api.models.codenames import CodenamesWord, CodenamesWordPack
 from ipg.api.models.friendship import Friendship, FriendshipStatus
 from ipg.api.models.game import GameType
 from ipg.api.models.room import RoomStatus, RoomType
-from ipg.api.models.stats import UserStats
+from ipg.api.models.stats import AchievementDefinition, UserAchievement, UserStats
 from ipg.api.models.table import Game, Room, User
 from ipg.api.models.undercover import TermPair, Word
 from ipg.database import create_app_engine, create_db_and_tables
@@ -74,12 +77,14 @@ TEST_USERS = [
         "email_address": "admin@test.com",
         "password": "admin123",
         "country": "SAU",
+        "bio": "Platform admin. Love organizing game nights!",
     },
     {
         "username": "user",
         "email_address": "user@test.com",
         "password": "user1234",
         "country": "ARE",
+        "bio": "Casual player, always up for a round.",
     },
     {
         "username": "player",
@@ -92,12 +97,14 @@ TEST_USERS = [
         "email_address": "ali@test.com",
         "password": "ali12345",
         "country": "EGY",
+        "bio": "Undercover champion. Try to catch me!",
     },
     {
         "username": "fatima",
         "email_address": "fatima@test.com",
         "password": "fatima12",
         "country": "TUN",
+        "bio": "Spymaster extraordinaire.",
     },
     {
         "username": "omar",
@@ -110,6 +117,7 @@ TEST_USERS = [
         "email_address": "aisha@test.com",
         "password": "aisha123",
         "country": "JOR",
+        "bio": "Here for the fun and the community.",
     },
     {
         "username": "yusuf",
@@ -122,6 +130,7 @@ TEST_USERS = [
         "email_address": "maryam@test.com",
         "password": "maryam12",
         "country": "MYS",
+        "bio": "Codenames is my favourite!",
     },
     {
         "username": "hamza",
@@ -327,6 +336,8 @@ async def create_test_users(session: AsyncSession) -> list[User]:
             email_address=user_data["email_address"],
             password=get_password_hash(user_data["password"]),
             country=user_data["country"],
+            email_verified=True,
+            bio=user_data.get("bio"),
         )
         session.add(user)
         users.append(user)
@@ -735,6 +746,110 @@ async def create_chat_messages(session: AsyncSession, users: list[User], rooms: 
     print(f"  Created {count} chat messages")
 
 
+async def create_user_achievements(session: AsyncSession, users: list[User]) -> None:
+    """Create sample UserAchievement records for test users.
+
+    Some achievements are unlocked (with unlocked_at), some are in-progress.
+
+    Args:
+        session: The database session.
+        users: List of users to create achievements for.
+    """
+    # Fetch all achievement definitions
+    definitions = list((await session.exec(select(AchievementDefinition))).all())
+    if not definitions:
+        print("  No achievement definitions found — skipping")
+        return
+
+    count = 0
+    for user in users[:10]:  # First 10 test users
+        # Give each user 3-6 random achievements
+        num_achievements = random.randint(3, min(6, len(definitions)))
+        selected = random.sample(definitions, num_achievements)
+
+        for defn in selected:
+            is_unlocked = random.random() < 0.6  # 60% chance unlocked
+            progress = defn.threshold if is_unlocked else random.randint(0, defn.threshold - 1)
+            unlocked_at = (
+                fake.date_time_between(start_date="-30d", end_date="now")
+                if is_unlocked
+                else None
+            )
+
+            achievement = UserAchievement(
+                id=uuid4(),
+                user_id=user.id,
+                achievement_id=defn.id,
+                progress=progress,
+                unlocked_at=unlocked_at,
+            )
+            session.add(achievement)
+            count += 1
+
+    await session.commit()
+    print(f"  Created {count} user achievements")
+
+
+async def create_user_challenges(session: AsyncSession, users: list[User]) -> None:
+    """Assign active challenges to test users.
+
+    Each user gets 3 daily + 2 weekly challenges (matching the app's assignment logic).
+
+    Args:
+        session: The database session.
+        users: List of users to assign challenges to.
+    """
+    # Fetch challenge definitions by type
+    all_defs = list((await session.exec(select(ChallengeDefinition))).all())
+    if not all_defs:
+        print("  No challenge definitions found — skipping")
+        return
+
+    daily_defs = [d for d in all_defs if d.challenge_type == ChallengeType.DAILY]
+    weekly_defs = [d for d in all_defs if d.challenge_type == ChallengeType.WEEKLY]
+
+    now = datetime.now(UTC)
+    daily_expires = now.replace(hour=23, minute=59, second=59) + timedelta(days=1)
+    weekly_expires = now + timedelta(days=7 - now.weekday())  # Next Monday
+
+    count = 0
+    for user in users[:10]:  # First 10 test users
+        # 3 daily challenges
+        chosen_daily = random.sample(daily_defs, min(3, len(daily_defs)))
+        for defn in chosen_daily:
+            progress = random.randint(0, defn.target_count)
+            challenge = UserChallenge(
+                id=uuid4(),
+                user_id=user.id,
+                challenge_id=defn.id,
+                progress=progress,
+                completed=progress >= defn.target_count,
+                assigned_at=now,
+                expires_at=daily_expires,
+            )
+            session.add(challenge)
+            count += 1
+
+        # 2 weekly challenges
+        chosen_weekly = random.sample(weekly_defs, min(2, len(weekly_defs)))
+        for defn in chosen_weekly:
+            progress = random.randint(0, defn.target_count)
+            challenge = UserChallenge(
+                id=uuid4(),
+                user_id=user.id,
+                challenge_id=defn.id,
+                progress=progress,
+                completed=progress >= defn.target_count,
+                assigned_at=now,
+                expires_at=weekly_expires,
+            )
+            session.add(challenge)
+            count += 1
+
+    await session.commit()
+    print(f"  Created {count} user challenges")
+
+
 # ── Main operations ─────────────────────────────────────────────────────────
 
 
@@ -766,47 +881,55 @@ async def generate_all_data(
 
     async with AsyncSession(engine, expire_on_commit=False) as session:
         # 1. Create test users
-        print("\n[1/10] Creating test users...")
+        print("\n[1/12] Creating test users...")
         test_users = await create_test_users(session)
 
         # 2. Create random users
-        print(f"\n[2/10] Creating {num_users} random users...")
+        print(f"\n[2/12] Creating {num_users} random users...")
         random_users = await create_random_users(session, num_users)
         all_users = test_users + random_users
 
         # 3. Create rooms
-        print("\n[3/10] Creating rooms...")
+        print("\n[3/12] Creating rooms...")
         rooms = await create_rooms(session, all_users, count=max(5, len(all_users) // 3))
 
         # 4. Seed Undercover words and pairs
-        print("\n[4/10] Seeding Undercover words and pairs...")
+        print("\n[4/12] Seeding Undercover words and pairs...")
         word_map = await seed_undercover_words(session)
         await seed_undercover_pairs(session, word_map)
 
         # 5. Seed Codenames words
-        print("\n[5/10] Seeding Codenames word packs...")
+        print("\n[5/12] Seeding Codenames word packs...")
         await seed_codenames_words(session)
 
         # 6. Seed achievements
-        print("\n[6/10] Seeding achievement definitions...")
+        print("\n[6/12] Seeding achievement definitions...")
         await seed_achievements(session)
 
         # 7. Seed challenges
-        print("\n[7/10] Seeding challenge definitions...")
+        print("\n[7/12] Seeding challenge definitions...")
         await seed_challenges(session)
 
         # 8. Create games and stats
-        print(f"\n[8/10] Creating {num_games} games and user stats...")
+        print(f"\n[8/12] Creating {num_games} games and user stats...")
         await create_games(session, all_users, count=num_games)
         await create_user_stats(session, test_users)
 
         # 9. Create friendships
-        print("\n[9/10] Creating friendships...")
+        print("\n[9/12] Creating friendships...")
         await create_friendships(session, test_users)
 
         # 10. Create chat messages
-        print("\n[10/10] Creating chat messages...")
+        print("\n[10/12] Creating chat messages...")
         await create_chat_messages(session, test_users, rooms)
+
+        # 11. Create user achievements (earned/in-progress)
+        print("\n[11/12] Creating user achievements...")
+        await create_user_achievements(session, test_users)
+
+        # 12. Create user challenges (assigned daily/weekly)
+        print("\n[12/12] Creating user challenges...")
+        await create_user_challenges(session, test_users)
 
     print("\nFake data generation complete!")
 
