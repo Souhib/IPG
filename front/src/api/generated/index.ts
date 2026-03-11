@@ -81,6 +81,8 @@ export type { GetWordPackApiV1CodenamesWordPacksPackIdGetQueryKey } from "./hook
 export type { GetWordPackApiV1CodenamesWordPacksPackIdGetSuspenseQueryKey } from "./hooks/useGetWordPackApiV1CodenamesWordPacksPackIdGetSuspense.ts";
 export type { GetWordPacksApiV1CodenamesWordPacksGetQueryKey } from "./hooks/useGetWordPacksApiV1CodenamesWordPacksGet.ts";
 export type { GetWordPacksApiV1CodenamesWordPacksGetSuspenseQueryKey } from "./hooks/useGetWordPacksApiV1CodenamesWordPacksGetSuspense.ts";
+export type { GetWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export type { GetWordquizStateApiV1WordquizGamesGameIdStateGetSuspenseQueryKey } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense.ts";
 export type { GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryKey } from "./hooks/useGetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
 export type { GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetSuspenseQueryKey } from "./hooks/useGetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetSuspense.ts";
 export type { GiveClueApiV1CodenamesGamesGameIdCluePostMutationKey } from "./hooks/useGiveClueApiV1CodenamesGamesGameIdCluePost.ts";
@@ -94,8 +96,10 @@ export type { KickPlayerApiV1RoomsRoomIdKickPatchMutationKey } from "./hooks/use
 export type { LeaveRoomApiV1RoomsLeavePatchMutationKey } from "./hooks/useLeaveRoomApiV1RoomsLeavePatch.ts";
 export type { LoginApiV1AuthLoginPostMutationKey } from "./hooks/useLoginApiV1AuthLoginPost.ts";
 export type { LogoutApiV1AuthLogoutPostMutationKey } from "./hooks/useLogoutApiV1AuthLogoutPost.ts";
+export type { NextRoundApiV1WordquizGamesGameIdNextRoundPostMutationKey } from "./hooks/useNextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
 export type { RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationKey } from "./hooks/useRecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
 export type { RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationKey } from "./hooks/useRecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
+export type { RecordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutationKey } from "./hooks/useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
 export type { RefreshTokenApiV1AuthRefreshPostMutationKey } from "./hooks/useRefreshTokenApiV1AuthRefreshPost.ts";
 export type { RegisterApiV1AuthRegisterPostMutationKey } from "./hooks/useRegisterApiV1AuthRegisterPost.ts";
 export type { RejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutationKey } from "./hooks/useRejectFriendRequestApiV1FriendsFriendshipIdRejectPost.ts";
@@ -109,21 +113,39 @@ export type { SendMessageApiV1RoomsRoomIdMessagesPostMutationKey } from "./hooks
 export type { StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationKey } from "./hooks/useStartCodenamesGameApiV1CodenamesGamesRoomIdStartPost.ts";
 export type { StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationKey } from "./hooks/useStartNextRoundApiV1UndercoverGamesGameIdNextRoundPost.ts";
 export type { StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationKey } from "./hooks/useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
+export type { StartWordquizGameApiV1WordquizGamesRoomIdStartPostMutationKey } from "./hooks/useStartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
+export type { SubmitAnswerApiV1WordquizGamesGameIdAnswerPostMutationKey } from "./hooks/useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
 export type { SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationKey } from "./hooks/useSubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
 export type { SubmitVoteApiV1UndercoverGamesGameIdVotePostMutationKey } from "./hooks/useSubmitVoteApiV1UndercoverGamesGameIdVotePost.ts";
 export type { TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutationKey } from "./hooks/useTimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost.ts";
 export type { TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationKey } from "./hooks/useTimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
+export type { TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutationKey } from "./hooks/useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
 export type { UpdateMyProfileApiV1ProfilesMePatchMutationKey } from "./hooks/useUpdateMyProfileApiV1ProfilesMePatch.ts";
 export type { UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationKey } from "./hooks/useUpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch.ts";
 export type { UpdateUndercoverGameApiV1GamesGameIdPatchMutationKey } from "./hooks/useUpdateUndercoverGameApiV1GamesGameIdPatch.ts";
 export type { UpdateUserApiV1UsersUserIdPatchMutationKey } from "./hooks/useUpdateUserApiV1UsersUserIdPatch.ts";
 export type { UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutationKey } from "./hooks/useUpdateUserPasswordApiV1UsersUserIdPasswordPatch.ts";
 export type { VerifyEmailApiV1AuthVerifyEmailPostMutationKey } from "./hooks/useVerifyEmailApiV1AuthVerifyEmailPost.ts";
-export type { AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostPathParams, AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost200, AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost404, AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost422, AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationResponse, AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutation } from "./types/AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost.ts";
+export type {
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostPathParams,
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost200,
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost404,
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost422,
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationResponse,
+  AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutation,
+} from "./types/AcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost.ts";
 export type { AchievementWithProgress } from "./types/AchievementWithProgress.ts";
 export type { ActiveChallenge } from "./types/ActiveChallenge.ts";
 export type { ActiveRoomResponse } from "./types/ActiveRoomResponse.ts";
-export type { AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostPathParams, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost201, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost404, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost422, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationRequest, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationResponse, AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutation } from "./types/AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost.ts";
+export type {
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostPathParams,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost201,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost404,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost422,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationRequest,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationResponse,
+  AddWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutation,
+} from "./types/AddWordToPackApiV1CodenamesWordPacksPackIdWordsPost.ts";
 export type { ChatMessageView } from "./types/ChatMessageView.ts";
 export type { ClueGuess } from "./types/ClueGuess.ts";
 export type { ClueHistoryEntry } from "./types/ClueHistoryEntry.ts";
@@ -139,30 +161,148 @@ export type { CodenamesWord } from "./types/CodenamesWord.ts";
 export type { CodenamesWordCreate } from "./types/CodenamesWordCreate.ts";
 export type { CodenamesWordPack } from "./types/CodenamesWordPack.ts";
 export type { CodenamesWordPackCreate } from "./types/CodenamesWordPackCreate.ts";
-export type { CreateGameApiV1GamesPost201, CreateGameApiV1GamesPost404, CreateGameApiV1GamesPost422, CreateGameApiV1GamesPostMutationRequest, CreateGameApiV1GamesPostMutationResponse, CreateGameApiV1GamesPostMutation } from "./types/CreateGameApiV1GamesPost.ts";
-export type { CreateRoomApiV1RoomsPost201, CreateRoomApiV1RoomsPost404, CreateRoomApiV1RoomsPost422, CreateRoomApiV1RoomsPostMutationRequest, CreateRoomApiV1RoomsPostMutationResponse, CreateRoomApiV1RoomsPostMutation } from "./types/CreateRoomApiV1RoomsPost.ts";
-export type { CreateTermPairApiV1UndercoverTermpairPost201, CreateTermPairApiV1UndercoverTermpairPost404, CreateTermPairApiV1UndercoverTermpairPost422, CreateTermPairApiV1UndercoverTermpairPostMutationRequest, CreateTermPairApiV1UndercoverTermpairPostMutationResponse, CreateTermPairApiV1UndercoverTermpairPostMutation } from "./types/CreateTermPairApiV1UndercoverTermpairPost.ts";
-export type { CreateUserApiV1UsersPost201, CreateUserApiV1UsersPost404, CreateUserApiV1UsersPost422, CreateUserApiV1UsersPostMutationRequest, CreateUserApiV1UsersPostMutationResponse, CreateUserApiV1UsersPostMutation } from "./types/CreateUserApiV1UsersPost.ts";
-export type { CreateWordApiV1UndercoverWordsPost201, CreateWordApiV1UndercoverWordsPost404, CreateWordApiV1UndercoverWordsPost422, CreateWordApiV1UndercoverWordsPostMutationRequest, CreateWordApiV1UndercoverWordsPostMutationResponse, CreateWordApiV1UndercoverWordsPostMutation } from "./types/CreateWordApiV1UndercoverWordsPost.ts";
-export type { CreateWordPackApiV1CodenamesWordPacksPost201, CreateWordPackApiV1CodenamesWordPacksPost404, CreateWordPackApiV1CodenamesWordPacksPost422, CreateWordPackApiV1CodenamesWordPacksPostMutationRequest, CreateWordPackApiV1CodenamesWordPacksPostMutationResponse, CreateWordPackApiV1CodenamesWordPacksPostMutation } from "./types/CreateWordPackApiV1CodenamesWordPacksPost.ts";
+export type {
+  CreateGameApiV1GamesPost201,
+  CreateGameApiV1GamesPost404,
+  CreateGameApiV1GamesPost422,
+  CreateGameApiV1GamesPostMutationRequest,
+  CreateGameApiV1GamesPostMutationResponse,
+  CreateGameApiV1GamesPostMutation,
+} from "./types/CreateGameApiV1GamesPost.ts";
+export type {
+  CreateRoomApiV1RoomsPost201,
+  CreateRoomApiV1RoomsPost404,
+  CreateRoomApiV1RoomsPost422,
+  CreateRoomApiV1RoomsPostMutationRequest,
+  CreateRoomApiV1RoomsPostMutationResponse,
+  CreateRoomApiV1RoomsPostMutation,
+} from "./types/CreateRoomApiV1RoomsPost.ts";
+export type {
+  CreateTermPairApiV1UndercoverTermpairPost201,
+  CreateTermPairApiV1UndercoverTermpairPost404,
+  CreateTermPairApiV1UndercoverTermpairPost422,
+  CreateTermPairApiV1UndercoverTermpairPostMutationRequest,
+  CreateTermPairApiV1UndercoverTermpairPostMutationResponse,
+  CreateTermPairApiV1UndercoverTermpairPostMutation,
+} from "./types/CreateTermPairApiV1UndercoverTermpairPost.ts";
+export type {
+  CreateUserApiV1UsersPost201,
+  CreateUserApiV1UsersPost404,
+  CreateUserApiV1UsersPost422,
+  CreateUserApiV1UsersPostMutationRequest,
+  CreateUserApiV1UsersPostMutationResponse,
+  CreateUserApiV1UsersPostMutation,
+} from "./types/CreateUserApiV1UsersPost.ts";
+export type {
+  CreateWordApiV1UndercoverWordsPost201,
+  CreateWordApiV1UndercoverWordsPost404,
+  CreateWordApiV1UndercoverWordsPost422,
+  CreateWordApiV1UndercoverWordsPostMutationRequest,
+  CreateWordApiV1UndercoverWordsPostMutationResponse,
+  CreateWordApiV1UndercoverWordsPostMutation,
+} from "./types/CreateWordApiV1UndercoverWordsPost.ts";
+export type {
+  CreateWordPackApiV1CodenamesWordPacksPost201,
+  CreateWordPackApiV1CodenamesWordPacksPost404,
+  CreateWordPackApiV1CodenamesWordPacksPost422,
+  CreateWordPackApiV1CodenamesWordPacksPostMutationRequest,
+  CreateWordPackApiV1CodenamesWordPacksPostMutationResponse,
+  CreateWordPackApiV1CodenamesWordPacksPostMutation,
+} from "./types/CreateWordPackApiV1CodenamesWordPacksPost.ts";
 export type { DailyGameRecord } from "./types/DailyGameRecord.ts";
-export type { DeleteAccountApiV1UsersMeAccountDelete204, DeleteAccountApiV1UsersMeAccountDelete404, DeleteAccountApiV1UsersMeAccountDelete422, DeleteAccountApiV1UsersMeAccountDeleteMutationRequest, DeleteAccountApiV1UsersMeAccountDeleteMutationResponse, DeleteAccountApiV1UsersMeAccountDeleteMutation } from "./types/DeleteAccountApiV1UsersMeAccountDelete.ts";
+export type {
+  DeleteAccountApiV1UsersMeAccountDelete204,
+  DeleteAccountApiV1UsersMeAccountDelete404,
+  DeleteAccountApiV1UsersMeAccountDelete422,
+  DeleteAccountApiV1UsersMeAccountDeleteMutationRequest,
+  DeleteAccountApiV1UsersMeAccountDeleteMutationResponse,
+  DeleteAccountApiV1UsersMeAccountDeleteMutation,
+} from "./types/DeleteAccountApiV1UsersMeAccountDelete.ts";
 export type { DeleteAccountRequest } from "./types/DeleteAccountRequest.ts";
-export type { DeleteRoomApiV1RoomsRoomIdDeletePathParams, DeleteRoomApiV1RoomsRoomIdDelete204, DeleteRoomApiV1RoomsRoomIdDelete404, DeleteRoomApiV1RoomsRoomIdDelete422, DeleteRoomApiV1RoomsRoomIdDeleteMutationResponse, DeleteRoomApiV1RoomsRoomIdDeleteMutation } from "./types/DeleteRoomApiV1RoomsRoomIdDelete.ts";
-export type { DeleteTermPairApiV1UndercoverTermpairTermPairIdDeletePathParams, DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete204, DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete404, DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete422, DeleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutationResponse, DeleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutation } from "./types/DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete.ts";
-export type { DeleteUndercoverGameApiV1GamesGameIdDeletePathParams, DeleteUndercoverGameApiV1GamesGameIdDelete204, DeleteUndercoverGameApiV1GamesGameIdDelete404, DeleteUndercoverGameApiV1GamesGameIdDelete422, DeleteUndercoverGameApiV1GamesGameIdDeleteMutationResponse, DeleteUndercoverGameApiV1GamesGameIdDeleteMutation } from "./types/DeleteUndercoverGameApiV1GamesGameIdDelete.ts";
-export type { DeleteUserApiV1UsersUserIdDeletePathParams, DeleteUserApiV1UsersUserIdDelete204, DeleteUserApiV1UsersUserIdDelete404, DeleteUserApiV1UsersUserIdDelete422, DeleteUserApiV1UsersUserIdDeleteMutationResponse, DeleteUserApiV1UsersUserIdDeleteMutation } from "./types/DeleteUserApiV1UsersUserIdDelete.ts";
-export type { DeleteWordApiV1CodenamesWordsWordIdDeletePathParams, DeleteWordApiV1CodenamesWordsWordIdDelete204, DeleteWordApiV1CodenamesWordsWordIdDelete404, DeleteWordApiV1CodenamesWordsWordIdDelete422, DeleteWordApiV1CodenamesWordsWordIdDeleteMutationResponse, DeleteWordApiV1CodenamesWordsWordIdDeleteMutation } from "./types/DeleteWordApiV1CodenamesWordsWordIdDelete.ts";
-export type { DeleteWordApiV1UndercoverWordsWordIdDeletePathParams, DeleteWordApiV1UndercoverWordsWordIdDelete204, DeleteWordApiV1UndercoverWordsWordIdDelete404, DeleteWordApiV1UndercoverWordsWordIdDelete422, DeleteWordApiV1UndercoverWordsWordIdDeleteMutationResponse, DeleteWordApiV1UndercoverWordsWordIdDeleteMutation } from "./types/DeleteWordApiV1UndercoverWordsWordIdDelete.ts";
-export type { DeleteWordPackApiV1CodenamesWordPacksPackIdDeletePathParams, DeleteWordPackApiV1CodenamesWordPacksPackIdDelete204, DeleteWordPackApiV1CodenamesWordPacksPackIdDelete404, DeleteWordPackApiV1CodenamesWordPacksPackIdDelete422, DeleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutationResponse, DeleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutation } from "./types/DeleteWordPackApiV1CodenamesWordPacksPackIdDelete.ts";
+export type {
+  DeleteRoomApiV1RoomsRoomIdDeletePathParams,
+  DeleteRoomApiV1RoomsRoomIdDelete204,
+  DeleteRoomApiV1RoomsRoomIdDelete404,
+  DeleteRoomApiV1RoomsRoomIdDelete422,
+  DeleteRoomApiV1RoomsRoomIdDeleteMutationResponse,
+  DeleteRoomApiV1RoomsRoomIdDeleteMutation,
+} from "./types/DeleteRoomApiV1RoomsRoomIdDelete.ts";
+export type {
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDeletePathParams,
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete204,
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete404,
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete422,
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutationResponse,
+  DeleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutation,
+} from "./types/DeleteTermPairApiV1UndercoverTermpairTermPairIdDelete.ts";
+export type {
+  DeleteUndercoverGameApiV1GamesGameIdDeletePathParams,
+  DeleteUndercoverGameApiV1GamesGameIdDelete204,
+  DeleteUndercoverGameApiV1GamesGameIdDelete404,
+  DeleteUndercoverGameApiV1GamesGameIdDelete422,
+  DeleteUndercoverGameApiV1GamesGameIdDeleteMutationResponse,
+  DeleteUndercoverGameApiV1GamesGameIdDeleteMutation,
+} from "./types/DeleteUndercoverGameApiV1GamesGameIdDelete.ts";
+export type {
+  DeleteUserApiV1UsersUserIdDeletePathParams,
+  DeleteUserApiV1UsersUserIdDelete204,
+  DeleteUserApiV1UsersUserIdDelete404,
+  DeleteUserApiV1UsersUserIdDelete422,
+  DeleteUserApiV1UsersUserIdDeleteMutationResponse,
+  DeleteUserApiV1UsersUserIdDeleteMutation,
+} from "./types/DeleteUserApiV1UsersUserIdDelete.ts";
+export type {
+  DeleteWordApiV1CodenamesWordsWordIdDeletePathParams,
+  DeleteWordApiV1CodenamesWordsWordIdDelete204,
+  DeleteWordApiV1CodenamesWordsWordIdDelete404,
+  DeleteWordApiV1CodenamesWordsWordIdDelete422,
+  DeleteWordApiV1CodenamesWordsWordIdDeleteMutationResponse,
+  DeleteWordApiV1CodenamesWordsWordIdDeleteMutation,
+} from "./types/DeleteWordApiV1CodenamesWordsWordIdDelete.ts";
+export type {
+  DeleteWordApiV1UndercoverWordsWordIdDeletePathParams,
+  DeleteWordApiV1UndercoverWordsWordIdDelete204,
+  DeleteWordApiV1UndercoverWordsWordIdDelete404,
+  DeleteWordApiV1UndercoverWordsWordIdDelete422,
+  DeleteWordApiV1UndercoverWordsWordIdDeleteMutationResponse,
+  DeleteWordApiV1UndercoverWordsWordIdDeleteMutation,
+} from "./types/DeleteWordApiV1UndercoverWordsWordIdDelete.ts";
+export type {
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDeletePathParams,
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDelete204,
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDelete404,
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDelete422,
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutationResponse,
+  DeleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutation,
+} from "./types/DeleteWordPackApiV1CodenamesWordPacksPackIdDelete.ts";
 export type { DescriptionOrderEntry } from "./types/DescriptionOrderEntry.ts";
 export type { DescriptionRequest } from "./types/DescriptionRequest.ts";
 export type { EliminatedInfo } from "./types/EliminatedInfo.ts";
 export type { EliminatedPlayer } from "./types/EliminatedPlayer.ts";
-export type { EndTurnApiV1CodenamesGamesGameIdEndTurnPostPathParams, EndTurnApiV1CodenamesGamesGameIdEndTurnPost200, EndTurnApiV1CodenamesGamesGameIdEndTurnPost404, EndTurnApiV1CodenamesGamesGameIdEndTurnPost422, EndTurnApiV1CodenamesGamesGameIdEndTurnPostMutationResponse, EndTurnApiV1CodenamesGamesGameIdEndTurnPostMutation } from "./types/EndTurnApiV1CodenamesGamesGameIdEndTurnPost.ts";
+export type {
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPostPathParams,
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPost200,
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPost404,
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPost422,
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPostMutationResponse,
+  EndTurnApiV1CodenamesGamesGameIdEndTurnPostMutation,
+} from "./types/EndTurnApiV1CodenamesGamesGameIdEndTurnPost.ts";
 export type { EndTurnResponse } from "./types/EndTurnResponse.ts";
-export type { EndUndercoverGameApiV1GamesGameIdEndPatchPathParams, EndUndercoverGameApiV1GamesGameIdEndPatch200, EndUndercoverGameApiV1GamesGameIdEndPatch404, EndUndercoverGameApiV1GamesGameIdEndPatch422, EndUndercoverGameApiV1GamesGameIdEndPatchMutationResponse, EndUndercoverGameApiV1GamesGameIdEndPatchMutation } from "./types/EndUndercoverGameApiV1GamesGameIdEndPatch.ts";
-export type { ForgotPasswordApiV1AuthForgotPasswordPost200, ForgotPasswordApiV1AuthForgotPasswordPost422, ForgotPasswordApiV1AuthForgotPasswordPostMutationRequest, ForgotPasswordApiV1AuthForgotPasswordPostMutationResponse, ForgotPasswordApiV1AuthForgotPasswordPostMutation } from "./types/ForgotPasswordApiV1AuthForgotPasswordPost.ts";
+export type {
+  EndUndercoverGameApiV1GamesGameIdEndPatchPathParams,
+  EndUndercoverGameApiV1GamesGameIdEndPatch200,
+  EndUndercoverGameApiV1GamesGameIdEndPatch404,
+  EndUndercoverGameApiV1GamesGameIdEndPatch422,
+  EndUndercoverGameApiV1GamesGameIdEndPatchMutationResponse,
+  EndUndercoverGameApiV1GamesGameIdEndPatchMutation,
+} from "./types/EndUndercoverGameApiV1GamesGameIdEndPatch.ts";
+export type {
+  ForgotPasswordApiV1AuthForgotPasswordPost200,
+  ForgotPasswordApiV1AuthForgotPasswordPost422,
+  ForgotPasswordApiV1AuthForgotPasswordPostMutationRequest,
+  ForgotPasswordApiV1AuthForgotPasswordPostMutationResponse,
+  ForgotPasswordApiV1AuthForgotPasswordPostMutation,
+} from "./types/ForgotPasswordApiV1AuthForgotPasswordPost.ts";
 export type { ForgotPasswordRequest } from "./types/ForgotPasswordRequest.ts";
 export type { FriendActionResponse } from "./types/FriendActionResponse.ts";
 export type { FriendEntry } from "./types/FriendEntry.ts";
@@ -177,76 +317,440 @@ export type { GameSummary } from "./types/GameSummary.ts";
 export type { GameSummaryPlayer } from "./types/GameSummaryPlayer.ts";
 export type { GameTypeEnumKey, GameType } from "./types/GameType.ts";
 export type { GameUpdate } from "./types/GameUpdate.ts";
-export type { GetActiveChallengesApiV1ChallengesActiveGet200, GetActiveChallengesApiV1ChallengesActiveGet404, GetActiveChallengesApiV1ChallengesActiveGetQueryResponse, GetActiveChallengesApiV1ChallengesActiveGetQuery } from "./types/GetActiveChallengesApiV1ChallengesActiveGet.ts";
-export type { GetActiveRoomApiV1RoomsActiveGet200, GetActiveRoomApiV1RoomsActiveGet404, GetActiveRoomApiV1RoomsActiveGetQueryResponse, GetActiveRoomApiV1RoomsActiveGetQuery } from "./types/GetActiveRoomApiV1RoomsActiveGet.ts";
-export type { GetAllRoomsApiV1RoomsGet200, GetAllRoomsApiV1RoomsGet404, GetAllRoomsApiV1RoomsGetQueryResponse, GetAllRoomsApiV1RoomsGetQuery } from "./types/GetAllRoomsApiV1RoomsGet.ts";
-export type { GetAllTermPairsApiV1UndercoverTermpairGet200, GetAllTermPairsApiV1UndercoverTermpairGet404, GetAllTermPairsApiV1UndercoverTermpairGetQueryResponse, GetAllTermPairsApiV1UndercoverTermpairGetQuery } from "./types/GetAllTermPairsApiV1UndercoverTermpairGet.ts";
-export type { GetAllUndercoverGamesApiV1GamesGet200, GetAllUndercoverGamesApiV1GamesGet404, GetAllUndercoverGamesApiV1GamesGetQueryResponse, GetAllUndercoverGamesApiV1GamesGetQuery } from "./types/GetAllUndercoverGamesApiV1GamesGet.ts";
-export type { GetAllUsersApiV1UsersGet200, GetAllUsersApiV1UsersGet404, GetAllUsersApiV1UsersGetQueryResponse, GetAllUsersApiV1UsersGetQuery } from "./types/GetAllUsersApiV1UsersGet.ts";
-export type { GetAllWordsApiV1UndercoverWordsGet200, GetAllWordsApiV1UndercoverWordsGet404, GetAllWordsApiV1UndercoverWordsGetQueryResponse, GetAllWordsApiV1UndercoverWordsGetQuery } from "./types/GetAllWordsApiV1UndercoverWordsGet.ts";
-export type { GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetPathParams, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryParams, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet200, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet404, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet422, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryResponse, GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQuery } from "./types/GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet.ts";
-export type { GetDurationStatsApiV1StatsUsersUserIdDurationGetPathParams, GetDurationStatsApiV1StatsUsersUserIdDurationGet200, GetDurationStatsApiV1StatsUsersUserIdDurationGet404, GetDurationStatsApiV1StatsUsersUserIdDurationGet422, GetDurationStatsApiV1StatsUsersUserIdDurationGetQueryResponse, GetDurationStatsApiV1StatsUsersUserIdDurationGetQuery } from "./types/GetDurationStatsApiV1StatsUsersUserIdDurationGet.ts";
-export type { GetFriendsApiV1FriendsGet200, GetFriendsApiV1FriendsGet404, GetFriendsApiV1FriendsGetQueryResponse, GetFriendsApiV1FriendsGetQuery } from "./types/GetFriendsApiV1FriendsGet.ts";
-export type { GetGameHistoryApiV1StatsUsersUserIdHistoryGetPathParams, GetGameHistoryApiV1StatsUsersUserIdHistoryGetQueryParams, GetGameHistoryApiV1StatsUsersUserIdHistoryGet200, GetGameHistoryApiV1StatsUsersUserIdHistoryGet404, GetGameHistoryApiV1StatsUsersUserIdHistoryGet422, GetGameHistoryApiV1StatsUsersUserIdHistoryGetQueryResponse, GetGameHistoryApiV1StatsUsersUserIdHistoryGetQuery } from "./types/GetGameHistoryApiV1StatsUsersUserIdHistoryGet.ts";
-export type { GetGamesByUserApiV1GamesUserUserIdGetPathParams, GetGamesByUserApiV1GamesUserUserIdGetQueryParams, GetGamesByUserApiV1GamesUserUserIdGet200, GetGamesByUserApiV1GamesUserUserIdGet404, GetGamesByUserApiV1GamesUserUserIdGet422, GetGamesByUserApiV1GamesUserUserIdGetQueryResponse, GetGamesByUserApiV1GamesUserUserIdGetQuery } from "./types/GetGamesByUserApiV1GamesUserUserIdGet.ts";
-export type { GetGameSummaryApiV1GamesGameIdSummaryGetPathParams, GetGameSummaryApiV1GamesGameIdSummaryGet200, GetGameSummaryApiV1GamesGameIdSummaryGet404, GetGameSummaryApiV1GamesGameIdSummaryGet422, GetGameSummaryApiV1GamesGameIdSummaryGetQueryResponse, GetGameSummaryApiV1GamesGameIdSummaryGetQuery } from "./types/GetGameSummaryApiV1GamesGameIdSummaryGet.ts";
-export type { GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetPathParams, GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet200, GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet404, GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet422, GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQueryResponse, GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQuery } from "./types/GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet.ts";
-export type { GetLeaderboardApiV1StatsLeaderboardGetQueryParams, GetLeaderboardApiV1StatsLeaderboardGet200, GetLeaderboardApiV1StatsLeaderboardGet404, GetLeaderboardApiV1StatsLeaderboardGet422, GetLeaderboardApiV1StatsLeaderboardGetQueryResponse, GetLeaderboardApiV1StatsLeaderboardGetQuery } from "./types/GetLeaderboardApiV1StatsLeaderboardGet.ts";
-export type { GetMeApiV1AuthMeGet200, GetMeApiV1AuthMeGetQueryResponse, GetMeApiV1AuthMeGetQuery } from "./types/GetMeApiV1AuthMeGet.ts";
-export type { GetMessagesApiV1RoomsRoomIdMessagesGetPathParams, GetMessagesApiV1RoomsRoomIdMessagesGetQueryParams, GetMessagesApiV1RoomsRoomIdMessagesGet200, GetMessagesApiV1RoomsRoomIdMessagesGet404, GetMessagesApiV1RoomsRoomIdMessagesGet422, GetMessagesApiV1RoomsRoomIdMessagesGetQueryResponse, GetMessagesApiV1RoomsRoomIdMessagesGetQuery } from "./types/GetMessagesApiV1RoomsRoomIdMessagesGet.ts";
-export type { GetPendingRequestsApiV1FriendsPendingGet200, GetPendingRequestsApiV1FriendsPendingGet404, GetPendingRequestsApiV1FriendsPendingGetQueryResponse, GetPendingRequestsApiV1FriendsPendingGetQuery } from "./types/GetPendingRequestsApiV1FriendsPendingGet.ts";
-export type { GetPublicProfileApiV1ProfilesUsersUserIdGetPathParams, GetPublicProfileApiV1ProfilesUsersUserIdGet200, GetPublicProfileApiV1ProfilesUsersUserIdGet404, GetPublicProfileApiV1ProfilesUsersUserIdGet422, GetPublicProfileApiV1ProfilesUsersUserIdGetQueryResponse, GetPublicProfileApiV1ProfilesUsersUserIdGetQuery } from "./types/GetPublicProfileApiV1ProfilesUsersUserIdGet.ts";
-export type { GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet200, GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet404, GetRandomTermPairApiV1UndercoverTermpairSearchRandomGetQueryResponse, GetRandomTermPairApiV1UndercoverTermpairSearchRandomGetQuery } from "./types/GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet.ts";
-export type { GetRoomApiV1RoomsRoomIdGetPathParams, GetRoomApiV1RoomsRoomIdGet200, GetRoomApiV1RoomsRoomIdGet404, GetRoomApiV1RoomsRoomIdGet422, GetRoomApiV1RoomsRoomIdGetQueryResponse, GetRoomApiV1RoomsRoomIdGetQuery } from "./types/GetRoomApiV1RoomsRoomIdGet.ts";
-export type { GetRoomStateApiV1RoomsRoomIdStateGetPathParams, GetRoomStateApiV1RoomsRoomIdStateGet200, GetRoomStateApiV1RoomsRoomIdStateGet404, GetRoomStateApiV1RoomsRoomIdStateGet422, GetRoomStateApiV1RoomsRoomIdStateGetQueryResponse, GetRoomStateApiV1RoomsRoomIdStateGetQuery } from "./types/GetRoomStateApiV1RoomsRoomIdStateGet.ts";
-export type { GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetPathParams, GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet200, GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet404, GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet422, GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetQueryResponse, GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetQuery } from "./types/GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet.ts";
-export type { GetUndercoverGameApiV1GamesGameIdGetPathParams, GetUndercoverGameApiV1GamesGameIdGet200, GetUndercoverGameApiV1GamesGameIdGet404, GetUndercoverGameApiV1GamesGameIdGet422, GetUndercoverGameApiV1GamesGameIdGetQueryResponse, GetUndercoverGameApiV1GamesGameIdGetQuery } from "./types/GetUndercoverGameApiV1GamesGameIdGet.ts";
-export type { GetUndercoverStateApiV1UndercoverGamesGameIdStateGetPathParams, GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryParams, GetUndercoverStateApiV1UndercoverGamesGameIdStateGet200, GetUndercoverStateApiV1UndercoverGamesGameIdStateGet404, GetUndercoverStateApiV1UndercoverGamesGameIdStateGet422, GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryResponse, GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQuery } from "./types/GetUndercoverStateApiV1UndercoverGamesGameIdStateGet.ts";
-export type { GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetPathParams, GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet200, GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet404, GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet422, GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetQueryResponse, GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetQuery } from "./types/GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet.ts";
-export type { GetUserByIdApiV1UsersUserIdGetPathParams, GetUserByIdApiV1UsersUserIdGet200, GetUserByIdApiV1UsersUserIdGet404, GetUserByIdApiV1UsersUserIdGet422, GetUserByIdApiV1UsersUserIdGetQueryResponse, GetUserByIdApiV1UsersUserIdGetQuery } from "./types/GetUserByIdApiV1UsersUserIdGet.ts";
-export type { GetUserStatsApiV1StatsUsersUserIdStatsGetPathParams, GetUserStatsApiV1StatsUsersUserIdStatsGet200, GetUserStatsApiV1StatsUsersUserIdStatsGet404, GetUserStatsApiV1StatsUsersUserIdStatsGet422, GetUserStatsApiV1StatsUsersUserIdStatsGetQueryResponse, GetUserStatsApiV1StatsUsersUserIdStatsGetQuery } from "./types/GetUserStatsApiV1StatsUsersUserIdStatsGet.ts";
-export type { GetWordByIdApiV1UndercoverWordsWordIdGetPathParams, GetWordByIdApiV1UndercoverWordsWordIdGet200, GetWordByIdApiV1UndercoverWordsWordIdGet404, GetWordByIdApiV1UndercoverWordsWordIdGet422, GetWordByIdApiV1UndercoverWordsWordIdGetQueryResponse, GetWordByIdApiV1UndercoverWordsWordIdGetQuery } from "./types/GetWordByIdApiV1UndercoverWordsWordIdGet.ts";
-export type { GetWordByWordApiV1UndercoverWordsSearchWordGetPathParams, GetWordByWordApiV1UndercoverWordsSearchWordGet200, GetWordByWordApiV1UndercoverWordsSearchWordGet404, GetWordByWordApiV1UndercoverWordsSearchWordGet422, GetWordByWordApiV1UndercoverWordsSearchWordGetQueryResponse, GetWordByWordApiV1UndercoverWordsSearchWordGetQuery } from "./types/GetWordByWordApiV1UndercoverWordsSearchWordGet.ts";
-export type { GetWordPackApiV1CodenamesWordPacksPackIdGetPathParams, GetWordPackApiV1CodenamesWordPacksPackIdGet200, GetWordPackApiV1CodenamesWordPacksPackIdGet404, GetWordPackApiV1CodenamesWordPacksPackIdGet422, GetWordPackApiV1CodenamesWordPacksPackIdGetQueryResponse, GetWordPackApiV1CodenamesWordPacksPackIdGetQuery } from "./types/GetWordPackApiV1CodenamesWordPacksPackIdGet.ts";
-export type { GetWordPacksApiV1CodenamesWordPacksGet200, GetWordPacksApiV1CodenamesWordPacksGet404, GetWordPacksApiV1CodenamesWordPacksGetQueryResponse, GetWordPacksApiV1CodenamesWordPacksGetQuery } from "./types/GetWordPacksApiV1CodenamesWordPacksGet.ts";
-export type { GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetPathParams, GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet200, GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet404, GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet422, GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryResponse, GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQuery } from "./types/GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
-export type { GiveClueApiV1CodenamesGamesGameIdCluePostPathParams, GiveClueApiV1CodenamesGamesGameIdCluePost200, GiveClueApiV1CodenamesGamesGameIdCluePost404, GiveClueApiV1CodenamesGamesGameIdCluePost422, GiveClueApiV1CodenamesGamesGameIdCluePostMutationRequest, GiveClueApiV1CodenamesGamesGameIdCluePostMutationResponse, GiveClueApiV1CodenamesGamesGameIdCluePostMutation } from "./types/GiveClueApiV1CodenamesGamesGameIdCluePost.ts";
+export type {
+  GetActiveChallengesApiV1ChallengesActiveGet200,
+  GetActiveChallengesApiV1ChallengesActiveGet404,
+  GetActiveChallengesApiV1ChallengesActiveGetQueryResponse,
+  GetActiveChallengesApiV1ChallengesActiveGetQuery,
+} from "./types/GetActiveChallengesApiV1ChallengesActiveGet.ts";
+export type {
+  GetActiveRoomApiV1RoomsActiveGet200,
+  GetActiveRoomApiV1RoomsActiveGet404,
+  GetActiveRoomApiV1RoomsActiveGetQueryResponse,
+  GetActiveRoomApiV1RoomsActiveGetQuery,
+} from "./types/GetActiveRoomApiV1RoomsActiveGet.ts";
+export type {
+  GetAllRoomsApiV1RoomsGet200,
+  GetAllRoomsApiV1RoomsGet404,
+  GetAllRoomsApiV1RoomsGetQueryResponse,
+  GetAllRoomsApiV1RoomsGetQuery,
+} from "./types/GetAllRoomsApiV1RoomsGet.ts";
+export type {
+  GetAllTermPairsApiV1UndercoverTermpairGet200,
+  GetAllTermPairsApiV1UndercoverTermpairGet404,
+  GetAllTermPairsApiV1UndercoverTermpairGetQueryResponse,
+  GetAllTermPairsApiV1UndercoverTermpairGetQuery,
+} from "./types/GetAllTermPairsApiV1UndercoverTermpairGet.ts";
+export type {
+  GetAllUndercoverGamesApiV1GamesGet200,
+  GetAllUndercoverGamesApiV1GamesGet404,
+  GetAllUndercoverGamesApiV1GamesGetQueryResponse,
+  GetAllUndercoverGamesApiV1GamesGetQuery,
+} from "./types/GetAllUndercoverGamesApiV1GamesGet.ts";
+export type {
+  GetAllUsersApiV1UsersGet200,
+  GetAllUsersApiV1UsersGet404,
+  GetAllUsersApiV1UsersGetQueryResponse,
+  GetAllUsersApiV1UsersGetQuery,
+} from "./types/GetAllUsersApiV1UsersGet.ts";
+export type {
+  GetAllWordsApiV1UndercoverWordsGet200,
+  GetAllWordsApiV1UndercoverWordsGet404,
+  GetAllWordsApiV1UndercoverWordsGetQueryResponse,
+  GetAllWordsApiV1UndercoverWordsGetQuery,
+} from "./types/GetAllWordsApiV1UndercoverWordsGet.ts";
+export type {
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetPathParams,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryParams,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet200,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet404,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet422,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryResponse,
+  GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQuery,
+} from "./types/GetCodenamesBoardApiV1CodenamesGamesGameIdBoardGet.ts";
+export type {
+  GetDurationStatsApiV1StatsUsersUserIdDurationGetPathParams,
+  GetDurationStatsApiV1StatsUsersUserIdDurationGet200,
+  GetDurationStatsApiV1StatsUsersUserIdDurationGet404,
+  GetDurationStatsApiV1StatsUsersUserIdDurationGet422,
+  GetDurationStatsApiV1StatsUsersUserIdDurationGetQueryResponse,
+  GetDurationStatsApiV1StatsUsersUserIdDurationGetQuery,
+} from "./types/GetDurationStatsApiV1StatsUsersUserIdDurationGet.ts";
+export type {
+  GetFriendsApiV1FriendsGet200,
+  GetFriendsApiV1FriendsGet404,
+  GetFriendsApiV1FriendsGetQueryResponse,
+  GetFriendsApiV1FriendsGetQuery,
+} from "./types/GetFriendsApiV1FriendsGet.ts";
+export type {
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGetPathParams,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGetQueryParams,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGet200,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGet404,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGet422,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGetQueryResponse,
+  GetGameHistoryApiV1StatsUsersUserIdHistoryGetQuery,
+} from "./types/GetGameHistoryApiV1StatsUsersUserIdHistoryGet.ts";
+export type {
+  GetGamesByUserApiV1GamesUserUserIdGetPathParams,
+  GetGamesByUserApiV1GamesUserUserIdGetQueryParams,
+  GetGamesByUserApiV1GamesUserUserIdGet200,
+  GetGamesByUserApiV1GamesUserUserIdGet404,
+  GetGamesByUserApiV1GamesUserUserIdGet422,
+  GetGamesByUserApiV1GamesUserUserIdGetQueryResponse,
+  GetGamesByUserApiV1GamesUserUserIdGetQuery,
+} from "./types/GetGamesByUserApiV1GamesUserUserIdGet.ts";
+export type {
+  GetGameSummaryApiV1GamesGameIdSummaryGetPathParams,
+  GetGameSummaryApiV1GamesGameIdSummaryGet200,
+  GetGameSummaryApiV1GamesGameIdSummaryGet404,
+  GetGameSummaryApiV1GamesGameIdSummaryGet422,
+  GetGameSummaryApiV1GamesGameIdSummaryGetQueryResponse,
+  GetGameSummaryApiV1GamesGameIdSummaryGetQuery,
+} from "./types/GetGameSummaryApiV1GamesGameIdSummaryGet.ts";
+export type {
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetPathParams,
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet200,
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet404,
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet422,
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQueryResponse,
+  GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQuery,
+} from "./types/GetHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet.ts";
+export type {
+  GetLeaderboardApiV1StatsLeaderboardGetQueryParams,
+  GetLeaderboardApiV1StatsLeaderboardGet200,
+  GetLeaderboardApiV1StatsLeaderboardGet404,
+  GetLeaderboardApiV1StatsLeaderboardGet422,
+  GetLeaderboardApiV1StatsLeaderboardGetQueryResponse,
+  GetLeaderboardApiV1StatsLeaderboardGetQuery,
+} from "./types/GetLeaderboardApiV1StatsLeaderboardGet.ts";
+export type {
+  GetMeApiV1AuthMeGet200,
+  GetMeApiV1AuthMeGetQueryResponse,
+  GetMeApiV1AuthMeGetQuery,
+} from "./types/GetMeApiV1AuthMeGet.ts";
+export type {
+  GetMessagesApiV1RoomsRoomIdMessagesGetPathParams,
+  GetMessagesApiV1RoomsRoomIdMessagesGetQueryParams,
+  GetMessagesApiV1RoomsRoomIdMessagesGet200,
+  GetMessagesApiV1RoomsRoomIdMessagesGet404,
+  GetMessagesApiV1RoomsRoomIdMessagesGet422,
+  GetMessagesApiV1RoomsRoomIdMessagesGetQueryResponse,
+  GetMessagesApiV1RoomsRoomIdMessagesGetQuery,
+} from "./types/GetMessagesApiV1RoomsRoomIdMessagesGet.ts";
+export type {
+  GetPendingRequestsApiV1FriendsPendingGet200,
+  GetPendingRequestsApiV1FriendsPendingGet404,
+  GetPendingRequestsApiV1FriendsPendingGetQueryResponse,
+  GetPendingRequestsApiV1FriendsPendingGetQuery,
+} from "./types/GetPendingRequestsApiV1FriendsPendingGet.ts";
+export type {
+  GetPublicProfileApiV1ProfilesUsersUserIdGetPathParams,
+  GetPublicProfileApiV1ProfilesUsersUserIdGet200,
+  GetPublicProfileApiV1ProfilesUsersUserIdGet404,
+  GetPublicProfileApiV1ProfilesUsersUserIdGet422,
+  GetPublicProfileApiV1ProfilesUsersUserIdGetQueryResponse,
+  GetPublicProfileApiV1ProfilesUsersUserIdGetQuery,
+} from "./types/GetPublicProfileApiV1ProfilesUsersUserIdGet.ts";
+export type {
+  GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet200,
+  GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet404,
+  GetRandomTermPairApiV1UndercoverTermpairSearchRandomGetQueryResponse,
+  GetRandomTermPairApiV1UndercoverTermpairSearchRandomGetQuery,
+} from "./types/GetRandomTermPairApiV1UndercoverTermpairSearchRandomGet.ts";
+export type {
+  GetRoomApiV1RoomsRoomIdGetPathParams,
+  GetRoomApiV1RoomsRoomIdGet200,
+  GetRoomApiV1RoomsRoomIdGet404,
+  GetRoomApiV1RoomsRoomIdGet422,
+  GetRoomApiV1RoomsRoomIdGetQueryResponse,
+  GetRoomApiV1RoomsRoomIdGetQuery,
+} from "./types/GetRoomApiV1RoomsRoomIdGet.ts";
+export type {
+  GetRoomStateApiV1RoomsRoomIdStateGetPathParams,
+  GetRoomStateApiV1RoomsRoomIdStateGet200,
+  GetRoomStateApiV1RoomsRoomIdStateGet404,
+  GetRoomStateApiV1RoomsRoomIdStateGet422,
+  GetRoomStateApiV1RoomsRoomIdStateGetQueryResponse,
+  GetRoomStateApiV1RoomsRoomIdStateGetQuery,
+} from "./types/GetRoomStateApiV1RoomsRoomIdStateGet.ts";
+export type {
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetPathParams,
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet200,
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet404,
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet422,
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetQueryResponse,
+  GetTermPairByIdApiV1UndercoverTermpairTermPairIdGetQuery,
+} from "./types/GetTermPairByIdApiV1UndercoverTermpairTermPairIdGet.ts";
+export type {
+  GetUndercoverGameApiV1GamesGameIdGetPathParams,
+  GetUndercoverGameApiV1GamesGameIdGet200,
+  GetUndercoverGameApiV1GamesGameIdGet404,
+  GetUndercoverGameApiV1GamesGameIdGet422,
+  GetUndercoverGameApiV1GamesGameIdGetQueryResponse,
+  GetUndercoverGameApiV1GamesGameIdGetQuery,
+} from "./types/GetUndercoverGameApiV1GamesGameIdGet.ts";
+export type {
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGetPathParams,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryParams,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGet200,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGet404,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGet422,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryResponse,
+  GetUndercoverStateApiV1UndercoverGamesGameIdStateGetQuery,
+} from "./types/GetUndercoverStateApiV1UndercoverGamesGameIdStateGet.ts";
+export type {
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetPathParams,
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet200,
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet404,
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet422,
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetQueryResponse,
+  GetUserAchievementsApiV1StatsUsersUserIdAchievementsGetQuery,
+} from "./types/GetUserAchievementsApiV1StatsUsersUserIdAchievementsGet.ts";
+export type {
+  GetUserByIdApiV1UsersUserIdGetPathParams,
+  GetUserByIdApiV1UsersUserIdGet200,
+  GetUserByIdApiV1UsersUserIdGet404,
+  GetUserByIdApiV1UsersUserIdGet422,
+  GetUserByIdApiV1UsersUserIdGetQueryResponse,
+  GetUserByIdApiV1UsersUserIdGetQuery,
+} from "./types/GetUserByIdApiV1UsersUserIdGet.ts";
+export type {
+  GetUserStatsApiV1StatsUsersUserIdStatsGetPathParams,
+  GetUserStatsApiV1StatsUsersUserIdStatsGet200,
+  GetUserStatsApiV1StatsUsersUserIdStatsGet404,
+  GetUserStatsApiV1StatsUsersUserIdStatsGet422,
+  GetUserStatsApiV1StatsUsersUserIdStatsGetQueryResponse,
+  GetUserStatsApiV1StatsUsersUserIdStatsGetQuery,
+} from "./types/GetUserStatsApiV1StatsUsersUserIdStatsGet.ts";
+export type {
+  GetWordByIdApiV1UndercoverWordsWordIdGetPathParams,
+  GetWordByIdApiV1UndercoverWordsWordIdGet200,
+  GetWordByIdApiV1UndercoverWordsWordIdGet404,
+  GetWordByIdApiV1UndercoverWordsWordIdGet422,
+  GetWordByIdApiV1UndercoverWordsWordIdGetQueryResponse,
+  GetWordByIdApiV1UndercoverWordsWordIdGetQuery,
+} from "./types/GetWordByIdApiV1UndercoverWordsWordIdGet.ts";
+export type {
+  GetWordByWordApiV1UndercoverWordsSearchWordGetPathParams,
+  GetWordByWordApiV1UndercoverWordsSearchWordGet200,
+  GetWordByWordApiV1UndercoverWordsSearchWordGet404,
+  GetWordByWordApiV1UndercoverWordsSearchWordGet422,
+  GetWordByWordApiV1UndercoverWordsSearchWordGetQueryResponse,
+  GetWordByWordApiV1UndercoverWordsSearchWordGetQuery,
+} from "./types/GetWordByWordApiV1UndercoverWordsSearchWordGet.ts";
+export type {
+  GetWordPackApiV1CodenamesWordPacksPackIdGetPathParams,
+  GetWordPackApiV1CodenamesWordPacksPackIdGet200,
+  GetWordPackApiV1CodenamesWordPacksPackIdGet404,
+  GetWordPackApiV1CodenamesWordPacksPackIdGet422,
+  GetWordPackApiV1CodenamesWordPacksPackIdGetQueryResponse,
+  GetWordPackApiV1CodenamesWordPacksPackIdGetQuery,
+} from "./types/GetWordPackApiV1CodenamesWordPacksPackIdGet.ts";
+export type {
+  GetWordPacksApiV1CodenamesWordPacksGet200,
+  GetWordPacksApiV1CodenamesWordPacksGet404,
+  GetWordPacksApiV1CodenamesWordPacksGetQueryResponse,
+  GetWordPacksApiV1CodenamesWordPacksGetQuery,
+} from "./types/GetWordPacksApiV1CodenamesWordPacksGet.ts";
+export type {
+  GetWordquizStateApiV1WordquizGamesGameIdStateGetPathParams,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGetQueryParams,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGet200,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGet404,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGet422,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGetQueryResponse,
+  GetWordquizStateApiV1WordquizGamesGameIdStateGetQuery,
+} from "./types/GetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export type {
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetPathParams,
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet200,
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet404,
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet422,
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryResponse,
+  GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQuery,
+} from "./types/GetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
+export type {
+  GiveClueApiV1CodenamesGamesGameIdCluePostPathParams,
+  GiveClueApiV1CodenamesGamesGameIdCluePost200,
+  GiveClueApiV1CodenamesGamesGameIdCluePost404,
+  GiveClueApiV1CodenamesGamesGameIdCluePost422,
+  GiveClueApiV1CodenamesGamesGameIdCluePostMutationRequest,
+  GiveClueApiV1CodenamesGamesGameIdCluePostMutationResponse,
+  GiveClueApiV1CodenamesGamesGameIdCluePostMutation,
+} from "./types/GiveClueApiV1CodenamesGamesGameIdCluePost.ts";
 export type { GiveClueRequest } from "./types/GiveClueRequest.ts";
 export type { GiveClueResponse } from "./types/GiveClueResponse.ts";
-export type { GuessCardApiV1CodenamesGamesGameIdGuessPostPathParams, GuessCardApiV1CodenamesGamesGameIdGuessPost200, GuessCardApiV1CodenamesGamesGameIdGuessPost404, GuessCardApiV1CodenamesGamesGameIdGuessPost422, GuessCardApiV1CodenamesGamesGameIdGuessPostMutationRequest, GuessCardApiV1CodenamesGamesGameIdGuessPostMutationResponse, GuessCardApiV1CodenamesGamesGameIdGuessPostMutation } from "./types/GuessCardApiV1CodenamesGamesGameIdGuessPost.ts";
+export type {
+  GuessCardApiV1CodenamesGamesGameIdGuessPostPathParams,
+  GuessCardApiV1CodenamesGamesGameIdGuessPost200,
+  GuessCardApiV1CodenamesGamesGameIdGuessPost404,
+  GuessCardApiV1CodenamesGamesGameIdGuessPost422,
+  GuessCardApiV1CodenamesGamesGameIdGuessPostMutationRequest,
+  GuessCardApiV1CodenamesGamesGameIdGuessPostMutationResponse,
+  GuessCardApiV1CodenamesGamesGameIdGuessPostMutation,
+} from "./types/GuessCardApiV1CodenamesGamesGameIdGuessPost.ts";
 export type { GuessCardRequest } from "./types/GuessCardRequest.ts";
 export type { GuessCardResponse } from "./types/GuessCardResponse.ts";
 export type { HeadToHeadStats } from "./types/HeadToHeadStats.ts";
-export type { HealthCheckHealthGet200, HealthCheckHealthGetQueryResponse, HealthCheckHealthGetQuery } from "./types/HealthCheckHealthGet.ts";
+export type {
+  HealthCheckHealthGet200,
+  HealthCheckHealthGetQueryResponse,
+  HealthCheckHealthGetQuery,
+} from "./types/HealthCheckHealthGet.ts";
 export type { HintRecordResponse } from "./types/HintRecordResponse.ts";
 export type { HTTPValidationError } from "./types/HTTPValidationError.ts";
-export type { InviteFriendToRoomApiV1RoomsRoomIdInvitePostPathParams, InviteFriendToRoomApiV1RoomsRoomIdInvitePost200, InviteFriendToRoomApiV1RoomsRoomIdInvitePost404, InviteFriendToRoomApiV1RoomsRoomIdInvitePost422, InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationRequest, InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationResponse, InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutation } from "./types/InviteFriendToRoomApiV1RoomsRoomIdInvitePost.ts";
-export type { JoinRoomApiV1RoomsJoinPatch200, JoinRoomApiV1RoomsJoinPatch404, JoinRoomApiV1RoomsJoinPatch422, JoinRoomApiV1RoomsJoinPatchMutationRequest, JoinRoomApiV1RoomsJoinPatchMutationResponse, JoinRoomApiV1RoomsJoinPatchMutation } from "./types/JoinRoomApiV1RoomsJoinPatch.ts";
-export type { JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch200, JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch404, JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch422, JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationRequest, JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationResponse, JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutation } from "./types/JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch.ts";
+export type {
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePostPathParams,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePost200,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePost404,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePost422,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationRequest,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationResponse,
+  InviteFriendToRoomApiV1RoomsRoomIdInvitePostMutation,
+} from "./types/InviteFriendToRoomApiV1RoomsRoomIdInvitePost.ts";
+export type {
+  JoinRoomApiV1RoomsJoinPatch200,
+  JoinRoomApiV1RoomsJoinPatch404,
+  JoinRoomApiV1RoomsJoinPatch422,
+  JoinRoomApiV1RoomsJoinPatchMutationRequest,
+  JoinRoomApiV1RoomsJoinPatchMutationResponse,
+  JoinRoomApiV1RoomsJoinPatchMutation,
+} from "./types/JoinRoomApiV1RoomsJoinPatch.ts";
+export type {
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch200,
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch404,
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch422,
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationRequest,
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationResponse,
+  JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutation,
+} from "./types/JoinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch.ts";
 export type { JoinSpectatorRequest } from "./types/JoinSpectatorRequest.ts";
-export type { KickPlayerApiV1RoomsRoomIdKickPatchPathParams, KickPlayerApiV1RoomsRoomIdKickPatch200, KickPlayerApiV1RoomsRoomIdKickPatch404, KickPlayerApiV1RoomsRoomIdKickPatch422, KickPlayerApiV1RoomsRoomIdKickPatchMutationRequest, KickPlayerApiV1RoomsRoomIdKickPatchMutationResponse, KickPlayerApiV1RoomsRoomIdKickPatchMutation } from "./types/KickPlayerApiV1RoomsRoomIdKickPatch.ts";
+export type {
+  KickPlayerApiV1RoomsRoomIdKickPatchPathParams,
+  KickPlayerApiV1RoomsRoomIdKickPatch200,
+  KickPlayerApiV1RoomsRoomIdKickPatch404,
+  KickPlayerApiV1RoomsRoomIdKickPatch422,
+  KickPlayerApiV1RoomsRoomIdKickPatchMutationRequest,
+  KickPlayerApiV1RoomsRoomIdKickPatchMutationResponse,
+  KickPlayerApiV1RoomsRoomIdKickPatchMutation,
+} from "./types/KickPlayerApiV1RoomsRoomIdKickPatch.ts";
 export type { KickPlayerRequest } from "./types/KickPlayerRequest.ts";
 export type { KickPlayerResponse } from "./types/KickPlayerResponse.ts";
 export type { LeaderboardEntry } from "./types/LeaderboardEntry.ts";
-export type { LeaveRoomApiV1RoomsLeavePatch200, LeaveRoomApiV1RoomsLeavePatch404, LeaveRoomApiV1RoomsLeavePatch422, LeaveRoomApiV1RoomsLeavePatchMutationRequest, LeaveRoomApiV1RoomsLeavePatchMutationResponse, LeaveRoomApiV1RoomsLeavePatchMutation } from "./types/LeaveRoomApiV1RoomsLeavePatch.ts";
-export type { LoginApiV1AuthLoginPost200, LoginApiV1AuthLoginPost422, LoginApiV1AuthLoginPostMutationRequest, LoginApiV1AuthLoginPostMutationResponse, LoginApiV1AuthLoginPostMutation } from "./types/LoginApiV1AuthLoginPost.ts";
+export type {
+  LeaveRoomApiV1RoomsLeavePatch200,
+  LeaveRoomApiV1RoomsLeavePatch404,
+  LeaveRoomApiV1RoomsLeavePatch422,
+  LeaveRoomApiV1RoomsLeavePatchMutationRequest,
+  LeaveRoomApiV1RoomsLeavePatchMutationResponse,
+  LeaveRoomApiV1RoomsLeavePatchMutation,
+} from "./types/LeaveRoomApiV1RoomsLeavePatch.ts";
+export type {
+  LoginApiV1AuthLoginPost200,
+  LoginApiV1AuthLoginPost422,
+  LoginApiV1AuthLoginPostMutationRequest,
+  LoginApiV1AuthLoginPostMutationResponse,
+  LoginApiV1AuthLoginPostMutation,
+} from "./types/LoginApiV1AuthLoginPost.ts";
 export type { LoginRequest } from "./types/LoginRequest.ts";
 export type { LoginResponse } from "./types/LoginResponse.ts";
 export type { LoginUserData } from "./types/LoginUserData.ts";
-export type { LogoutApiV1AuthLogoutPost200, LogoutApiV1AuthLogoutPostMutationResponse, LogoutApiV1AuthLogoutPostMutation } from "./types/LogoutApiV1AuthLogoutPost.ts";
+export type {
+  LogoutApiV1AuthLogoutPost200,
+  LogoutApiV1AuthLogoutPostMutationResponse,
+  LogoutApiV1AuthLogoutPostMutation,
+} from "./types/LogoutApiV1AuthLogoutPost.ts";
+export type {
+  NextRoundApiV1WordquizGamesGameIdNextRoundPostPathParams,
+  NextRoundApiV1WordquizGamesGameIdNextRoundPost200,
+  NextRoundApiV1WordquizGamesGameIdNextRoundPost404,
+  NextRoundApiV1WordquizGamesGameIdNextRoundPost422,
+  NextRoundApiV1WordquizGamesGameIdNextRoundPostMutationResponse,
+  NextRoundApiV1WordquizGamesGameIdNextRoundPostMutation,
+} from "./types/NextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
 export type { NextRoundRequest } from "./types/NextRoundRequest.ts";
 export type { PublicProfile } from "./types/PublicProfile.ts";
-export type { RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostPathParams, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost200, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost404, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost422, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationRequest, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationResponse, RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutation } from "./types/RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
-export type { RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostPathParams, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost200, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost404, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost422, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationRequest, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationResponse, RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutation } from "./types/RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
-export type { RefreshTokenApiV1AuthRefreshPostQueryParams, RefreshTokenApiV1AuthRefreshPost200, RefreshTokenApiV1AuthRefreshPost422, RefreshTokenApiV1AuthRefreshPostMutationResponse, RefreshTokenApiV1AuthRefreshPostMutation } from "./types/RefreshTokenApiV1AuthRefreshPost.ts";
-export type { RegisterApiV1AuthRegisterPost201, RegisterApiV1AuthRegisterPost422, RegisterApiV1AuthRegisterPostMutationRequest, RegisterApiV1AuthRegisterPostMutationResponse, RegisterApiV1AuthRegisterPostMutation } from "./types/RegisterApiV1AuthRegisterPost.ts";
-export type { RejectFriendRequestApiV1FriendsFriendshipIdRejectPostPathParams, RejectFriendRequestApiV1FriendsFriendshipIdRejectPost204, RejectFriendRequestApiV1FriendsFriendshipIdRejectPost404, RejectFriendRequestApiV1FriendsFriendshipIdRejectPost422, RejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutationResponse, RejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutation } from "./types/RejectFriendRequestApiV1FriendsFriendshipIdRejectPost.ts";
-export type { RematchApiV1RoomsRoomIdRematchPostPathParams, RematchApiV1RoomsRoomIdRematchPost200, RematchApiV1RoomsRoomIdRematchPost404, RematchApiV1RoomsRoomIdRematchPost422, RematchApiV1RoomsRoomIdRematchPostMutationResponse, RematchApiV1RoomsRoomIdRematchPostMutation } from "./types/RematchApiV1RoomsRoomIdRematchPost.ts";
+export type {
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostPathParams,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost200,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost404,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost422,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationRequest,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationResponse,
+  RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutation,
+} from "./types/RecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
+export type {
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostPathParams,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost200,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost404,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost422,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationRequest,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationResponse,
+  RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutation,
+} from "./types/RecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
+export type {
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPostPathParams,
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPost200,
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPost404,
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPost422,
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutationResponse,
+  RecordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutation,
+} from "./types/RecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
+export type {
+  RefreshTokenApiV1AuthRefreshPostQueryParams,
+  RefreshTokenApiV1AuthRefreshPost200,
+  RefreshTokenApiV1AuthRefreshPost422,
+  RefreshTokenApiV1AuthRefreshPostMutationResponse,
+  RefreshTokenApiV1AuthRefreshPostMutation,
+} from "./types/RefreshTokenApiV1AuthRefreshPost.ts";
+export type {
+  RegisterApiV1AuthRegisterPost201,
+  RegisterApiV1AuthRegisterPost422,
+  RegisterApiV1AuthRegisterPostMutationRequest,
+  RegisterApiV1AuthRegisterPostMutationResponse,
+  RegisterApiV1AuthRegisterPostMutation,
+} from "./types/RegisterApiV1AuthRegisterPost.ts";
+export type {
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPostPathParams,
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPost204,
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPost404,
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPost422,
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutationResponse,
+  RejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutation,
+} from "./types/RejectFriendRequestApiV1FriendsFriendshipIdRejectPost.ts";
+export type {
+  RematchApiV1RoomsRoomIdRematchPostPathParams,
+  RematchApiV1RoomsRoomIdRematchPost200,
+  RematchApiV1RoomsRoomIdRematchPost404,
+  RematchApiV1RoomsRoomIdRematchPost422,
+  RematchApiV1RoomsRoomIdRematchPostMutationResponse,
+  RematchApiV1RoomsRoomIdRematchPostMutation,
+} from "./types/RematchApiV1RoomsRoomIdRematchPost.ts";
 export type { RematchResponse } from "./types/RematchResponse.ts";
-export type { RemoveFriendApiV1FriendsFriendshipIdDeletePathParams, RemoveFriendApiV1FriendsFriendshipIdDelete204, RemoveFriendApiV1FriendsFriendshipIdDelete404, RemoveFriendApiV1FriendsFriendshipIdDelete422, RemoveFriendApiV1FriendsFriendshipIdDeleteMutationResponse, RemoveFriendApiV1FriendsFriendshipIdDeleteMutation } from "./types/RemoveFriendApiV1FriendsFriendshipIdDelete.ts";
-export type { ResendVerificationApiV1AuthResendVerificationPost200, ResendVerificationApiV1AuthResendVerificationPost422, ResendVerificationApiV1AuthResendVerificationPostMutationRequest, ResendVerificationApiV1AuthResendVerificationPostMutationResponse, ResendVerificationApiV1AuthResendVerificationPostMutation } from "./types/ResendVerificationApiV1AuthResendVerificationPost.ts";
+export type {
+  RemoveFriendApiV1FriendsFriendshipIdDeletePathParams,
+  RemoveFriendApiV1FriendsFriendshipIdDelete204,
+  RemoveFriendApiV1FriendsFriendshipIdDelete404,
+  RemoveFriendApiV1FriendsFriendshipIdDelete422,
+  RemoveFriendApiV1FriendsFriendshipIdDeleteMutationResponse,
+  RemoveFriendApiV1FriendsFriendshipIdDeleteMutation,
+} from "./types/RemoveFriendApiV1FriendsFriendshipIdDelete.ts";
+export type {
+  ResendVerificationApiV1AuthResendVerificationPost200,
+  ResendVerificationApiV1AuthResendVerificationPost422,
+  ResendVerificationApiV1AuthResendVerificationPostMutationRequest,
+  ResendVerificationApiV1AuthResendVerificationPostMutationResponse,
+  ResendVerificationApiV1AuthResendVerificationPostMutation,
+} from "./types/ResendVerificationApiV1AuthResendVerificationPost.ts";
 export type { ResendVerificationRequest } from "./types/ResendVerificationRequest.ts";
-export type { ResetPasswordApiV1AuthResetPasswordPost200, ResetPasswordApiV1AuthResetPasswordPost422, ResetPasswordApiV1AuthResetPasswordPostMutationRequest, ResetPasswordApiV1AuthResetPasswordPostMutationResponse, ResetPasswordApiV1AuthResetPasswordPostMutation } from "./types/ResetPasswordApiV1AuthResetPasswordPost.ts";
+export type {
+  ResetPasswordApiV1AuthResetPasswordPost200,
+  ResetPasswordApiV1AuthResetPasswordPost422,
+  ResetPasswordApiV1AuthResetPasswordPostMutationRequest,
+  ResetPasswordApiV1AuthResetPasswordPostMutationResponse,
+  ResetPasswordApiV1AuthResetPasswordPostMutation,
+} from "./types/ResetPasswordApiV1AuthResetPasswordPost.ts";
 export type { ResetPasswordRequest } from "./types/ResetPasswordRequest.ts";
 export type { RoomCreateRequest } from "./types/RoomCreateRequest.ts";
 export type { RoomInviteRequest } from "./types/RoomInviteRequest.ts";
@@ -259,25 +763,125 @@ export type { RoomState } from "./types/RoomState.ts";
 export type { RoomStatusEnumKey, RoomStatus } from "./types/RoomStatus.ts";
 export type { RoomTypeEnumKey, RoomType } from "./types/RoomType.ts";
 export type { RoomView } from "./types/RoomView.ts";
-export type { SeedChallengesApiV1ChallengesSeedPost204, SeedChallengesApiV1ChallengesSeedPost404, SeedChallengesApiV1ChallengesSeedPostMutationResponse, SeedChallengesApiV1ChallengesSeedPostMutation } from "./types/SeedChallengesApiV1ChallengesSeedPost.ts";
-export type { SendFriendRequestApiV1FriendsRequestPost201, SendFriendRequestApiV1FriendsRequestPost404, SendFriendRequestApiV1FriendsRequestPost422, SendFriendRequestApiV1FriendsRequestPostMutationRequest, SendFriendRequestApiV1FriendsRequestPostMutationResponse, SendFriendRequestApiV1FriendsRequestPostMutation } from "./types/SendFriendRequestApiV1FriendsRequestPost.ts";
-export type { SendMessageApiV1RoomsRoomIdMessagesPostPathParams, SendMessageApiV1RoomsRoomIdMessagesPost201, SendMessageApiV1RoomsRoomIdMessagesPost404, SendMessageApiV1RoomsRoomIdMessagesPost422, SendMessageApiV1RoomsRoomIdMessagesPostMutationRequest, SendMessageApiV1RoomsRoomIdMessagesPostMutationResponse, SendMessageApiV1RoomsRoomIdMessagesPostMutation } from "./types/SendMessageApiV1RoomsRoomIdMessagesPost.ts";
+export type {
+  SeedChallengesApiV1ChallengesSeedPost204,
+  SeedChallengesApiV1ChallengesSeedPost404,
+  SeedChallengesApiV1ChallengesSeedPostMutationResponse,
+  SeedChallengesApiV1ChallengesSeedPostMutation,
+} from "./types/SeedChallengesApiV1ChallengesSeedPost.ts";
+export type {
+  SendFriendRequestApiV1FriendsRequestPost201,
+  SendFriendRequestApiV1FriendsRequestPost404,
+  SendFriendRequestApiV1FriendsRequestPost422,
+  SendFriendRequestApiV1FriendsRequestPostMutationRequest,
+  SendFriendRequestApiV1FriendsRequestPostMutationResponse,
+  SendFriendRequestApiV1FriendsRequestPostMutation,
+} from "./types/SendFriendRequestApiV1FriendsRequestPost.ts";
+export type {
+  SendMessageApiV1RoomsRoomIdMessagesPostPathParams,
+  SendMessageApiV1RoomsRoomIdMessagesPost201,
+  SendMessageApiV1RoomsRoomIdMessagesPost404,
+  SendMessageApiV1RoomsRoomIdMessagesPost422,
+  SendMessageApiV1RoomsRoomIdMessagesPostMutationRequest,
+  SendMessageApiV1RoomsRoomIdMessagesPostMutationResponse,
+  SendMessageApiV1RoomsRoomIdMessagesPostMutation,
+} from "./types/SendMessageApiV1RoomsRoomIdMessagesPost.ts";
 export type { SendMessageRequest } from "./types/SendMessageRequest.ts";
-export type { StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostPathParams, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost201, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost404, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost422, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationRequest, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationResponse, StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutation } from "./types/StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost.ts";
+export type {
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostPathParams,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost201,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost404,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost422,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationRequest,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationResponse,
+  StartCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutation,
+} from "./types/StartCodenamesGameApiV1CodenamesGamesRoomIdStartPost.ts";
 export type { StartCodenamesRequest } from "./types/StartCodenamesRequest.ts";
-export type { StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostPathParams, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost200, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost404, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost422, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationRequest, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationResponse, StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutation } from "./types/StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost.ts";
+export type {
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostPathParams,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost200,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost404,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost422,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationRequest,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationResponse,
+  StartNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutation,
+} from "./types/StartNextRoundApiV1UndercoverGamesGameIdNextRoundPost.ts";
 export type { StartNextRoundResponse } from "./types/StartNextRoundResponse.ts";
-export type { StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostPathParams, StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost201, StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost404, StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost422, StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationResponse, StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutation } from "./types/StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
+export type {
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostPathParams,
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost201,
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost404,
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost422,
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationResponse,
+  StartUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutation,
+} from "./types/StartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
+export type {
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPostPathParams,
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPost201,
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPost404,
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPost422,
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPostMutationResponse,
+  StartWordquizGameApiV1WordquizGamesRoomIdStartPostMutation,
+} from "./types/StartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
 export type { StatusMessageResponse } from "./types/StatusMessageResponse.ts";
 export type { StatusResponse } from "./types/StatusResponse.ts";
-export type { SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostPathParams, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost200, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost404, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost422, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationRequest, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationResponse, SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutation } from "./types/SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
+export type {
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPostPathParams,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPost200,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPost404,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPost422,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPostMutationRequest,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPostMutationResponse,
+  SubmitAnswerApiV1WordquizGamesGameIdAnswerPostMutation,
+} from "./types/SubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
+export type { SubmitAnswerRequest } from "./types/SubmitAnswerRequest.ts";
+export type { SubmitAnswerResponse } from "./types/SubmitAnswerResponse.ts";
+export type {
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostPathParams,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost200,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost404,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost422,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationRequest,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationResponse,
+  SubmitDescriptionApiV1UndercoverGamesGameIdDescribePostMutation,
+} from "./types/SubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
 export type { SubmitDescriptionResponse } from "./types/SubmitDescriptionResponse.ts";
-export type { SubmitVoteApiV1UndercoverGamesGameIdVotePostPathParams, SubmitVoteApiV1UndercoverGamesGameIdVotePost200, SubmitVoteApiV1UndercoverGamesGameIdVotePost404, SubmitVoteApiV1UndercoverGamesGameIdVotePost422, SubmitVoteApiV1UndercoverGamesGameIdVotePostMutationRequest, SubmitVoteApiV1UndercoverGamesGameIdVotePostMutationResponse, SubmitVoteApiV1UndercoverGamesGameIdVotePostMutation } from "./types/SubmitVoteApiV1UndercoverGamesGameIdVotePost.ts";
+export type {
+  SubmitVoteApiV1UndercoverGamesGameIdVotePostPathParams,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePost200,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePost404,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePost422,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePostMutationRequest,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePostMutationResponse,
+  SubmitVoteApiV1UndercoverGamesGameIdVotePostMutation,
+} from "./types/SubmitVoteApiV1UndercoverGamesGameIdVotePost.ts";
 export type { SubmitVoteResponse } from "./types/SubmitVoteResponse.ts";
 export type { TermPair } from "./types/TermPair.ts";
 export type { TermPairCreate } from "./types/TermPairCreate.ts";
-export type { TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostPathParams, TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost200, TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost404, TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost422, TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutationResponse, TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutation } from "./types/TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost.ts";
-export type { TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostPathParams, TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost200, TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost404, TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost422, TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationResponse, TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutation } from "./types/TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
+export type {
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostPathParams,
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost200,
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost404,
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost422,
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutationResponse,
+  TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutation,
+} from "./types/TimerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost.ts";
+export type {
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostPathParams,
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost200,
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost404,
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost422,
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationResponse,
+  TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutation,
+} from "./types/TimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
+export type {
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPostPathParams,
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost200,
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost404,
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost422,
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutationResponse,
+  TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutation,
+} from "./types/TimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
 export type { TimerExpiredResponse } from "./types/TimerExpiredResponse.ts";
 export type { TokenPairResponse } from "./types/TokenPairResponse.ts";
 export type { UndercoverGameState } from "./types/UndercoverGameState.ts";
@@ -286,19 +890,64 @@ export type { UndercoverPlayerState } from "./types/UndercoverPlayerState.ts";
 export type { UndercoverTimerConfig } from "./types/UndercoverTimerConfig.ts";
 export type { UndercoverWordExplanations } from "./types/UndercoverWordExplanations.ts";
 export type { UpdateBioRequest } from "./types/UpdateBioRequest.ts";
-export type { UpdateMyProfileApiV1ProfilesMePatch200, UpdateMyProfileApiV1ProfilesMePatch404, UpdateMyProfileApiV1ProfilesMePatch422, UpdateMyProfileApiV1ProfilesMePatchMutationRequest, UpdateMyProfileApiV1ProfilesMePatchMutationResponse, UpdateMyProfileApiV1ProfilesMePatchMutation } from "./types/UpdateMyProfileApiV1ProfilesMePatch.ts";
-export type { UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchPathParams, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch200, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch404, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch422, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationRequest, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationResponse, UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutation } from "./types/UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch.ts";
+export type {
+  UpdateMyProfileApiV1ProfilesMePatch200,
+  UpdateMyProfileApiV1ProfilesMePatch404,
+  UpdateMyProfileApiV1ProfilesMePatch422,
+  UpdateMyProfileApiV1ProfilesMePatchMutationRequest,
+  UpdateMyProfileApiV1ProfilesMePatchMutationResponse,
+  UpdateMyProfileApiV1ProfilesMePatchMutation,
+} from "./types/UpdateMyProfileApiV1ProfilesMePatch.ts";
+export type {
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchPathParams,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch200,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch404,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch422,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationRequest,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationResponse,
+  UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutation,
+} from "./types/UpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch.ts";
 export type { UpdateRoomSettingsResponse } from "./types/UpdateRoomSettingsResponse.ts";
-export type { UpdateUndercoverGameApiV1GamesGameIdPatchPathParams, UpdateUndercoverGameApiV1GamesGameIdPatch200, UpdateUndercoverGameApiV1GamesGameIdPatch404, UpdateUndercoverGameApiV1GamesGameIdPatch422, UpdateUndercoverGameApiV1GamesGameIdPatchMutationRequest, UpdateUndercoverGameApiV1GamesGameIdPatchMutationResponse, UpdateUndercoverGameApiV1GamesGameIdPatchMutation } from "./types/UpdateUndercoverGameApiV1GamesGameIdPatch.ts";
-export type { UpdateUserApiV1UsersUserIdPatchPathParams, UpdateUserApiV1UsersUserIdPatch200, UpdateUserApiV1UsersUserIdPatch404, UpdateUserApiV1UsersUserIdPatch422, UpdateUserApiV1UsersUserIdPatchMutationRequest, UpdateUserApiV1UsersUserIdPatchMutationResponse, UpdateUserApiV1UsersUserIdPatchMutation } from "./types/UpdateUserApiV1UsersUserIdPatch.ts";
-export type { UpdateUserPasswordApiV1UsersUserIdPasswordPatchPathParams, UpdateUserPasswordApiV1UsersUserIdPasswordPatch200, UpdateUserPasswordApiV1UsersUserIdPasswordPatch404, UpdateUserPasswordApiV1UsersUserIdPasswordPatch422, UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutationRequest, UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutationResponse, UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutation } from "./types/UpdateUserPasswordApiV1UsersUserIdPasswordPatch.ts";
+export type {
+  UpdateUndercoverGameApiV1GamesGameIdPatchPathParams,
+  UpdateUndercoverGameApiV1GamesGameIdPatch200,
+  UpdateUndercoverGameApiV1GamesGameIdPatch404,
+  UpdateUndercoverGameApiV1GamesGameIdPatch422,
+  UpdateUndercoverGameApiV1GamesGameIdPatchMutationRequest,
+  UpdateUndercoverGameApiV1GamesGameIdPatchMutationResponse,
+  UpdateUndercoverGameApiV1GamesGameIdPatchMutation,
+} from "./types/UpdateUndercoverGameApiV1GamesGameIdPatch.ts";
+export type {
+  UpdateUserApiV1UsersUserIdPatchPathParams,
+  UpdateUserApiV1UsersUserIdPatch200,
+  UpdateUserApiV1UsersUserIdPatch404,
+  UpdateUserApiV1UsersUserIdPatch422,
+  UpdateUserApiV1UsersUserIdPatchMutationRequest,
+  UpdateUserApiV1UsersUserIdPatchMutationResponse,
+  UpdateUserApiV1UsersUserIdPatchMutation,
+} from "./types/UpdateUserApiV1UsersUserIdPatch.ts";
+export type {
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatchPathParams,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatch200,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatch404,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatch422,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutationRequest,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutationResponse,
+  UpdateUserPasswordApiV1UsersUserIdPasswordPatchMutation,
+} from "./types/UpdateUserPasswordApiV1UsersUserIdPasswordPatch.ts";
 export type { UserCreate } from "./types/UserCreate.ts";
 export type { UserStats } from "./types/UserStats.ts";
 export type { UserUpdate } from "./types/UserUpdate.ts";
 export type { UserUpdatePassword } from "./types/UserUpdatePassword.ts";
 export type { UserView } from "./types/UserView.ts";
 export type { ValidationError } from "./types/ValidationError.ts";
-export type { VerifyEmailApiV1AuthVerifyEmailPost200, VerifyEmailApiV1AuthVerifyEmailPost422, VerifyEmailApiV1AuthVerifyEmailPostMutationRequest, VerifyEmailApiV1AuthVerifyEmailPostMutationResponse, VerifyEmailApiV1AuthVerifyEmailPostMutation } from "./types/VerifyEmailApiV1AuthVerifyEmailPost.ts";
+export type {
+  VerifyEmailApiV1AuthVerifyEmailPost200,
+  VerifyEmailApiV1AuthVerifyEmailPost422,
+  VerifyEmailApiV1AuthVerifyEmailPostMutationRequest,
+  VerifyEmailApiV1AuthVerifyEmailPostMutationResponse,
+  VerifyEmailApiV1AuthVerifyEmailPostMutation,
+} from "./types/VerifyEmailApiV1AuthVerifyEmailPost.ts";
 export type { VerifyEmailRequest } from "./types/VerifyEmailRequest.ts";
 export type { VoteEntry } from "./types/VoteEntry.ts";
 export type { VoteHistoryEntry } from "./types/VoteHistoryEntry.ts";
@@ -308,6 +957,10 @@ export type { VoteRound } from "./types/VoteRound.ts";
 export type { Word } from "./types/Word.ts";
 export type { WordCreate } from "./types/WordCreate.ts";
 export type { WordExplanations } from "./types/WordExplanations.ts";
+export type { WordQuizGameState } from "./types/WordQuizGameState.ts";
+export type { WordQuizPlayerState } from "./types/WordQuizPlayerState.ts";
+export type { WordQuizRoundResult } from "./types/WordQuizRoundResult.ts";
+export type { WordQuizTimerConfig } from "./types/WordQuizTimerConfig.ts";
 export { acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationKey } from "./hooks/useAcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost.ts";
 export { acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost } from "./hooks/useAcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost.ts";
 export { acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationOptions } from "./hooks/useAcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost.ts";
@@ -640,6 +1293,14 @@ export { getWordPacksApiV1CodenamesWordPacksGetSuspenseQueryKey } from "./hooks/
 export { getWordPacksApiV1CodenamesWordPacksGetSuspense } from "./hooks/useGetWordPacksApiV1CodenamesWordPacksGetSuspense.ts";
 export { getWordPacksApiV1CodenamesWordPacksGetSuspenseQueryOptions } from "./hooks/useGetWordPacksApiV1CodenamesWordPacksGetSuspense.ts";
 export { useGetWordPacksApiV1CodenamesWordPacksGetSuspense } from "./hooks/useGetWordPacksApiV1CodenamesWordPacksGetSuspense.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGet } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGetQueryOptions } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export { useGetWordquizStateApiV1WordquizGamesGameIdStateGet } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGet.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGetSuspenseQueryKey } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGetSuspense } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense.ts";
+export { getWordquizStateApiV1WordquizGamesGameIdStateGetSuspenseQueryOptions } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense.ts";
+export { useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense } from "./hooks/useGetWordquizStateApiV1WordquizGamesGameIdStateGetSuspense.ts";
 export { getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryKey } from "./hooks/useGetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
 export { getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet } from "./hooks/useGetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
 export { getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryOptions } from "./hooks/useGetWordsByPackApiV1CodenamesWordPacksPackIdWordsGet.ts";
@@ -692,6 +1353,10 @@ export { logoutApiV1AuthLogoutPostMutationKey } from "./hooks/useLogoutApiV1Auth
 export { logoutApiV1AuthLogoutPost } from "./hooks/useLogoutApiV1AuthLogoutPost.ts";
 export { logoutApiV1AuthLogoutPostMutationOptions } from "./hooks/useLogoutApiV1AuthLogoutPost.ts";
 export { useLogoutApiV1AuthLogoutPost } from "./hooks/useLogoutApiV1AuthLogoutPost.ts";
+export { nextRoundApiV1WordquizGamesGameIdNextRoundPostMutationKey } from "./hooks/useNextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
+export { nextRoundApiV1WordquizGamesGameIdNextRoundPost } from "./hooks/useNextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
+export { nextRoundApiV1WordquizGamesGameIdNextRoundPostMutationOptions } from "./hooks/useNextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
+export { useNextRoundApiV1WordquizGamesGameIdNextRoundPost } from "./hooks/useNextRoundApiV1WordquizGamesGameIdNextRoundPost.ts";
 export { recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationKey } from "./hooks/useRecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
 export { recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost } from "./hooks/useRecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
 export { recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationOptions } from "./hooks/useRecordHintViewedApiV1CodenamesGamesGameIdHintViewedPost.ts";
@@ -700,6 +1365,10 @@ export { recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationKey } f
 export { recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost } from "./hooks/useRecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
 export { recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationOptions } from "./hooks/useRecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
 export { useRecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost } from "./hooks/useRecordHintViewedApiV1UndercoverGamesGameIdHintViewedPost.ts";
+export { recordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutationKey } from "./hooks/useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
+export { recordHintViewedApiV1WordquizGamesGameIdHintViewedPost } from "./hooks/useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
+export { recordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutationOptions } from "./hooks/useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
+export { useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost } from "./hooks/useRecordHintViewedApiV1WordquizGamesGameIdHintViewedPost.ts";
 export { refreshTokenApiV1AuthRefreshPostMutationKey } from "./hooks/useRefreshTokenApiV1AuthRefreshPost.ts";
 export { refreshTokenApiV1AuthRefreshPost } from "./hooks/useRefreshTokenApiV1AuthRefreshPost.ts";
 export { refreshTokenApiV1AuthRefreshPostMutationOptions } from "./hooks/useRefreshTokenApiV1AuthRefreshPost.ts";
@@ -752,6 +1421,14 @@ export { startUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationKey } fro
 export { startUndercoverGameApiV1UndercoverGamesRoomIdStartPost } from "./hooks/useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
 export { startUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationOptions } from "./hooks/useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
 export { useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost } from "./hooks/useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost.ts";
+export { startWordquizGameApiV1WordquizGamesRoomIdStartPostMutationKey } from "./hooks/useStartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
+export { startWordquizGameApiV1WordquizGamesRoomIdStartPost } from "./hooks/useStartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
+export { startWordquizGameApiV1WordquizGamesRoomIdStartPostMutationOptions } from "./hooks/useStartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
+export { useStartWordquizGameApiV1WordquizGamesRoomIdStartPost } from "./hooks/useStartWordquizGameApiV1WordquizGamesRoomIdStartPost.ts";
+export { submitAnswerApiV1WordquizGamesGameIdAnswerPostMutationKey } from "./hooks/useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
+export { submitAnswerApiV1WordquizGamesGameIdAnswerPost } from "./hooks/useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
+export { submitAnswerApiV1WordquizGamesGameIdAnswerPostMutationOptions } from "./hooks/useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
+export { useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost } from "./hooks/useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost.ts";
 export { submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationKey } from "./hooks/useSubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
 export { submitDescriptionApiV1UndercoverGamesGameIdDescribePost } from "./hooks/useSubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
 export { submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationOptions } from "./hooks/useSubmitDescriptionApiV1UndercoverGamesGameIdDescribePost.ts";
@@ -768,6 +1445,10 @@ export { timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationKey } fro
 export { timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost } from "./hooks/useTimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
 export { timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationOptions } from "./hooks/useTimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
 export { useTimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost } from "./hooks/useTimerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost.ts";
+export { timerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutationKey } from "./hooks/useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
+export { timerExpiredApiV1WordquizGamesGameIdTimerExpiredPost } from "./hooks/useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
+export { timerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutationOptions } from "./hooks/useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
+export { useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost } from "./hooks/useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost.ts";
 export { updateMyProfileApiV1ProfilesMePatchMutationKey } from "./hooks/useUpdateMyProfileApiV1ProfilesMePatch.ts";
 export { updateMyProfileApiV1ProfilesMePatch } from "./hooks/useUpdateMyProfileApiV1ProfilesMePatch.ts";
 export { updateMyProfileApiV1ProfilesMePatchMutationOptions } from "./hooks/useUpdateMyProfileApiV1ProfilesMePatch.ts";
@@ -792,11 +1473,24 @@ export { verifyEmailApiV1AuthVerifyEmailPostMutationKey } from "./hooks/useVerif
 export { verifyEmailApiV1AuthVerifyEmailPost } from "./hooks/useVerifyEmailApiV1AuthVerifyEmailPost.ts";
 export { verifyEmailApiV1AuthVerifyEmailPostMutationOptions } from "./hooks/useVerifyEmailApiV1AuthVerifyEmailPost.ts";
 export { useVerifyEmailApiV1AuthVerifyEmailPost } from "./hooks/useVerifyEmailApiV1AuthVerifyEmailPost.ts";
-export { acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostPathParamsSchema, acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost200Schema, acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost404Schema, acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost422Schema, acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationResponseSchema } from "./schemas/acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostSchema.ts";
+export {
+  acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostPathParamsSchema,
+  acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost200Schema,
+  acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost404Schema,
+  acceptFriendRequestApiV1FriendsFriendshipIdAcceptPost422Schema,
+  acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostMutationResponseSchema,
+} from "./schemas/acceptFriendRequestApiV1FriendsFriendshipIdAcceptPostSchema.ts";
 export { achievementWithProgressSchema } from "./schemas/achievementWithProgressSchema.ts";
 export { activeChallengeSchema } from "./schemas/activeChallengeSchema.ts";
 export { activeRoomResponseSchema } from "./schemas/activeRoomResponseSchema.ts";
-export { addWordToPackApiV1CodenamesWordPacksPackIdWordsPostPathParamsSchema, addWordToPackApiV1CodenamesWordPacksPackIdWordsPost201Schema, addWordToPackApiV1CodenamesWordPacksPackIdWordsPost404Schema, addWordToPackApiV1CodenamesWordPacksPackIdWordsPost422Schema, addWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationRequestSchema, addWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationResponseSchema } from "./schemas/addWordToPackApiV1CodenamesWordPacksPackIdWordsPostSchema.ts";
+export {
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPostPathParamsSchema,
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPost201Schema,
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPost404Schema,
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPost422Schema,
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationRequestSchema,
+  addWordToPackApiV1CodenamesWordPacksPackIdWordsPostMutationResponseSchema,
+} from "./schemas/addWordToPackApiV1CodenamesWordPacksPackIdWordsPostSchema.ts";
 export { chatMessageViewSchema } from "./schemas/chatMessageViewSchema.ts";
 export { clueGuessSchema } from "./schemas/clueGuessSchema.ts";
 export { clueHistoryEntrySchema } from "./schemas/clueHistoryEntrySchema.ts";
@@ -812,30 +1506,131 @@ export { codenamesWordCreateSchema } from "./schemas/codenamesWordCreateSchema.t
 export { codenamesWordPackCreateSchema } from "./schemas/codenamesWordPackCreateSchema.ts";
 export { codenamesWordPackSchema } from "./schemas/codenamesWordPackSchema.ts";
 export { codenamesWordSchema } from "./schemas/codenamesWordSchema.ts";
-export { createGameApiV1GamesPost201Schema, createGameApiV1GamesPost404Schema, createGameApiV1GamesPost422Schema, createGameApiV1GamesPostMutationRequestSchema, createGameApiV1GamesPostMutationResponseSchema } from "./schemas/createGameApiV1GamesPostSchema.ts";
-export { createRoomApiV1RoomsPost201Schema, createRoomApiV1RoomsPost404Schema, createRoomApiV1RoomsPost422Schema, createRoomApiV1RoomsPostMutationRequestSchema, createRoomApiV1RoomsPostMutationResponseSchema } from "./schemas/createRoomApiV1RoomsPostSchema.ts";
-export { createTermPairApiV1UndercoverTermpairPost201Schema, createTermPairApiV1UndercoverTermpairPost404Schema, createTermPairApiV1UndercoverTermpairPost422Schema, createTermPairApiV1UndercoverTermpairPostMutationRequestSchema, createTermPairApiV1UndercoverTermpairPostMutationResponseSchema } from "./schemas/createTermPairApiV1UndercoverTermpairPostSchema.ts";
-export { createUserApiV1UsersPost201Schema, createUserApiV1UsersPost404Schema, createUserApiV1UsersPost422Schema, createUserApiV1UsersPostMutationRequestSchema, createUserApiV1UsersPostMutationResponseSchema } from "./schemas/createUserApiV1UsersPostSchema.ts";
-export { createWordApiV1UndercoverWordsPost201Schema, createWordApiV1UndercoverWordsPost404Schema, createWordApiV1UndercoverWordsPost422Schema, createWordApiV1UndercoverWordsPostMutationRequestSchema, createWordApiV1UndercoverWordsPostMutationResponseSchema } from "./schemas/createWordApiV1UndercoverWordsPostSchema.ts";
-export { createWordPackApiV1CodenamesWordPacksPost201Schema, createWordPackApiV1CodenamesWordPacksPost404Schema, createWordPackApiV1CodenamesWordPacksPost422Schema, createWordPackApiV1CodenamesWordPacksPostMutationRequestSchema, createWordPackApiV1CodenamesWordPacksPostMutationResponseSchema } from "./schemas/createWordPackApiV1CodenamesWordPacksPostSchema.ts";
+export {
+  createGameApiV1GamesPost201Schema,
+  createGameApiV1GamesPost404Schema,
+  createGameApiV1GamesPost422Schema,
+  createGameApiV1GamesPostMutationRequestSchema,
+  createGameApiV1GamesPostMutationResponseSchema,
+} from "./schemas/createGameApiV1GamesPostSchema.ts";
+export {
+  createRoomApiV1RoomsPost201Schema,
+  createRoomApiV1RoomsPost404Schema,
+  createRoomApiV1RoomsPost422Schema,
+  createRoomApiV1RoomsPostMutationRequestSchema,
+  createRoomApiV1RoomsPostMutationResponseSchema,
+} from "./schemas/createRoomApiV1RoomsPostSchema.ts";
+export {
+  createTermPairApiV1UndercoverTermpairPost201Schema,
+  createTermPairApiV1UndercoverTermpairPost404Schema,
+  createTermPairApiV1UndercoverTermpairPost422Schema,
+  createTermPairApiV1UndercoverTermpairPostMutationRequestSchema,
+  createTermPairApiV1UndercoverTermpairPostMutationResponseSchema,
+} from "./schemas/createTermPairApiV1UndercoverTermpairPostSchema.ts";
+export {
+  createUserApiV1UsersPost201Schema,
+  createUserApiV1UsersPost404Schema,
+  createUserApiV1UsersPost422Schema,
+  createUserApiV1UsersPostMutationRequestSchema,
+  createUserApiV1UsersPostMutationResponseSchema,
+} from "./schemas/createUserApiV1UsersPostSchema.ts";
+export {
+  createWordApiV1UndercoverWordsPost201Schema,
+  createWordApiV1UndercoverWordsPost404Schema,
+  createWordApiV1UndercoverWordsPost422Schema,
+  createWordApiV1UndercoverWordsPostMutationRequestSchema,
+  createWordApiV1UndercoverWordsPostMutationResponseSchema,
+} from "./schemas/createWordApiV1UndercoverWordsPostSchema.ts";
+export {
+  createWordPackApiV1CodenamesWordPacksPost201Schema,
+  createWordPackApiV1CodenamesWordPacksPost404Schema,
+  createWordPackApiV1CodenamesWordPacksPost422Schema,
+  createWordPackApiV1CodenamesWordPacksPostMutationRequestSchema,
+  createWordPackApiV1CodenamesWordPacksPostMutationResponseSchema,
+} from "./schemas/createWordPackApiV1CodenamesWordPacksPostSchema.ts";
 export { dailyGameRecordSchema } from "./schemas/dailyGameRecordSchema.ts";
-export { deleteAccountApiV1UsersMeAccountDelete204Schema, deleteAccountApiV1UsersMeAccountDelete404Schema, deleteAccountApiV1UsersMeAccountDelete422Schema, deleteAccountApiV1UsersMeAccountDeleteMutationRequestSchema, deleteAccountApiV1UsersMeAccountDeleteMutationResponseSchema } from "./schemas/deleteAccountApiV1UsersMeAccountDeleteSchema.ts";
+export {
+  deleteAccountApiV1UsersMeAccountDelete204Schema,
+  deleteAccountApiV1UsersMeAccountDelete404Schema,
+  deleteAccountApiV1UsersMeAccountDelete422Schema,
+  deleteAccountApiV1UsersMeAccountDeleteMutationRequestSchema,
+  deleteAccountApiV1UsersMeAccountDeleteMutationResponseSchema,
+} from "./schemas/deleteAccountApiV1UsersMeAccountDeleteSchema.ts";
 export { deleteAccountRequestSchema } from "./schemas/deleteAccountRequestSchema.ts";
-export { deleteRoomApiV1RoomsRoomIdDeletePathParamsSchema, deleteRoomApiV1RoomsRoomIdDelete204Schema, deleteRoomApiV1RoomsRoomIdDelete404Schema, deleteRoomApiV1RoomsRoomIdDelete422Schema, deleteRoomApiV1RoomsRoomIdDeleteMutationResponseSchema } from "./schemas/deleteRoomApiV1RoomsRoomIdDeleteSchema.ts";
-export { deleteTermPairApiV1UndercoverTermpairTermPairIdDeletePathParamsSchema, deleteTermPairApiV1UndercoverTermpairTermPairIdDelete204Schema, deleteTermPairApiV1UndercoverTermpairTermPairIdDelete404Schema, deleteTermPairApiV1UndercoverTermpairTermPairIdDelete422Schema, deleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutationResponseSchema } from "./schemas/deleteTermPairApiV1UndercoverTermpairTermPairIdDeleteSchema.ts";
-export { deleteUndercoverGameApiV1GamesGameIdDeletePathParamsSchema, deleteUndercoverGameApiV1GamesGameIdDelete204Schema, deleteUndercoverGameApiV1GamesGameIdDelete404Schema, deleteUndercoverGameApiV1GamesGameIdDelete422Schema, deleteUndercoverGameApiV1GamesGameIdDeleteMutationResponseSchema } from "./schemas/deleteUndercoverGameApiV1GamesGameIdDeleteSchema.ts";
-export { deleteUserApiV1UsersUserIdDeletePathParamsSchema, deleteUserApiV1UsersUserIdDelete204Schema, deleteUserApiV1UsersUserIdDelete404Schema, deleteUserApiV1UsersUserIdDelete422Schema, deleteUserApiV1UsersUserIdDeleteMutationResponseSchema } from "./schemas/deleteUserApiV1UsersUserIdDeleteSchema.ts";
-export { deleteWordApiV1CodenamesWordsWordIdDeletePathParamsSchema, deleteWordApiV1CodenamesWordsWordIdDelete204Schema, deleteWordApiV1CodenamesWordsWordIdDelete404Schema, deleteWordApiV1CodenamesWordsWordIdDelete422Schema, deleteWordApiV1CodenamesWordsWordIdDeleteMutationResponseSchema } from "./schemas/deleteWordApiV1CodenamesWordsWordIdDeleteSchema.ts";
-export { deleteWordApiV1UndercoverWordsWordIdDeletePathParamsSchema, deleteWordApiV1UndercoverWordsWordIdDelete204Schema, deleteWordApiV1UndercoverWordsWordIdDelete404Schema, deleteWordApiV1UndercoverWordsWordIdDelete422Schema, deleteWordApiV1UndercoverWordsWordIdDeleteMutationResponseSchema } from "./schemas/deleteWordApiV1UndercoverWordsWordIdDeleteSchema.ts";
-export { deleteWordPackApiV1CodenamesWordPacksPackIdDeletePathParamsSchema, deleteWordPackApiV1CodenamesWordPacksPackIdDelete204Schema, deleteWordPackApiV1CodenamesWordPacksPackIdDelete404Schema, deleteWordPackApiV1CodenamesWordPacksPackIdDelete422Schema, deleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutationResponseSchema } from "./schemas/deleteWordPackApiV1CodenamesWordPacksPackIdDeleteSchema.ts";
+export {
+  deleteRoomApiV1RoomsRoomIdDeletePathParamsSchema,
+  deleteRoomApiV1RoomsRoomIdDelete204Schema,
+  deleteRoomApiV1RoomsRoomIdDelete404Schema,
+  deleteRoomApiV1RoomsRoomIdDelete422Schema,
+  deleteRoomApiV1RoomsRoomIdDeleteMutationResponseSchema,
+} from "./schemas/deleteRoomApiV1RoomsRoomIdDeleteSchema.ts";
+export {
+  deleteTermPairApiV1UndercoverTermpairTermPairIdDeletePathParamsSchema,
+  deleteTermPairApiV1UndercoverTermpairTermPairIdDelete204Schema,
+  deleteTermPairApiV1UndercoverTermpairTermPairIdDelete404Schema,
+  deleteTermPairApiV1UndercoverTermpairTermPairIdDelete422Schema,
+  deleteTermPairApiV1UndercoverTermpairTermPairIdDeleteMutationResponseSchema,
+} from "./schemas/deleteTermPairApiV1UndercoverTermpairTermPairIdDeleteSchema.ts";
+export {
+  deleteUndercoverGameApiV1GamesGameIdDeletePathParamsSchema,
+  deleteUndercoverGameApiV1GamesGameIdDelete204Schema,
+  deleteUndercoverGameApiV1GamesGameIdDelete404Schema,
+  deleteUndercoverGameApiV1GamesGameIdDelete422Schema,
+  deleteUndercoverGameApiV1GamesGameIdDeleteMutationResponseSchema,
+} from "./schemas/deleteUndercoverGameApiV1GamesGameIdDeleteSchema.ts";
+export {
+  deleteUserApiV1UsersUserIdDeletePathParamsSchema,
+  deleteUserApiV1UsersUserIdDelete204Schema,
+  deleteUserApiV1UsersUserIdDelete404Schema,
+  deleteUserApiV1UsersUserIdDelete422Schema,
+  deleteUserApiV1UsersUserIdDeleteMutationResponseSchema,
+} from "./schemas/deleteUserApiV1UsersUserIdDeleteSchema.ts";
+export {
+  deleteWordApiV1CodenamesWordsWordIdDeletePathParamsSchema,
+  deleteWordApiV1CodenamesWordsWordIdDelete204Schema,
+  deleteWordApiV1CodenamesWordsWordIdDelete404Schema,
+  deleteWordApiV1CodenamesWordsWordIdDelete422Schema,
+  deleteWordApiV1CodenamesWordsWordIdDeleteMutationResponseSchema,
+} from "./schemas/deleteWordApiV1CodenamesWordsWordIdDeleteSchema.ts";
+export {
+  deleteWordApiV1UndercoverWordsWordIdDeletePathParamsSchema,
+  deleteWordApiV1UndercoverWordsWordIdDelete204Schema,
+  deleteWordApiV1UndercoverWordsWordIdDelete404Schema,
+  deleteWordApiV1UndercoverWordsWordIdDelete422Schema,
+  deleteWordApiV1UndercoverWordsWordIdDeleteMutationResponseSchema,
+} from "./schemas/deleteWordApiV1UndercoverWordsWordIdDeleteSchema.ts";
+export {
+  deleteWordPackApiV1CodenamesWordPacksPackIdDeletePathParamsSchema,
+  deleteWordPackApiV1CodenamesWordPacksPackIdDelete204Schema,
+  deleteWordPackApiV1CodenamesWordPacksPackIdDelete404Schema,
+  deleteWordPackApiV1CodenamesWordPacksPackIdDelete422Schema,
+  deleteWordPackApiV1CodenamesWordPacksPackIdDeleteMutationResponseSchema,
+} from "./schemas/deleteWordPackApiV1CodenamesWordPacksPackIdDeleteSchema.ts";
 export { descriptionOrderEntrySchema } from "./schemas/descriptionOrderEntrySchema.ts";
 export { descriptionRequestSchema } from "./schemas/descriptionRequestSchema.ts";
 export { eliminatedInfoSchema } from "./schemas/eliminatedInfoSchema.ts";
 export { eliminatedPlayerSchema } from "./schemas/eliminatedPlayerSchema.ts";
-export { endTurnApiV1CodenamesGamesGameIdEndTurnPostPathParamsSchema, endTurnApiV1CodenamesGamesGameIdEndTurnPost200Schema, endTurnApiV1CodenamesGamesGameIdEndTurnPost404Schema, endTurnApiV1CodenamesGamesGameIdEndTurnPost422Schema, endTurnApiV1CodenamesGamesGameIdEndTurnPostMutationResponseSchema } from "./schemas/endTurnApiV1CodenamesGamesGameIdEndTurnPostSchema.ts";
+export {
+  endTurnApiV1CodenamesGamesGameIdEndTurnPostPathParamsSchema,
+  endTurnApiV1CodenamesGamesGameIdEndTurnPost200Schema,
+  endTurnApiV1CodenamesGamesGameIdEndTurnPost404Schema,
+  endTurnApiV1CodenamesGamesGameIdEndTurnPost422Schema,
+  endTurnApiV1CodenamesGamesGameIdEndTurnPostMutationResponseSchema,
+} from "./schemas/endTurnApiV1CodenamesGamesGameIdEndTurnPostSchema.ts";
 export { endTurnResponseSchema } from "./schemas/endTurnResponseSchema.ts";
-export { endUndercoverGameApiV1GamesGameIdEndPatchPathParamsSchema, endUndercoverGameApiV1GamesGameIdEndPatch200Schema, endUndercoverGameApiV1GamesGameIdEndPatch404Schema, endUndercoverGameApiV1GamesGameIdEndPatch422Schema, endUndercoverGameApiV1GamesGameIdEndPatchMutationResponseSchema } from "./schemas/endUndercoverGameApiV1GamesGameIdEndPatchSchema.ts";
-export { forgotPasswordApiV1AuthForgotPasswordPost200Schema, forgotPasswordApiV1AuthForgotPasswordPost422Schema, forgotPasswordApiV1AuthForgotPasswordPostMutationRequestSchema, forgotPasswordApiV1AuthForgotPasswordPostMutationResponseSchema } from "./schemas/forgotPasswordApiV1AuthForgotPasswordPostSchema.ts";
+export {
+  endUndercoverGameApiV1GamesGameIdEndPatchPathParamsSchema,
+  endUndercoverGameApiV1GamesGameIdEndPatch200Schema,
+  endUndercoverGameApiV1GamesGameIdEndPatch404Schema,
+  endUndercoverGameApiV1GamesGameIdEndPatch422Schema,
+  endUndercoverGameApiV1GamesGameIdEndPatchMutationResponseSchema,
+} from "./schemas/endUndercoverGameApiV1GamesGameIdEndPatchSchema.ts";
+export {
+  forgotPasswordApiV1AuthForgotPasswordPost200Schema,
+  forgotPasswordApiV1AuthForgotPasswordPost422Schema,
+  forgotPasswordApiV1AuthForgotPasswordPostMutationRequestSchema,
+  forgotPasswordApiV1AuthForgotPasswordPostMutationResponseSchema,
+} from "./schemas/forgotPasswordApiV1AuthForgotPasswordPostSchema.ts";
 export { forgotPasswordRequestSchema } from "./schemas/forgotPasswordRequestSchema.ts";
 export { friendActionResponseSchema } from "./schemas/friendActionResponseSchema.ts";
 export { friendEntrySchema } from "./schemas/friendEntrySchema.ts";
@@ -850,76 +1645,385 @@ export { gameSummaryPlayerSchema } from "./schemas/gameSummaryPlayerSchema.ts";
 export { gameSummarySchema } from "./schemas/gameSummarySchema.ts";
 export { gameTypeSchema } from "./schemas/gameTypeSchema.ts";
 export { gameUpdateSchema } from "./schemas/gameUpdateSchema.ts";
-export { getActiveChallengesApiV1ChallengesActiveGet200Schema, getActiveChallengesApiV1ChallengesActiveGet404Schema, getActiveChallengesApiV1ChallengesActiveGetQueryResponseSchema } from "./schemas/getActiveChallengesApiV1ChallengesActiveGetSchema.ts";
-export { getActiveRoomApiV1RoomsActiveGet200Schema, getActiveRoomApiV1RoomsActiveGet404Schema, getActiveRoomApiV1RoomsActiveGetQueryResponseSchema } from "./schemas/getActiveRoomApiV1RoomsActiveGetSchema.ts";
-export { getAllRoomsApiV1RoomsGet200Schema, getAllRoomsApiV1RoomsGet404Schema, getAllRoomsApiV1RoomsGetQueryResponseSchema } from "./schemas/getAllRoomsApiV1RoomsGetSchema.ts";
-export { getAllTermPairsApiV1UndercoverTermpairGet200Schema, getAllTermPairsApiV1UndercoverTermpairGet404Schema, getAllTermPairsApiV1UndercoverTermpairGetQueryResponseSchema } from "./schemas/getAllTermPairsApiV1UndercoverTermpairGetSchema.ts";
-export { getAllUndercoverGamesApiV1GamesGet200Schema, getAllUndercoverGamesApiV1GamesGet404Schema, getAllUndercoverGamesApiV1GamesGetQueryResponseSchema } from "./schemas/getAllUndercoverGamesApiV1GamesGetSchema.ts";
-export { getAllUsersApiV1UsersGet200Schema, getAllUsersApiV1UsersGet404Schema, getAllUsersApiV1UsersGetQueryResponseSchema } from "./schemas/getAllUsersApiV1UsersGetSchema.ts";
-export { getAllWordsApiV1UndercoverWordsGet200Schema, getAllWordsApiV1UndercoverWordsGet404Schema, getAllWordsApiV1UndercoverWordsGetQueryResponseSchema } from "./schemas/getAllWordsApiV1UndercoverWordsGetSchema.ts";
-export { getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetPathParamsSchema, getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryParamsSchema, getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet200Schema, getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet404Schema, getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet422Schema, getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryResponseSchema } from "./schemas/getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetSchema.ts";
-export { getDurationStatsApiV1StatsUsersUserIdDurationGetPathParamsSchema, getDurationStatsApiV1StatsUsersUserIdDurationGet200Schema, getDurationStatsApiV1StatsUsersUserIdDurationGet404Schema, getDurationStatsApiV1StatsUsersUserIdDurationGet422Schema, getDurationStatsApiV1StatsUsersUserIdDurationGetQueryResponseSchema } from "./schemas/getDurationStatsApiV1StatsUsersUserIdDurationGetSchema.ts";
-export { getFriendsApiV1FriendsGet200Schema, getFriendsApiV1FriendsGet404Schema, getFriendsApiV1FriendsGetQueryResponseSchema } from "./schemas/getFriendsApiV1FriendsGetSchema.ts";
-export { getGameHistoryApiV1StatsUsersUserIdHistoryGetPathParamsSchema, getGameHistoryApiV1StatsUsersUserIdHistoryGetQueryParamsSchema, getGameHistoryApiV1StatsUsersUserIdHistoryGet200Schema, getGameHistoryApiV1StatsUsersUserIdHistoryGet404Schema, getGameHistoryApiV1StatsUsersUserIdHistoryGet422Schema, getGameHistoryApiV1StatsUsersUserIdHistoryGetQueryResponseSchema } from "./schemas/getGameHistoryApiV1StatsUsersUserIdHistoryGetSchema.ts";
-export { getGamesByUserApiV1GamesUserUserIdGetPathParamsSchema, getGamesByUserApiV1GamesUserUserIdGetQueryParamsSchema, getGamesByUserApiV1GamesUserUserIdGet200Schema, getGamesByUserApiV1GamesUserUserIdGet404Schema, getGamesByUserApiV1GamesUserUserIdGet422Schema, getGamesByUserApiV1GamesUserUserIdGetQueryResponseSchema } from "./schemas/getGamesByUserApiV1GamesUserUserIdGetSchema.ts";
-export { getGameSummaryApiV1GamesGameIdSummaryGetPathParamsSchema, getGameSummaryApiV1GamesGameIdSummaryGet200Schema, getGameSummaryApiV1GamesGameIdSummaryGet404Schema, getGameSummaryApiV1GamesGameIdSummaryGet422Schema, getGameSummaryApiV1GamesGameIdSummaryGetQueryResponseSchema } from "./schemas/getGameSummaryApiV1GamesGameIdSummaryGetSchema.ts";
-export { getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetPathParamsSchema, getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet200Schema, getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet404Schema, getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet422Schema, getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQueryResponseSchema } from "./schemas/getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetSchema.ts";
-export { getLeaderboardApiV1StatsLeaderboardGetQueryParamsSchema, getLeaderboardApiV1StatsLeaderboardGet200Schema, getLeaderboardApiV1StatsLeaderboardGet404Schema, getLeaderboardApiV1StatsLeaderboardGet422Schema, getLeaderboardApiV1StatsLeaderboardGetQueryResponseSchema } from "./schemas/getLeaderboardApiV1StatsLeaderboardGetSchema.ts";
-export { getMeApiV1AuthMeGet200Schema, getMeApiV1AuthMeGetQueryResponseSchema } from "./schemas/getMeApiV1AuthMeGetSchema.ts";
-export { getMessagesApiV1RoomsRoomIdMessagesGetPathParamsSchema, getMessagesApiV1RoomsRoomIdMessagesGetQueryParamsSchema, getMessagesApiV1RoomsRoomIdMessagesGet200Schema, getMessagesApiV1RoomsRoomIdMessagesGet404Schema, getMessagesApiV1RoomsRoomIdMessagesGet422Schema, getMessagesApiV1RoomsRoomIdMessagesGetQueryResponseSchema } from "./schemas/getMessagesApiV1RoomsRoomIdMessagesGetSchema.ts";
-export { getPendingRequestsApiV1FriendsPendingGet200Schema, getPendingRequestsApiV1FriendsPendingGet404Schema, getPendingRequestsApiV1FriendsPendingGetQueryResponseSchema } from "./schemas/getPendingRequestsApiV1FriendsPendingGetSchema.ts";
-export { getPublicProfileApiV1ProfilesUsersUserIdGetPathParamsSchema, getPublicProfileApiV1ProfilesUsersUserIdGet200Schema, getPublicProfileApiV1ProfilesUsersUserIdGet404Schema, getPublicProfileApiV1ProfilesUsersUserIdGet422Schema, getPublicProfileApiV1ProfilesUsersUserIdGetQueryResponseSchema } from "./schemas/getPublicProfileApiV1ProfilesUsersUserIdGetSchema.ts";
-export { getRandomTermPairApiV1UndercoverTermpairSearchRandomGet200Schema, getRandomTermPairApiV1UndercoverTermpairSearchRandomGet404Schema, getRandomTermPairApiV1UndercoverTermpairSearchRandomGetQueryResponseSchema } from "./schemas/getRandomTermPairApiV1UndercoverTermpairSearchRandomGetSchema.ts";
-export { getRoomApiV1RoomsRoomIdGetPathParamsSchema, getRoomApiV1RoomsRoomIdGet200Schema, getRoomApiV1RoomsRoomIdGet404Schema, getRoomApiV1RoomsRoomIdGet422Schema, getRoomApiV1RoomsRoomIdGetQueryResponseSchema } from "./schemas/getRoomApiV1RoomsRoomIdGetSchema.ts";
-export { getRoomStateApiV1RoomsRoomIdStateGetPathParamsSchema, getRoomStateApiV1RoomsRoomIdStateGet200Schema, getRoomStateApiV1RoomsRoomIdStateGet404Schema, getRoomStateApiV1RoomsRoomIdStateGet422Schema, getRoomStateApiV1RoomsRoomIdStateGetQueryResponseSchema } from "./schemas/getRoomStateApiV1RoomsRoomIdStateGetSchema.ts";
-export { getTermPairByIdApiV1UndercoverTermpairTermPairIdGetPathParamsSchema, getTermPairByIdApiV1UndercoverTermpairTermPairIdGet200Schema, getTermPairByIdApiV1UndercoverTermpairTermPairIdGet404Schema, getTermPairByIdApiV1UndercoverTermpairTermPairIdGet422Schema, getTermPairByIdApiV1UndercoverTermpairTermPairIdGetQueryResponseSchema } from "./schemas/getTermPairByIdApiV1UndercoverTermpairTermPairIdGetSchema.ts";
-export { getUndercoverGameApiV1GamesGameIdGetPathParamsSchema, getUndercoverGameApiV1GamesGameIdGet200Schema, getUndercoverGameApiV1GamesGameIdGet404Schema, getUndercoverGameApiV1GamesGameIdGet422Schema, getUndercoverGameApiV1GamesGameIdGetQueryResponseSchema } from "./schemas/getUndercoverGameApiV1GamesGameIdGetSchema.ts";
-export { getUndercoverStateApiV1UndercoverGamesGameIdStateGetPathParamsSchema, getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryParamsSchema, getUndercoverStateApiV1UndercoverGamesGameIdStateGet200Schema, getUndercoverStateApiV1UndercoverGamesGameIdStateGet404Schema, getUndercoverStateApiV1UndercoverGamesGameIdStateGet422Schema, getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryResponseSchema } from "./schemas/getUndercoverStateApiV1UndercoverGamesGameIdStateGetSchema.ts";
-export { getUserAchievementsApiV1StatsUsersUserIdAchievementsGetPathParamsSchema, getUserAchievementsApiV1StatsUsersUserIdAchievementsGet200Schema, getUserAchievementsApiV1StatsUsersUserIdAchievementsGet404Schema, getUserAchievementsApiV1StatsUsersUserIdAchievementsGet422Schema, getUserAchievementsApiV1StatsUsersUserIdAchievementsGetQueryResponseSchema } from "./schemas/getUserAchievementsApiV1StatsUsersUserIdAchievementsGetSchema.ts";
-export { getUserByIdApiV1UsersUserIdGetPathParamsSchema, getUserByIdApiV1UsersUserIdGet200Schema, getUserByIdApiV1UsersUserIdGet404Schema, getUserByIdApiV1UsersUserIdGet422Schema, getUserByIdApiV1UsersUserIdGetQueryResponseSchema } from "./schemas/getUserByIdApiV1UsersUserIdGetSchema.ts";
-export { getUserStatsApiV1StatsUsersUserIdStatsGetPathParamsSchema, getUserStatsApiV1StatsUsersUserIdStatsGet200Schema, getUserStatsApiV1StatsUsersUserIdStatsGet404Schema, getUserStatsApiV1StatsUsersUserIdStatsGet422Schema, getUserStatsApiV1StatsUsersUserIdStatsGetQueryResponseSchema } from "./schemas/getUserStatsApiV1StatsUsersUserIdStatsGetSchema.ts";
-export { getWordByIdApiV1UndercoverWordsWordIdGetPathParamsSchema, getWordByIdApiV1UndercoverWordsWordIdGet200Schema, getWordByIdApiV1UndercoverWordsWordIdGet404Schema, getWordByIdApiV1UndercoverWordsWordIdGet422Schema, getWordByIdApiV1UndercoverWordsWordIdGetQueryResponseSchema } from "./schemas/getWordByIdApiV1UndercoverWordsWordIdGetSchema.ts";
-export { getWordByWordApiV1UndercoverWordsSearchWordGetPathParamsSchema, getWordByWordApiV1UndercoverWordsSearchWordGet200Schema, getWordByWordApiV1UndercoverWordsSearchWordGet404Schema, getWordByWordApiV1UndercoverWordsSearchWordGet422Schema, getWordByWordApiV1UndercoverWordsSearchWordGetQueryResponseSchema } from "./schemas/getWordByWordApiV1UndercoverWordsSearchWordGetSchema.ts";
-export { getWordPackApiV1CodenamesWordPacksPackIdGetPathParamsSchema, getWordPackApiV1CodenamesWordPacksPackIdGet200Schema, getWordPackApiV1CodenamesWordPacksPackIdGet404Schema, getWordPackApiV1CodenamesWordPacksPackIdGet422Schema, getWordPackApiV1CodenamesWordPacksPackIdGetQueryResponseSchema } from "./schemas/getWordPackApiV1CodenamesWordPacksPackIdGetSchema.ts";
-export { getWordPacksApiV1CodenamesWordPacksGet200Schema, getWordPacksApiV1CodenamesWordPacksGet404Schema, getWordPacksApiV1CodenamesWordPacksGetQueryResponseSchema } from "./schemas/getWordPacksApiV1CodenamesWordPacksGetSchema.ts";
-export { getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetPathParamsSchema, getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet200Schema, getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet404Schema, getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet422Schema, getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryResponseSchema } from "./schemas/getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetSchema.ts";
-export { giveClueApiV1CodenamesGamesGameIdCluePostPathParamsSchema, giveClueApiV1CodenamesGamesGameIdCluePost200Schema, giveClueApiV1CodenamesGamesGameIdCluePost404Schema, giveClueApiV1CodenamesGamesGameIdCluePost422Schema, giveClueApiV1CodenamesGamesGameIdCluePostMutationRequestSchema, giveClueApiV1CodenamesGamesGameIdCluePostMutationResponseSchema } from "./schemas/giveClueApiV1CodenamesGamesGameIdCluePostSchema.ts";
+export {
+  getActiveChallengesApiV1ChallengesActiveGet200Schema,
+  getActiveChallengesApiV1ChallengesActiveGet404Schema,
+  getActiveChallengesApiV1ChallengesActiveGetQueryResponseSchema,
+} from "./schemas/getActiveChallengesApiV1ChallengesActiveGetSchema.ts";
+export {
+  getActiveRoomApiV1RoomsActiveGet200Schema,
+  getActiveRoomApiV1RoomsActiveGet404Schema,
+  getActiveRoomApiV1RoomsActiveGetQueryResponseSchema,
+} from "./schemas/getActiveRoomApiV1RoomsActiveGetSchema.ts";
+export {
+  getAllRoomsApiV1RoomsGet200Schema,
+  getAllRoomsApiV1RoomsGet404Schema,
+  getAllRoomsApiV1RoomsGetQueryResponseSchema,
+} from "./schemas/getAllRoomsApiV1RoomsGetSchema.ts";
+export {
+  getAllTermPairsApiV1UndercoverTermpairGet200Schema,
+  getAllTermPairsApiV1UndercoverTermpairGet404Schema,
+  getAllTermPairsApiV1UndercoverTermpairGetQueryResponseSchema,
+} from "./schemas/getAllTermPairsApiV1UndercoverTermpairGetSchema.ts";
+export {
+  getAllUndercoverGamesApiV1GamesGet200Schema,
+  getAllUndercoverGamesApiV1GamesGet404Schema,
+  getAllUndercoverGamesApiV1GamesGetQueryResponseSchema,
+} from "./schemas/getAllUndercoverGamesApiV1GamesGetSchema.ts";
+export {
+  getAllUsersApiV1UsersGet200Schema,
+  getAllUsersApiV1UsersGet404Schema,
+  getAllUsersApiV1UsersGetQueryResponseSchema,
+} from "./schemas/getAllUsersApiV1UsersGetSchema.ts";
+export {
+  getAllWordsApiV1UndercoverWordsGet200Schema,
+  getAllWordsApiV1UndercoverWordsGet404Schema,
+  getAllWordsApiV1UndercoverWordsGetQueryResponseSchema,
+} from "./schemas/getAllWordsApiV1UndercoverWordsGetSchema.ts";
+export {
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetPathParamsSchema,
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryParamsSchema,
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet200Schema,
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet404Schema,
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGet422Schema,
+  getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryResponseSchema,
+} from "./schemas/getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetSchema.ts";
+export {
+  getDurationStatsApiV1StatsUsersUserIdDurationGetPathParamsSchema,
+  getDurationStatsApiV1StatsUsersUserIdDurationGet200Schema,
+  getDurationStatsApiV1StatsUsersUserIdDurationGet404Schema,
+  getDurationStatsApiV1StatsUsersUserIdDurationGet422Schema,
+  getDurationStatsApiV1StatsUsersUserIdDurationGetQueryResponseSchema,
+} from "./schemas/getDurationStatsApiV1StatsUsersUserIdDurationGetSchema.ts";
+export {
+  getFriendsApiV1FriendsGet200Schema,
+  getFriendsApiV1FriendsGet404Schema,
+  getFriendsApiV1FriendsGetQueryResponseSchema,
+} from "./schemas/getFriendsApiV1FriendsGetSchema.ts";
+export {
+  getGameHistoryApiV1StatsUsersUserIdHistoryGetPathParamsSchema,
+  getGameHistoryApiV1StatsUsersUserIdHistoryGetQueryParamsSchema,
+  getGameHistoryApiV1StatsUsersUserIdHistoryGet200Schema,
+  getGameHistoryApiV1StatsUsersUserIdHistoryGet404Schema,
+  getGameHistoryApiV1StatsUsersUserIdHistoryGet422Schema,
+  getGameHistoryApiV1StatsUsersUserIdHistoryGetQueryResponseSchema,
+} from "./schemas/getGameHistoryApiV1StatsUsersUserIdHistoryGetSchema.ts";
+export {
+  getGamesByUserApiV1GamesUserUserIdGetPathParamsSchema,
+  getGamesByUserApiV1GamesUserUserIdGetQueryParamsSchema,
+  getGamesByUserApiV1GamesUserUserIdGet200Schema,
+  getGamesByUserApiV1GamesUserUserIdGet404Schema,
+  getGamesByUserApiV1GamesUserUserIdGet422Schema,
+  getGamesByUserApiV1GamesUserUserIdGetQueryResponseSchema,
+} from "./schemas/getGamesByUserApiV1GamesUserUserIdGetSchema.ts";
+export {
+  getGameSummaryApiV1GamesGameIdSummaryGetPathParamsSchema,
+  getGameSummaryApiV1GamesGameIdSummaryGet200Schema,
+  getGameSummaryApiV1GamesGameIdSummaryGet404Schema,
+  getGameSummaryApiV1GamesGameIdSummaryGet422Schema,
+  getGameSummaryApiV1GamesGameIdSummaryGetQueryResponseSchema,
+} from "./schemas/getGameSummaryApiV1GamesGameIdSummaryGetSchema.ts";
+export {
+  getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetPathParamsSchema,
+  getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet200Schema,
+  getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet404Schema,
+  getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGet422Schema,
+  getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetQueryResponseSchema,
+} from "./schemas/getHeadToHeadApiV1StatsUsersUserIdVsOpponentIdGetSchema.ts";
+export {
+  getLeaderboardApiV1StatsLeaderboardGetQueryParamsSchema,
+  getLeaderboardApiV1StatsLeaderboardGet200Schema,
+  getLeaderboardApiV1StatsLeaderboardGet404Schema,
+  getLeaderboardApiV1StatsLeaderboardGet422Schema,
+  getLeaderboardApiV1StatsLeaderboardGetQueryResponseSchema,
+} from "./schemas/getLeaderboardApiV1StatsLeaderboardGetSchema.ts";
+export {
+  getMeApiV1AuthMeGet200Schema,
+  getMeApiV1AuthMeGetQueryResponseSchema,
+} from "./schemas/getMeApiV1AuthMeGetSchema.ts";
+export {
+  getMessagesApiV1RoomsRoomIdMessagesGetPathParamsSchema,
+  getMessagesApiV1RoomsRoomIdMessagesGetQueryParamsSchema,
+  getMessagesApiV1RoomsRoomIdMessagesGet200Schema,
+  getMessagesApiV1RoomsRoomIdMessagesGet404Schema,
+  getMessagesApiV1RoomsRoomIdMessagesGet422Schema,
+  getMessagesApiV1RoomsRoomIdMessagesGetQueryResponseSchema,
+} from "./schemas/getMessagesApiV1RoomsRoomIdMessagesGetSchema.ts";
+export {
+  getPendingRequestsApiV1FriendsPendingGet200Schema,
+  getPendingRequestsApiV1FriendsPendingGet404Schema,
+  getPendingRequestsApiV1FriendsPendingGetQueryResponseSchema,
+} from "./schemas/getPendingRequestsApiV1FriendsPendingGetSchema.ts";
+export {
+  getPublicProfileApiV1ProfilesUsersUserIdGetPathParamsSchema,
+  getPublicProfileApiV1ProfilesUsersUserIdGet200Schema,
+  getPublicProfileApiV1ProfilesUsersUserIdGet404Schema,
+  getPublicProfileApiV1ProfilesUsersUserIdGet422Schema,
+  getPublicProfileApiV1ProfilesUsersUserIdGetQueryResponseSchema,
+} from "./schemas/getPublicProfileApiV1ProfilesUsersUserIdGetSchema.ts";
+export {
+  getRandomTermPairApiV1UndercoverTermpairSearchRandomGet200Schema,
+  getRandomTermPairApiV1UndercoverTermpairSearchRandomGet404Schema,
+  getRandomTermPairApiV1UndercoverTermpairSearchRandomGetQueryResponseSchema,
+} from "./schemas/getRandomTermPairApiV1UndercoverTermpairSearchRandomGetSchema.ts";
+export {
+  getRoomApiV1RoomsRoomIdGetPathParamsSchema,
+  getRoomApiV1RoomsRoomIdGet200Schema,
+  getRoomApiV1RoomsRoomIdGet404Schema,
+  getRoomApiV1RoomsRoomIdGet422Schema,
+  getRoomApiV1RoomsRoomIdGetQueryResponseSchema,
+} from "./schemas/getRoomApiV1RoomsRoomIdGetSchema.ts";
+export {
+  getRoomStateApiV1RoomsRoomIdStateGetPathParamsSchema,
+  getRoomStateApiV1RoomsRoomIdStateGet200Schema,
+  getRoomStateApiV1RoomsRoomIdStateGet404Schema,
+  getRoomStateApiV1RoomsRoomIdStateGet422Schema,
+  getRoomStateApiV1RoomsRoomIdStateGetQueryResponseSchema,
+} from "./schemas/getRoomStateApiV1RoomsRoomIdStateGetSchema.ts";
+export {
+  getTermPairByIdApiV1UndercoverTermpairTermPairIdGetPathParamsSchema,
+  getTermPairByIdApiV1UndercoverTermpairTermPairIdGet200Schema,
+  getTermPairByIdApiV1UndercoverTermpairTermPairIdGet404Schema,
+  getTermPairByIdApiV1UndercoverTermpairTermPairIdGet422Schema,
+  getTermPairByIdApiV1UndercoverTermpairTermPairIdGetQueryResponseSchema,
+} from "./schemas/getTermPairByIdApiV1UndercoverTermpairTermPairIdGetSchema.ts";
+export {
+  getUndercoverGameApiV1GamesGameIdGetPathParamsSchema,
+  getUndercoverGameApiV1GamesGameIdGet200Schema,
+  getUndercoverGameApiV1GamesGameIdGet404Schema,
+  getUndercoverGameApiV1GamesGameIdGet422Schema,
+  getUndercoverGameApiV1GamesGameIdGetQueryResponseSchema,
+} from "./schemas/getUndercoverGameApiV1GamesGameIdGetSchema.ts";
+export {
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGetPathParamsSchema,
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryParamsSchema,
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGet200Schema,
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGet404Schema,
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGet422Schema,
+  getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryResponseSchema,
+} from "./schemas/getUndercoverStateApiV1UndercoverGamesGameIdStateGetSchema.ts";
+export {
+  getUserAchievementsApiV1StatsUsersUserIdAchievementsGetPathParamsSchema,
+  getUserAchievementsApiV1StatsUsersUserIdAchievementsGet200Schema,
+  getUserAchievementsApiV1StatsUsersUserIdAchievementsGet404Schema,
+  getUserAchievementsApiV1StatsUsersUserIdAchievementsGet422Schema,
+  getUserAchievementsApiV1StatsUsersUserIdAchievementsGetQueryResponseSchema,
+} from "./schemas/getUserAchievementsApiV1StatsUsersUserIdAchievementsGetSchema.ts";
+export {
+  getUserByIdApiV1UsersUserIdGetPathParamsSchema,
+  getUserByIdApiV1UsersUserIdGet200Schema,
+  getUserByIdApiV1UsersUserIdGet404Schema,
+  getUserByIdApiV1UsersUserIdGet422Schema,
+  getUserByIdApiV1UsersUserIdGetQueryResponseSchema,
+} from "./schemas/getUserByIdApiV1UsersUserIdGetSchema.ts";
+export {
+  getUserStatsApiV1StatsUsersUserIdStatsGetPathParamsSchema,
+  getUserStatsApiV1StatsUsersUserIdStatsGet200Schema,
+  getUserStatsApiV1StatsUsersUserIdStatsGet404Schema,
+  getUserStatsApiV1StatsUsersUserIdStatsGet422Schema,
+  getUserStatsApiV1StatsUsersUserIdStatsGetQueryResponseSchema,
+} from "./schemas/getUserStatsApiV1StatsUsersUserIdStatsGetSchema.ts";
+export {
+  getWordByIdApiV1UndercoverWordsWordIdGetPathParamsSchema,
+  getWordByIdApiV1UndercoverWordsWordIdGet200Schema,
+  getWordByIdApiV1UndercoverWordsWordIdGet404Schema,
+  getWordByIdApiV1UndercoverWordsWordIdGet422Schema,
+  getWordByIdApiV1UndercoverWordsWordIdGetQueryResponseSchema,
+} from "./schemas/getWordByIdApiV1UndercoverWordsWordIdGetSchema.ts";
+export {
+  getWordByWordApiV1UndercoverWordsSearchWordGetPathParamsSchema,
+  getWordByWordApiV1UndercoverWordsSearchWordGet200Schema,
+  getWordByWordApiV1UndercoverWordsSearchWordGet404Schema,
+  getWordByWordApiV1UndercoverWordsSearchWordGet422Schema,
+  getWordByWordApiV1UndercoverWordsSearchWordGetQueryResponseSchema,
+} from "./schemas/getWordByWordApiV1UndercoverWordsSearchWordGetSchema.ts";
+export {
+  getWordPackApiV1CodenamesWordPacksPackIdGetPathParamsSchema,
+  getWordPackApiV1CodenamesWordPacksPackIdGet200Schema,
+  getWordPackApiV1CodenamesWordPacksPackIdGet404Schema,
+  getWordPackApiV1CodenamesWordPacksPackIdGet422Schema,
+  getWordPackApiV1CodenamesWordPacksPackIdGetQueryResponseSchema,
+} from "./schemas/getWordPackApiV1CodenamesWordPacksPackIdGetSchema.ts";
+export {
+  getWordPacksApiV1CodenamesWordPacksGet200Schema,
+  getWordPacksApiV1CodenamesWordPacksGet404Schema,
+  getWordPacksApiV1CodenamesWordPacksGetQueryResponseSchema,
+} from "./schemas/getWordPacksApiV1CodenamesWordPacksGetSchema.ts";
+export {
+  getWordquizStateApiV1WordquizGamesGameIdStateGetPathParamsSchema,
+  getWordquizStateApiV1WordquizGamesGameIdStateGetQueryParamsSchema,
+  getWordquizStateApiV1WordquizGamesGameIdStateGet200Schema,
+  getWordquizStateApiV1WordquizGamesGameIdStateGet404Schema,
+  getWordquizStateApiV1WordquizGamesGameIdStateGet422Schema,
+  getWordquizStateApiV1WordquizGamesGameIdStateGetQueryResponseSchema,
+} from "./schemas/getWordquizStateApiV1WordquizGamesGameIdStateGetSchema.ts";
+export {
+  getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetPathParamsSchema,
+  getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet200Schema,
+  getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet404Schema,
+  getWordsByPackApiV1CodenamesWordPacksPackIdWordsGet422Schema,
+  getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetQueryResponseSchema,
+} from "./schemas/getWordsByPackApiV1CodenamesWordPacksPackIdWordsGetSchema.ts";
+export {
+  giveClueApiV1CodenamesGamesGameIdCluePostPathParamsSchema,
+  giveClueApiV1CodenamesGamesGameIdCluePost200Schema,
+  giveClueApiV1CodenamesGamesGameIdCluePost404Schema,
+  giveClueApiV1CodenamesGamesGameIdCluePost422Schema,
+  giveClueApiV1CodenamesGamesGameIdCluePostMutationRequestSchema,
+  giveClueApiV1CodenamesGamesGameIdCluePostMutationResponseSchema,
+} from "./schemas/giveClueApiV1CodenamesGamesGameIdCluePostSchema.ts";
 export { giveClueRequestSchema } from "./schemas/giveClueRequestSchema.ts";
 export { giveClueResponseSchema } from "./schemas/giveClueResponseSchema.ts";
-export { guessCardApiV1CodenamesGamesGameIdGuessPostPathParamsSchema, guessCardApiV1CodenamesGamesGameIdGuessPost200Schema, guessCardApiV1CodenamesGamesGameIdGuessPost404Schema, guessCardApiV1CodenamesGamesGameIdGuessPost422Schema, guessCardApiV1CodenamesGamesGameIdGuessPostMutationRequestSchema, guessCardApiV1CodenamesGamesGameIdGuessPostMutationResponseSchema } from "./schemas/guessCardApiV1CodenamesGamesGameIdGuessPostSchema.ts";
+export {
+  guessCardApiV1CodenamesGamesGameIdGuessPostPathParamsSchema,
+  guessCardApiV1CodenamesGamesGameIdGuessPost200Schema,
+  guessCardApiV1CodenamesGamesGameIdGuessPost404Schema,
+  guessCardApiV1CodenamesGamesGameIdGuessPost422Schema,
+  guessCardApiV1CodenamesGamesGameIdGuessPostMutationRequestSchema,
+  guessCardApiV1CodenamesGamesGameIdGuessPostMutationResponseSchema,
+} from "./schemas/guessCardApiV1CodenamesGamesGameIdGuessPostSchema.ts";
 export { guessCardRequestSchema } from "./schemas/guessCardRequestSchema.ts";
 export { guessCardResponseSchema } from "./schemas/guessCardResponseSchema.ts";
 export { headToHeadStatsSchema } from "./schemas/headToHeadStatsSchema.ts";
-export { healthCheckHealthGet200Schema, healthCheckHealthGetQueryResponseSchema } from "./schemas/healthCheckHealthGetSchema.ts";
+export {
+  healthCheckHealthGet200Schema,
+  healthCheckHealthGetQueryResponseSchema,
+} from "./schemas/healthCheckHealthGetSchema.ts";
 export { hintRecordResponseSchema } from "./schemas/hintRecordResponseSchema.ts";
 export { HTTPValidationErrorSchema } from "./schemas/HTTPValidationErrorSchema.ts";
-export { inviteFriendToRoomApiV1RoomsRoomIdInvitePostPathParamsSchema, inviteFriendToRoomApiV1RoomsRoomIdInvitePost200Schema, inviteFriendToRoomApiV1RoomsRoomIdInvitePost404Schema, inviteFriendToRoomApiV1RoomsRoomIdInvitePost422Schema, inviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationRequestSchema, inviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationResponseSchema } from "./schemas/inviteFriendToRoomApiV1RoomsRoomIdInvitePostSchema.ts";
-export { joinRoomApiV1RoomsJoinPatch200Schema, joinRoomApiV1RoomsJoinPatch404Schema, joinRoomApiV1RoomsJoinPatch422Schema, joinRoomApiV1RoomsJoinPatchMutationRequestSchema, joinRoomApiV1RoomsJoinPatchMutationResponseSchema } from "./schemas/joinRoomApiV1RoomsJoinPatchSchema.ts";
-export { joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch200Schema, joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch404Schema, joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch422Schema, joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationRequestSchema, joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationResponseSchema } from "./schemas/joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchSchema.ts";
+export {
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePostPathParamsSchema,
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePost200Schema,
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePost404Schema,
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePost422Schema,
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationRequestSchema,
+  inviteFriendToRoomApiV1RoomsRoomIdInvitePostMutationResponseSchema,
+} from "./schemas/inviteFriendToRoomApiV1RoomsRoomIdInvitePostSchema.ts";
+export {
+  joinRoomApiV1RoomsJoinPatch200Schema,
+  joinRoomApiV1RoomsJoinPatch404Schema,
+  joinRoomApiV1RoomsJoinPatch422Schema,
+  joinRoomApiV1RoomsJoinPatchMutationRequestSchema,
+  joinRoomApiV1RoomsJoinPatchMutationResponseSchema,
+} from "./schemas/joinRoomApiV1RoomsJoinPatchSchema.ts";
+export {
+  joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch200Schema,
+  joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch404Schema,
+  joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatch422Schema,
+  joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationRequestSchema,
+  joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchMutationResponseSchema,
+} from "./schemas/joinRoomAsSpectatorApiV1RoomsJoinSpectatorPatchSchema.ts";
 export { joinSpectatorRequestSchema } from "./schemas/joinSpectatorRequestSchema.ts";
-export { kickPlayerApiV1RoomsRoomIdKickPatchPathParamsSchema, kickPlayerApiV1RoomsRoomIdKickPatch200Schema, kickPlayerApiV1RoomsRoomIdKickPatch404Schema, kickPlayerApiV1RoomsRoomIdKickPatch422Schema, kickPlayerApiV1RoomsRoomIdKickPatchMutationRequestSchema, kickPlayerApiV1RoomsRoomIdKickPatchMutationResponseSchema } from "./schemas/kickPlayerApiV1RoomsRoomIdKickPatchSchema.ts";
+export {
+  kickPlayerApiV1RoomsRoomIdKickPatchPathParamsSchema,
+  kickPlayerApiV1RoomsRoomIdKickPatch200Schema,
+  kickPlayerApiV1RoomsRoomIdKickPatch404Schema,
+  kickPlayerApiV1RoomsRoomIdKickPatch422Schema,
+  kickPlayerApiV1RoomsRoomIdKickPatchMutationRequestSchema,
+  kickPlayerApiV1RoomsRoomIdKickPatchMutationResponseSchema,
+} from "./schemas/kickPlayerApiV1RoomsRoomIdKickPatchSchema.ts";
 export { kickPlayerRequestSchema } from "./schemas/kickPlayerRequestSchema.ts";
 export { kickPlayerResponseSchema } from "./schemas/kickPlayerResponseSchema.ts";
 export { leaderboardEntrySchema } from "./schemas/leaderboardEntrySchema.ts";
-export { leaveRoomApiV1RoomsLeavePatch200Schema, leaveRoomApiV1RoomsLeavePatch404Schema, leaveRoomApiV1RoomsLeavePatch422Schema, leaveRoomApiV1RoomsLeavePatchMutationRequestSchema, leaveRoomApiV1RoomsLeavePatchMutationResponseSchema } from "./schemas/leaveRoomApiV1RoomsLeavePatchSchema.ts";
-export { loginApiV1AuthLoginPost200Schema, loginApiV1AuthLoginPost422Schema, loginApiV1AuthLoginPostMutationRequestSchema, loginApiV1AuthLoginPostMutationResponseSchema } from "./schemas/loginApiV1AuthLoginPostSchema.ts";
+export {
+  leaveRoomApiV1RoomsLeavePatch200Schema,
+  leaveRoomApiV1RoomsLeavePatch404Schema,
+  leaveRoomApiV1RoomsLeavePatch422Schema,
+  leaveRoomApiV1RoomsLeavePatchMutationRequestSchema,
+  leaveRoomApiV1RoomsLeavePatchMutationResponseSchema,
+} from "./schemas/leaveRoomApiV1RoomsLeavePatchSchema.ts";
+export {
+  loginApiV1AuthLoginPost200Schema,
+  loginApiV1AuthLoginPost422Schema,
+  loginApiV1AuthLoginPostMutationRequestSchema,
+  loginApiV1AuthLoginPostMutationResponseSchema,
+} from "./schemas/loginApiV1AuthLoginPostSchema.ts";
 export { loginRequestSchema } from "./schemas/loginRequestSchema.ts";
 export { loginResponseSchema } from "./schemas/loginResponseSchema.ts";
 export { loginUserDataSchema } from "./schemas/loginUserDataSchema.ts";
-export { logoutApiV1AuthLogoutPost200Schema, logoutApiV1AuthLogoutPostMutationResponseSchema } from "./schemas/logoutApiV1AuthLogoutPostSchema.ts";
+export {
+  logoutApiV1AuthLogoutPost200Schema,
+  logoutApiV1AuthLogoutPostMutationResponseSchema,
+} from "./schemas/logoutApiV1AuthLogoutPostSchema.ts";
+export {
+  nextRoundApiV1WordquizGamesGameIdNextRoundPostPathParamsSchema,
+  nextRoundApiV1WordquizGamesGameIdNextRoundPost200Schema,
+  nextRoundApiV1WordquizGamesGameIdNextRoundPost404Schema,
+  nextRoundApiV1WordquizGamesGameIdNextRoundPost422Schema,
+  nextRoundApiV1WordquizGamesGameIdNextRoundPostMutationResponseSchema,
+} from "./schemas/nextRoundApiV1WordquizGamesGameIdNextRoundPostSchema.ts";
 export { nextRoundRequestSchema } from "./schemas/nextRoundRequestSchema.ts";
 export { publicProfileSchema } from "./schemas/publicProfileSchema.ts";
-export { recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostPathParamsSchema, recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost200Schema, recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost404Schema, recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost422Schema, recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationRequestSchema, recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationResponseSchema } from "./schemas/recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostSchema.ts";
-export { recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostPathParamsSchema, recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost200Schema, recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost404Schema, recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost422Schema, recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationRequestSchema, recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationResponseSchema } from "./schemas/recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostSchema.ts";
-export { refreshTokenApiV1AuthRefreshPostQueryParamsSchema, refreshTokenApiV1AuthRefreshPost200Schema, refreshTokenApiV1AuthRefreshPost422Schema, refreshTokenApiV1AuthRefreshPostMutationResponseSchema } from "./schemas/refreshTokenApiV1AuthRefreshPostSchema.ts";
-export { registerApiV1AuthRegisterPost201Schema, registerApiV1AuthRegisterPost422Schema, registerApiV1AuthRegisterPostMutationRequestSchema, registerApiV1AuthRegisterPostMutationResponseSchema } from "./schemas/registerApiV1AuthRegisterPostSchema.ts";
-export { rejectFriendRequestApiV1FriendsFriendshipIdRejectPostPathParamsSchema, rejectFriendRequestApiV1FriendsFriendshipIdRejectPost204Schema, rejectFriendRequestApiV1FriendsFriendshipIdRejectPost404Schema, rejectFriendRequestApiV1FriendsFriendshipIdRejectPost422Schema, rejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutationResponseSchema } from "./schemas/rejectFriendRequestApiV1FriendsFriendshipIdRejectPostSchema.ts";
-export { rematchApiV1RoomsRoomIdRematchPostPathParamsSchema, rematchApiV1RoomsRoomIdRematchPost200Schema, rematchApiV1RoomsRoomIdRematchPost404Schema, rematchApiV1RoomsRoomIdRematchPost422Schema, rematchApiV1RoomsRoomIdRematchPostMutationResponseSchema } from "./schemas/rematchApiV1RoomsRoomIdRematchPostSchema.ts";
+export {
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostPathParamsSchema,
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost200Schema,
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost404Schema,
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPost422Schema,
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationRequestSchema,
+  recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostMutationResponseSchema,
+} from "./schemas/recordHintViewedApiV1CodenamesGamesGameIdHintViewedPostSchema.ts";
+export {
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostPathParamsSchema,
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost200Schema,
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost404Schema,
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPost422Schema,
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationRequestSchema,
+  recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostMutationResponseSchema,
+} from "./schemas/recordHintViewedApiV1UndercoverGamesGameIdHintViewedPostSchema.ts";
+export {
+  recordHintViewedApiV1WordquizGamesGameIdHintViewedPostPathParamsSchema,
+  recordHintViewedApiV1WordquizGamesGameIdHintViewedPost200Schema,
+  recordHintViewedApiV1WordquizGamesGameIdHintViewedPost404Schema,
+  recordHintViewedApiV1WordquizGamesGameIdHintViewedPost422Schema,
+  recordHintViewedApiV1WordquizGamesGameIdHintViewedPostMutationResponseSchema,
+} from "./schemas/recordHintViewedApiV1WordquizGamesGameIdHintViewedPostSchema.ts";
+export {
+  refreshTokenApiV1AuthRefreshPostQueryParamsSchema,
+  refreshTokenApiV1AuthRefreshPost200Schema,
+  refreshTokenApiV1AuthRefreshPost422Schema,
+  refreshTokenApiV1AuthRefreshPostMutationResponseSchema,
+} from "./schemas/refreshTokenApiV1AuthRefreshPostSchema.ts";
+export {
+  registerApiV1AuthRegisterPost201Schema,
+  registerApiV1AuthRegisterPost422Schema,
+  registerApiV1AuthRegisterPostMutationRequestSchema,
+  registerApiV1AuthRegisterPostMutationResponseSchema,
+} from "./schemas/registerApiV1AuthRegisterPostSchema.ts";
+export {
+  rejectFriendRequestApiV1FriendsFriendshipIdRejectPostPathParamsSchema,
+  rejectFriendRequestApiV1FriendsFriendshipIdRejectPost204Schema,
+  rejectFriendRequestApiV1FriendsFriendshipIdRejectPost404Schema,
+  rejectFriendRequestApiV1FriendsFriendshipIdRejectPost422Schema,
+  rejectFriendRequestApiV1FriendsFriendshipIdRejectPostMutationResponseSchema,
+} from "./schemas/rejectFriendRequestApiV1FriendsFriendshipIdRejectPostSchema.ts";
+export {
+  rematchApiV1RoomsRoomIdRematchPostPathParamsSchema,
+  rematchApiV1RoomsRoomIdRematchPost200Schema,
+  rematchApiV1RoomsRoomIdRematchPost404Schema,
+  rematchApiV1RoomsRoomIdRematchPost422Schema,
+  rematchApiV1RoomsRoomIdRematchPostMutationResponseSchema,
+} from "./schemas/rematchApiV1RoomsRoomIdRematchPostSchema.ts";
 export { rematchResponseSchema } from "./schemas/rematchResponseSchema.ts";
-export { removeFriendApiV1FriendsFriendshipIdDeletePathParamsSchema, removeFriendApiV1FriendsFriendshipIdDelete204Schema, removeFriendApiV1FriendsFriendshipIdDelete404Schema, removeFriendApiV1FriendsFriendshipIdDelete422Schema, removeFriendApiV1FriendsFriendshipIdDeleteMutationResponseSchema } from "./schemas/removeFriendApiV1FriendsFriendshipIdDeleteSchema.ts";
-export { resendVerificationApiV1AuthResendVerificationPost200Schema, resendVerificationApiV1AuthResendVerificationPost422Schema, resendVerificationApiV1AuthResendVerificationPostMutationRequestSchema, resendVerificationApiV1AuthResendVerificationPostMutationResponseSchema } from "./schemas/resendVerificationApiV1AuthResendVerificationPostSchema.ts";
+export {
+  removeFriendApiV1FriendsFriendshipIdDeletePathParamsSchema,
+  removeFriendApiV1FriendsFriendshipIdDelete204Schema,
+  removeFriendApiV1FriendsFriendshipIdDelete404Schema,
+  removeFriendApiV1FriendsFriendshipIdDelete422Schema,
+  removeFriendApiV1FriendsFriendshipIdDeleteMutationResponseSchema,
+} from "./schemas/removeFriendApiV1FriendsFriendshipIdDeleteSchema.ts";
+export {
+  resendVerificationApiV1AuthResendVerificationPost200Schema,
+  resendVerificationApiV1AuthResendVerificationPost422Schema,
+  resendVerificationApiV1AuthResendVerificationPostMutationRequestSchema,
+  resendVerificationApiV1AuthResendVerificationPostMutationResponseSchema,
+} from "./schemas/resendVerificationApiV1AuthResendVerificationPostSchema.ts";
 export { resendVerificationRequestSchema } from "./schemas/resendVerificationRequestSchema.ts";
-export { resetPasswordApiV1AuthResetPasswordPost200Schema, resetPasswordApiV1AuthResetPasswordPost422Schema, resetPasswordApiV1AuthResetPasswordPostMutationRequestSchema, resetPasswordApiV1AuthResetPasswordPostMutationResponseSchema } from "./schemas/resetPasswordApiV1AuthResetPasswordPostSchema.ts";
+export {
+  resetPasswordApiV1AuthResetPasswordPost200Schema,
+  resetPasswordApiV1AuthResetPasswordPost422Schema,
+  resetPasswordApiV1AuthResetPasswordPostMutationRequestSchema,
+  resetPasswordApiV1AuthResetPasswordPostMutationResponseSchema,
+} from "./schemas/resetPasswordApiV1AuthResetPasswordPostSchema.ts";
 export { resetPasswordRequestSchema } from "./schemas/resetPasswordRequestSchema.ts";
 export { roomCreateRequestSchema } from "./schemas/roomCreateRequestSchema.ts";
 export { roomInviteRequestSchema } from "./schemas/roomInviteRequestSchema.ts";
@@ -932,25 +2036,112 @@ export { roomStateSchema } from "./schemas/roomStateSchema.ts";
 export { roomStatusSchema } from "./schemas/roomStatusSchema.ts";
 export { roomTypeSchema } from "./schemas/roomTypeSchema.ts";
 export { roomViewSchema } from "./schemas/roomViewSchema.ts";
-export { seedChallengesApiV1ChallengesSeedPost204Schema, seedChallengesApiV1ChallengesSeedPost404Schema, seedChallengesApiV1ChallengesSeedPostMutationResponseSchema } from "./schemas/seedChallengesApiV1ChallengesSeedPostSchema.ts";
-export { sendFriendRequestApiV1FriendsRequestPost201Schema, sendFriendRequestApiV1FriendsRequestPost404Schema, sendFriendRequestApiV1FriendsRequestPost422Schema, sendFriendRequestApiV1FriendsRequestPostMutationRequestSchema, sendFriendRequestApiV1FriendsRequestPostMutationResponseSchema } from "./schemas/sendFriendRequestApiV1FriendsRequestPostSchema.ts";
-export { sendMessageApiV1RoomsRoomIdMessagesPostPathParamsSchema, sendMessageApiV1RoomsRoomIdMessagesPost201Schema, sendMessageApiV1RoomsRoomIdMessagesPost404Schema, sendMessageApiV1RoomsRoomIdMessagesPost422Schema, sendMessageApiV1RoomsRoomIdMessagesPostMutationRequestSchema, sendMessageApiV1RoomsRoomIdMessagesPostMutationResponseSchema } from "./schemas/sendMessageApiV1RoomsRoomIdMessagesPostSchema.ts";
+export {
+  seedChallengesApiV1ChallengesSeedPost204Schema,
+  seedChallengesApiV1ChallengesSeedPost404Schema,
+  seedChallengesApiV1ChallengesSeedPostMutationResponseSchema,
+} from "./schemas/seedChallengesApiV1ChallengesSeedPostSchema.ts";
+export {
+  sendFriendRequestApiV1FriendsRequestPost201Schema,
+  sendFriendRequestApiV1FriendsRequestPost404Schema,
+  sendFriendRequestApiV1FriendsRequestPost422Schema,
+  sendFriendRequestApiV1FriendsRequestPostMutationRequestSchema,
+  sendFriendRequestApiV1FriendsRequestPostMutationResponseSchema,
+} from "./schemas/sendFriendRequestApiV1FriendsRequestPostSchema.ts";
+export {
+  sendMessageApiV1RoomsRoomIdMessagesPostPathParamsSchema,
+  sendMessageApiV1RoomsRoomIdMessagesPost201Schema,
+  sendMessageApiV1RoomsRoomIdMessagesPost404Schema,
+  sendMessageApiV1RoomsRoomIdMessagesPost422Schema,
+  sendMessageApiV1RoomsRoomIdMessagesPostMutationRequestSchema,
+  sendMessageApiV1RoomsRoomIdMessagesPostMutationResponseSchema,
+} from "./schemas/sendMessageApiV1RoomsRoomIdMessagesPostSchema.ts";
 export { sendMessageRequestSchema } from "./schemas/sendMessageRequestSchema.ts";
-export { startCodenamesGameApiV1CodenamesGamesRoomIdStartPostPathParamsSchema, startCodenamesGameApiV1CodenamesGamesRoomIdStartPost201Schema, startCodenamesGameApiV1CodenamesGamesRoomIdStartPost404Schema, startCodenamesGameApiV1CodenamesGamesRoomIdStartPost422Schema, startCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationRequestSchema, startCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationResponseSchema } from "./schemas/startCodenamesGameApiV1CodenamesGamesRoomIdStartPostSchema.ts";
+export {
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPostPathParamsSchema,
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPost201Schema,
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPost404Schema,
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPost422Schema,
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationRequestSchema,
+  startCodenamesGameApiV1CodenamesGamesRoomIdStartPostMutationResponseSchema,
+} from "./schemas/startCodenamesGameApiV1CodenamesGamesRoomIdStartPostSchema.ts";
 export { startCodenamesRequestSchema } from "./schemas/startCodenamesRequestSchema.ts";
-export { startNextRoundApiV1UndercoverGamesGameIdNextRoundPostPathParamsSchema, startNextRoundApiV1UndercoverGamesGameIdNextRoundPost200Schema, startNextRoundApiV1UndercoverGamesGameIdNextRoundPost404Schema, startNextRoundApiV1UndercoverGamesGameIdNextRoundPost422Schema, startNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationRequestSchema, startNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationResponseSchema } from "./schemas/startNextRoundApiV1UndercoverGamesGameIdNextRoundPostSchema.ts";
+export {
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPostPathParamsSchema,
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPost200Schema,
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPost404Schema,
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPost422Schema,
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationRequestSchema,
+  startNextRoundApiV1UndercoverGamesGameIdNextRoundPostMutationResponseSchema,
+} from "./schemas/startNextRoundApiV1UndercoverGamesGameIdNextRoundPostSchema.ts";
 export { startNextRoundResponseSchema } from "./schemas/startNextRoundResponseSchema.ts";
-export { startUndercoverGameApiV1UndercoverGamesRoomIdStartPostPathParamsSchema, startUndercoverGameApiV1UndercoverGamesRoomIdStartPost201Schema, startUndercoverGameApiV1UndercoverGamesRoomIdStartPost404Schema, startUndercoverGameApiV1UndercoverGamesRoomIdStartPost422Schema, startUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationResponseSchema } from "./schemas/startUndercoverGameApiV1UndercoverGamesRoomIdStartPostSchema.ts";
+export {
+  startUndercoverGameApiV1UndercoverGamesRoomIdStartPostPathParamsSchema,
+  startUndercoverGameApiV1UndercoverGamesRoomIdStartPost201Schema,
+  startUndercoverGameApiV1UndercoverGamesRoomIdStartPost404Schema,
+  startUndercoverGameApiV1UndercoverGamesRoomIdStartPost422Schema,
+  startUndercoverGameApiV1UndercoverGamesRoomIdStartPostMutationResponseSchema,
+} from "./schemas/startUndercoverGameApiV1UndercoverGamesRoomIdStartPostSchema.ts";
+export {
+  startWordquizGameApiV1WordquizGamesRoomIdStartPostPathParamsSchema,
+  startWordquizGameApiV1WordquizGamesRoomIdStartPost201Schema,
+  startWordquizGameApiV1WordquizGamesRoomIdStartPost404Schema,
+  startWordquizGameApiV1WordquizGamesRoomIdStartPost422Schema,
+  startWordquizGameApiV1WordquizGamesRoomIdStartPostMutationResponseSchema,
+} from "./schemas/startWordquizGameApiV1WordquizGamesRoomIdStartPostSchema.ts";
 export { statusMessageResponseSchema } from "./schemas/statusMessageResponseSchema.ts";
 export { statusResponseSchema } from "./schemas/statusResponseSchema.ts";
-export { submitDescriptionApiV1UndercoverGamesGameIdDescribePostPathParamsSchema, submitDescriptionApiV1UndercoverGamesGameIdDescribePost200Schema, submitDescriptionApiV1UndercoverGamesGameIdDescribePost404Schema, submitDescriptionApiV1UndercoverGamesGameIdDescribePost422Schema, submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationRequestSchema, submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationResponseSchema } from "./schemas/submitDescriptionApiV1UndercoverGamesGameIdDescribePostSchema.ts";
+export {
+  submitAnswerApiV1WordquizGamesGameIdAnswerPostPathParamsSchema,
+  submitAnswerApiV1WordquizGamesGameIdAnswerPost200Schema,
+  submitAnswerApiV1WordquizGamesGameIdAnswerPost404Schema,
+  submitAnswerApiV1WordquizGamesGameIdAnswerPost422Schema,
+  submitAnswerApiV1WordquizGamesGameIdAnswerPostMutationRequestSchema,
+  submitAnswerApiV1WordquizGamesGameIdAnswerPostMutationResponseSchema,
+} from "./schemas/submitAnswerApiV1WordquizGamesGameIdAnswerPostSchema.ts";
+export { submitAnswerRequestSchema } from "./schemas/submitAnswerRequestSchema.ts";
+export { submitAnswerResponseSchema } from "./schemas/submitAnswerResponseSchema.ts";
+export {
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePostPathParamsSchema,
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePost200Schema,
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePost404Schema,
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePost422Schema,
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationRequestSchema,
+  submitDescriptionApiV1UndercoverGamesGameIdDescribePostMutationResponseSchema,
+} from "./schemas/submitDescriptionApiV1UndercoverGamesGameIdDescribePostSchema.ts";
 export { submitDescriptionResponseSchema } from "./schemas/submitDescriptionResponseSchema.ts";
-export { submitVoteApiV1UndercoverGamesGameIdVotePostPathParamsSchema, submitVoteApiV1UndercoverGamesGameIdVotePost200Schema, submitVoteApiV1UndercoverGamesGameIdVotePost404Schema, submitVoteApiV1UndercoverGamesGameIdVotePost422Schema, submitVoteApiV1UndercoverGamesGameIdVotePostMutationRequestSchema, submitVoteApiV1UndercoverGamesGameIdVotePostMutationResponseSchema } from "./schemas/submitVoteApiV1UndercoverGamesGameIdVotePostSchema.ts";
+export {
+  submitVoteApiV1UndercoverGamesGameIdVotePostPathParamsSchema,
+  submitVoteApiV1UndercoverGamesGameIdVotePost200Schema,
+  submitVoteApiV1UndercoverGamesGameIdVotePost404Schema,
+  submitVoteApiV1UndercoverGamesGameIdVotePost422Schema,
+  submitVoteApiV1UndercoverGamesGameIdVotePostMutationRequestSchema,
+  submitVoteApiV1UndercoverGamesGameIdVotePostMutationResponseSchema,
+} from "./schemas/submitVoteApiV1UndercoverGamesGameIdVotePostSchema.ts";
 export { submitVoteResponseSchema } from "./schemas/submitVoteResponseSchema.ts";
 export { termPairCreateSchema } from "./schemas/termPairCreateSchema.ts";
 export { termPairSchema } from "./schemas/termPairSchema.ts";
-export { timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostPathParamsSchema, timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost200Schema, timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost404Schema, timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost422Schema, timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutationResponseSchema } from "./schemas/timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostSchema.ts";
-export { timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostPathParamsSchema, timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost200Schema, timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost404Schema, timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost422Schema, timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationResponseSchema } from "./schemas/timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostSchema.ts";
+export {
+  timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostPathParamsSchema,
+  timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost200Schema,
+  timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost404Schema,
+  timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPost422Schema,
+  timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostMutationResponseSchema,
+} from "./schemas/timerExpiredApiV1CodenamesGamesGameIdTimerExpiredPostSchema.ts";
+export {
+  timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostPathParamsSchema,
+  timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost200Schema,
+  timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost404Schema,
+  timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPost422Schema,
+  timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostMutationResponseSchema,
+} from "./schemas/timerExpiredApiV1UndercoverGamesGameIdTimerExpiredPostSchema.ts";
+export {
+  timerExpiredApiV1WordquizGamesGameIdTimerExpiredPostPathParamsSchema,
+  timerExpiredApiV1WordquizGamesGameIdTimerExpiredPost200Schema,
+  timerExpiredApiV1WordquizGamesGameIdTimerExpiredPost404Schema,
+  timerExpiredApiV1WordquizGamesGameIdTimerExpiredPost422Schema,
+  timerExpiredApiV1WordquizGamesGameIdTimerExpiredPostMutationResponseSchema,
+} from "./schemas/timerExpiredApiV1WordquizGamesGameIdTimerExpiredPostSchema.ts";
 export { timerExpiredResponseSchema } from "./schemas/timerExpiredResponseSchema.ts";
 export { tokenPairResponseSchema } from "./schemas/tokenPairResponseSchema.ts";
 export { undercoverGameStateSchema } from "./schemas/undercoverGameStateSchema.ts";
@@ -959,19 +2150,58 @@ export { undercoverPlayerStateSchema } from "./schemas/undercoverPlayerStateSche
 export { undercoverTimerConfigSchema } from "./schemas/undercoverTimerConfigSchema.ts";
 export { undercoverWordExplanationsSchema } from "./schemas/undercoverWordExplanationsSchema.ts";
 export { updateBioRequestSchema } from "./schemas/updateBioRequestSchema.ts";
-export { updateMyProfileApiV1ProfilesMePatch200Schema, updateMyProfileApiV1ProfilesMePatch404Schema, updateMyProfileApiV1ProfilesMePatch422Schema, updateMyProfileApiV1ProfilesMePatchMutationRequestSchema, updateMyProfileApiV1ProfilesMePatchMutationResponseSchema } from "./schemas/updateMyProfileApiV1ProfilesMePatchSchema.ts";
-export { updateRoomSettingsApiV1RoomsRoomIdSettingsPatchPathParamsSchema, updateRoomSettingsApiV1RoomsRoomIdSettingsPatch200Schema, updateRoomSettingsApiV1RoomsRoomIdSettingsPatch404Schema, updateRoomSettingsApiV1RoomsRoomIdSettingsPatch422Schema, updateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationRequestSchema, updateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationResponseSchema } from "./schemas/updateRoomSettingsApiV1RoomsRoomIdSettingsPatchSchema.ts";
+export {
+  updateMyProfileApiV1ProfilesMePatch200Schema,
+  updateMyProfileApiV1ProfilesMePatch404Schema,
+  updateMyProfileApiV1ProfilesMePatch422Schema,
+  updateMyProfileApiV1ProfilesMePatchMutationRequestSchema,
+  updateMyProfileApiV1ProfilesMePatchMutationResponseSchema,
+} from "./schemas/updateMyProfileApiV1ProfilesMePatchSchema.ts";
+export {
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatchPathParamsSchema,
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatch200Schema,
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatch404Schema,
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatch422Schema,
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationRequestSchema,
+  updateRoomSettingsApiV1RoomsRoomIdSettingsPatchMutationResponseSchema,
+} from "./schemas/updateRoomSettingsApiV1RoomsRoomIdSettingsPatchSchema.ts";
 export { updateRoomSettingsResponseSchema } from "./schemas/updateRoomSettingsResponseSchema.ts";
-export { updateUndercoverGameApiV1GamesGameIdPatchPathParamsSchema, updateUndercoverGameApiV1GamesGameIdPatch200Schema, updateUndercoverGameApiV1GamesGameIdPatch404Schema, updateUndercoverGameApiV1GamesGameIdPatch422Schema, updateUndercoverGameApiV1GamesGameIdPatchMutationRequestSchema, updateUndercoverGameApiV1GamesGameIdPatchMutationResponseSchema } from "./schemas/updateUndercoverGameApiV1GamesGameIdPatchSchema.ts";
-export { updateUserApiV1UsersUserIdPatchPathParamsSchema, updateUserApiV1UsersUserIdPatch200Schema, updateUserApiV1UsersUserIdPatch404Schema, updateUserApiV1UsersUserIdPatch422Schema, updateUserApiV1UsersUserIdPatchMutationRequestSchema, updateUserApiV1UsersUserIdPatchMutationResponseSchema } from "./schemas/updateUserApiV1UsersUserIdPatchSchema.ts";
-export { updateUserPasswordApiV1UsersUserIdPasswordPatchPathParamsSchema, updateUserPasswordApiV1UsersUserIdPasswordPatch200Schema, updateUserPasswordApiV1UsersUserIdPasswordPatch404Schema, updateUserPasswordApiV1UsersUserIdPasswordPatch422Schema, updateUserPasswordApiV1UsersUserIdPasswordPatchMutationRequestSchema, updateUserPasswordApiV1UsersUserIdPasswordPatchMutationResponseSchema } from "./schemas/updateUserPasswordApiV1UsersUserIdPasswordPatchSchema.ts";
+export {
+  updateUndercoverGameApiV1GamesGameIdPatchPathParamsSchema,
+  updateUndercoverGameApiV1GamesGameIdPatch200Schema,
+  updateUndercoverGameApiV1GamesGameIdPatch404Schema,
+  updateUndercoverGameApiV1GamesGameIdPatch422Schema,
+  updateUndercoverGameApiV1GamesGameIdPatchMutationRequestSchema,
+  updateUndercoverGameApiV1GamesGameIdPatchMutationResponseSchema,
+} from "./schemas/updateUndercoverGameApiV1GamesGameIdPatchSchema.ts";
+export {
+  updateUserApiV1UsersUserIdPatchPathParamsSchema,
+  updateUserApiV1UsersUserIdPatch200Schema,
+  updateUserApiV1UsersUserIdPatch404Schema,
+  updateUserApiV1UsersUserIdPatch422Schema,
+  updateUserApiV1UsersUserIdPatchMutationRequestSchema,
+  updateUserApiV1UsersUserIdPatchMutationResponseSchema,
+} from "./schemas/updateUserApiV1UsersUserIdPatchSchema.ts";
+export {
+  updateUserPasswordApiV1UsersUserIdPasswordPatchPathParamsSchema,
+  updateUserPasswordApiV1UsersUserIdPasswordPatch200Schema,
+  updateUserPasswordApiV1UsersUserIdPasswordPatch404Schema,
+  updateUserPasswordApiV1UsersUserIdPasswordPatch422Schema,
+  updateUserPasswordApiV1UsersUserIdPasswordPatchMutationRequestSchema,
+  updateUserPasswordApiV1UsersUserIdPasswordPatchMutationResponseSchema,
+} from "./schemas/updateUserPasswordApiV1UsersUserIdPasswordPatchSchema.ts";
 export { userCreateSchema } from "./schemas/userCreateSchema.ts";
 export { userStatsSchema } from "./schemas/userStatsSchema.ts";
 export { userUpdatePasswordSchema } from "./schemas/userUpdatePasswordSchema.ts";
 export { userUpdateSchema } from "./schemas/userUpdateSchema.ts";
 export { userViewSchema } from "./schemas/userViewSchema.ts";
 export { validationErrorSchema } from "./schemas/validationErrorSchema.ts";
-export { verifyEmailApiV1AuthVerifyEmailPost200Schema, verifyEmailApiV1AuthVerifyEmailPost422Schema, verifyEmailApiV1AuthVerifyEmailPostMutationRequestSchema, verifyEmailApiV1AuthVerifyEmailPostMutationResponseSchema } from "./schemas/verifyEmailApiV1AuthVerifyEmailPostSchema.ts";
+export {
+  verifyEmailApiV1AuthVerifyEmailPost200Schema,
+  verifyEmailApiV1AuthVerifyEmailPost422Schema,
+  verifyEmailApiV1AuthVerifyEmailPostMutationRequestSchema,
+  verifyEmailApiV1AuthVerifyEmailPostMutationResponseSchema,
+} from "./schemas/verifyEmailApiV1AuthVerifyEmailPostSchema.ts";
 export { verifyEmailRequestSchema } from "./schemas/verifyEmailRequestSchema.ts";
 export { voteEntrySchema } from "./schemas/voteEntrySchema.ts";
 export { voteHistoryEntrySchema } from "./schemas/voteHistoryEntrySchema.ts";
@@ -980,6 +2210,10 @@ export { voteRequestSchema } from "./schemas/voteRequestSchema.ts";
 export { voteRoundSchema } from "./schemas/voteRoundSchema.ts";
 export { wordCreateSchema } from "./schemas/wordCreateSchema.ts";
 export { wordExplanationsSchema } from "./schemas/wordExplanationsSchema.ts";
+export { wordQuizGameStateSchema } from "./schemas/wordQuizGameStateSchema.ts";
+export { wordQuizPlayerStateSchema } from "./schemas/wordQuizPlayerStateSchema.ts";
+export { wordQuizRoundResultSchema } from "./schemas/wordQuizRoundResultSchema.ts";
+export { wordQuizTimerConfigSchema } from "./schemas/wordQuizTimerConfigSchema.ts";
 export { wordSchema } from "./schemas/wordSchema.ts";
 export { gameStatusEnum } from "./types/GameStatus.ts";
 export { gameTypeEnum } from "./types/GameType.ts";

@@ -6,6 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ipg.api.controllers.codenames_game import CodenamesGameController
 from ipg.api.controllers.room import RoomController
 from ipg.api.controllers.undercover_game import UndercoverGameController
+from ipg.api.controllers.wordquiz_game import WordQuizGameController
 from ipg.api.models.table import Game
 from ipg.database import get_engine
 
@@ -34,6 +35,10 @@ async def fetch_game_state(game_id: str, user_id: str) -> dict:
         try:
             if game.type.value == "undercover":
                 controller = UndercoverGameController(session)
+                result = await controller.get_state(UUID(game_id), UUID(user_id), update_heartbeat=False)
+                return result.model_dump()
+            elif game.type.value == "word_quiz":
+                controller = WordQuizGameController(session)
                 result = await controller.get_state(UUID(game_id), UUID(user_id), update_heartbeat=False)
                 return result.model_dump()
             else:

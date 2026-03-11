@@ -39,9 +39,12 @@ api/
 │   ├── game.py        # Game lifecycle
 │   ├── undercover.py  # Undercover word/term pairs
 │   ├── codenames.py   # Codenames words/packs
+│   ├── wordquiz.py    # QuizWord model (word_en/ar/fr, accepted_answers, hints JSON)
 │   ├── undercover_game.py # Undercover game logic (REST + PostgreSQL JSON)
 │   ├── codenames_game.py  # Codenames game logic (REST + PostgreSQL JSON)
 │   ├── codenames_helpers.py # Board builder, player assigner
+│   ├── wordquiz.py        # QuizWord CRUD (get_random_words, create, delete)
+│   ├── wordquiz_game.py   # Word Quiz game logic (create, submit_answer, timer, rounds)
 │   ├── game_lock.py   # PostgreSQL advisory locks per game_id (asyncio.Lock fallback for SQLite)
 │   ├── disconnect.py  # Disconnect/kick handlers (used by kick_player)
 │   ├── stats.py       # User statistics
@@ -58,6 +61,7 @@ api/
 ├── schemas/           # Pydantic request/response models
 │   ├── shared.py      # BaseModel, BaseTable (USE THESE)
 │   ├── error.py       # Enhanced error classes
+│   ├── wordquiz.py    # Word Quiz schemas (QuizWordCreate, SubmitAnswer, WordQuizGameState)
 │   └── auth.py        # TokenPayload, LoginRequest, etc.
 ├── routes/            # FastAPI routers (thin, delegate to controllers, trigger notify)
 │   ├── auth.py        # /api/v1/auth/*
@@ -66,6 +70,7 @@ api/
 │   ├── game.py        # /api/v1/games/*
 │   ├── undercover.py  # /api/v1/undercover/* (notify_game_changed after mutations)
 │   ├── codenames.py   # /api/v1/codenames/* (notify_game_changed after mutations)
+│   ├── wordquiz.py    # /api/v1/wordquiz/* (start, state, answer, timer, next-round)
 │   └── stats.py       # /api/v1/users/{id}/stats, achievements, leaderboard
 ├── ws/                # Socket.IO real-time notification layer
 │   ├── __init__.py    # Exports sio, socketio_app
@@ -101,6 +106,7 @@ Socket.IO is a **notification layer**, not a game engine. The flow is:
 All game state stored in `Game.live_state` JSON column:
 - **Undercover**: `{players, turns, civilian_word, undercover_word, phase, ...}`
 - **Codenames**: `{board, players, current_team, current_turn, status, winner, ...}`
+- **Word Quiz**: `{players, current_round, total_rounds, round_phase, hints, answers, current_word, ...}`
 
 All game mutations use `get_game_lock(game_id, session)` — PostgreSQL advisory locks in production, asyncio.Lock fallback for SQLite tests:
 ```python
@@ -224,6 +230,7 @@ from ipg.api.constants import MIN_PLAYERS_FOR_GAME, ROOM_PASSWORD_LENGTH
 | TermPair | term_pair | Undercover word pairs |
 | CodenamesWord | codenames_word | Codenames board words |
 | CodenamesWordPack | codenames_word_pack | Word pack groupings |
+| QuizWord | quiz_word | Word Quiz words (multilingual hints, accepted answers) |
 | UserStats | user_stats | Aggregated player statistics |
 | AchievementDefinition | achievement_definition | Badge definitions |
 | UserAchievement | user_achievement | Earned achievements |

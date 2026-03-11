@@ -94,6 +94,10 @@
         "red": "الفريق الأحمر",
         "blue": "الفريق الأزرق"
       }
+    },
+    "wordQuiz": {
+      "name": "مسابقة الكلمات",
+      "description": "خمّن المصطلح الإسلامي من خلال تلميحات متدرجة! كلما أجبت أسرع، كلما حصلت على نقاط أكثر."
     }
   },
   "room": {
@@ -235,6 +239,28 @@
       "waitingForVotes": "في انتظار تصويت العملاء...",
       "tieWarning": "تعادل! تم الاختيار عشوائياً بين البطاقات المتعادلة",
       "voteChanged": "تم تغيير التصويت"
+    },
+    "wordQuiz": {
+      "hint": "تلميح",
+      "hintNumber": "تلميح {{number}}/{{total}}",
+      "submitAnswer": "إرسال",
+      "typeYourAnswer": "اكتب إجابتك...",
+      "correct": "صحيح!",
+      "tryAgain": "حاول مرة أخرى!",
+      "pointsEarned": "+{{points}} نقطة",
+      "round": "الجولة {{current}}/{{total}}",
+      "nextRound": "الجولة التالية",
+      "correctAnswer": "الإجابة كانت: {{answer}}",
+      "timeUp": "انتهى الوقت!",
+      "answered": "أجاب",
+      "notAnswered": "لم يجب",
+      "finalScores": "النتائج النهائية",
+      "winner": "{{username}} فاز!",
+      "score": "النقاط",
+      "backToRoom": "العودة للغرفة",
+      "waiting": "في انتظار النتائج...",
+      "category": "الفئة",
+      "players": "{{count}} لاعب(ين)"
     }
   },
   "stats": {

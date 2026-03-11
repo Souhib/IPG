@@ -28,6 +28,7 @@ from ipg.api.routes.room import router as room_router
 from ipg.api.routes.stats import router as stats_router
 from ipg.api.routes.undercover import router as undercover_router
 from ipg.api.routes.user import router as user_router
+from ipg.api.routes.wordquiz import router as wordquiz_router
 from ipg.api.schemas.error import BaseError
 from ipg.api.ws import socketio_app
 from ipg.database import get_engine as _get_engine
@@ -68,6 +69,7 @@ def create_app(lifespan) -> FastAPI:
     app.include_router(game_router, prefix="/api/v1")
     app.include_router(undercover_router, prefix="/api/v1")
     app.include_router(codenames_router, prefix="/api/v1")
+    app.include_router(wordquiz_router, prefix="/api/v1")
     app.include_router(stats_router, prefix="/api/v1")
     app.include_router(profile_router, prefix="/api/v1")
     app.include_router(friend_router, prefix="/api/v1")

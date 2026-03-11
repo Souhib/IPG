@@ -80,7 +80,8 @@ src/
 │   │   │   └── $roomId.tsx  # Room lobby (Socket.IO real-time)
 │   │   ├── game/
 │   │   │   ├── undercover.$gameId.tsx  # Undercover game UI (Socket.IO)
-│   │   │   └── codenames.$gameId.tsx   # Codenames game UI (Socket.IO)
+│   │   │   ├── codenames.$gameId.tsx   # Codenames game UI (Socket.IO)
+│   │   │   └── wordquiz.$gameId.tsx   # Word Quiz game UI (Socket.IO)
 │   │   ├── profile.tsx      # User profile + stats
 │   │   └── achievements.tsx # Achievement badges
 │   └── auth/

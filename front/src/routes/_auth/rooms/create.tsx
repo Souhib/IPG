@@ -16,7 +16,7 @@ function CreateRoomPage() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [gameType, setGameType] = useState<"undercover" | "codenames">("undercover")
+  const [gameType, setGameType] = useState<"undercover" | "codenames" | "word_quiz">("undercover")
   const [error, setError] = useState("")
 
   const { data: activeRoom, refetch: refetchActiveRoom } = useGetActiveRoomApiV1RoomsActiveGet({
@@ -99,12 +99,13 @@ function CreateRoomPage() {
         {/* Game Type */}
         <div>
           <label className="block text-sm font-medium mb-3">{t("room.gameType")}</label>
-          <div className="grid grid-cols-2 gap-4">
-            {(["undercover", "codenames"] as const).map((type) => {
+          <div className="grid grid-cols-3 gap-4">
+            {(["undercover", "codenames", "word_quiz"] as const).map((type) => {
               const selected = gameType === type
               const config = {
-                undercover: { icon: "🕵️", players: "3-12" },
-                codenames: { icon: "🔤", players: "4-10" },
+                undercover: { icon: "🕵️", players: "3-12", nameKey: "undercover" },
+                codenames: { icon: "🔤", players: "4-10", nameKey: "codenames" },
+                word_quiz: { icon: "📖", players: "1+", nameKey: "wordQuiz" },
               }[type]
               return (
                 <button
@@ -125,7 +126,7 @@ function CreateRoomPage() {
                     </div>
                   )}
                   <div className="text-3xl mb-3">{config.icon}</div>
-                  <div className={`font-extrabold tracking-tight ${selected ? "text-primary" : ""}`}>{t(`games.${type}.name`)}</div>
+                  <div className={`font-extrabold tracking-tight ${selected ? "text-primary" : ""}`}>{t(`games.${config.nameKey}.name`)}</div>
                   <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">{config.players} {t("room.players")}</div>
                 </button>
               )

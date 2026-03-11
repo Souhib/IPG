@@ -499,3 +499,87 @@ class ClueWordIsOnBoardError(BaseError):
             status_code=status.HTTP_400_BAD_REQUEST,
             details={"clue_word": clue_word},
         )
+
+
+# ========== Word Quiz Errors ==========
+
+
+class QuizWordNotFoundError(BaseError):
+    """Raised when a quiz word is not found."""
+
+    def __init__(self, word_id: UUID):
+        super().__init__(
+            message=f"Quiz word {word_id} not found",
+            frontend_message="Quiz word not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"word_id": str(word_id)},
+        )
+
+
+class NoQuizWordsAvailableError(BaseError):
+    """Raised when no quiz words are available for a game."""
+
+    def __init__(self):
+        super().__init__(
+            message="No quiz words available in the database",
+            frontend_message="No quiz words available. Please seed the database.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AlreadyAnsweredError(BaseError):
+    """Raised when a player has already correctly answered this round."""
+
+    def __init__(self, user_id: UUID):
+        super().__init__(
+            message=f"User {user_id} has already answered this round",
+            frontend_message="You have already answered this round.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"user_id": str(user_id)},
+        )
+
+
+class RoundNotPlayingError(BaseError):
+    """Raised when an action is attempted outside the playing phase."""
+
+    def __init__(self):
+        super().__init__(
+            message="Round is not in playing phase",
+            frontend_message="Round is not in playing phase.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class SpectatorCannotAnswerError(BaseError):
+    """Raised when a spectator tries to submit an answer."""
+
+    def __init__(self, user_id: UUID):
+        super().__init__(
+            message=f"Spectator {user_id} cannot submit answers",
+            frontend_message="Spectators cannot submit answers.",
+            status_code=status.HTTP_403_FORBIDDEN,
+            details={"user_id": str(user_id)},
+        )
+
+
+class EmptyAnswerError(BaseError):
+    """Raised when an empty answer is submitted."""
+
+    def __init__(self):
+        super().__init__(
+            message="Answer cannot be empty",
+            frontend_message="Answer cannot be empty.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class NotHostError(BaseError):
+    """Raised when a non-host tries to perform a host-only action."""
+
+    def __init__(self, user_id: UUID):
+        super().__init__(
+            message=f"User {user_id} is not the host",
+            frontend_message="Only the host can perform this action.",
+            status_code=status.HTTP_403_FORBIDDEN,
+            details={"user_id": str(user_id)},
+        )

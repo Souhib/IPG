@@ -10,6 +10,7 @@ import {
   getRoomStateApiV1RoomsRoomIdStateGetQueryKey,
   useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost,
   useStartCodenamesGameApiV1CodenamesGamesRoomIdStartPost,
+  useStartWordquizGameApiV1WordquizGamesRoomIdStartPost,
   useLeaveRoomApiV1RoomsLeavePatch,
   useKickPlayerApiV1RoomsRoomIdKickPatch,
 } from "@/api/generated"
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/_auth/rooms/$roomId")({
   component: RoomLobbyPage,
 })
 
-type GameType = "undercover" | "codenames"
+type GameType = "undercover" | "codenames" | "word_quiz"
 
 function RoomLobbyPage() {
   const { roomId } = Route.useParams()
@@ -136,6 +137,8 @@ function RoomLobbyPage() {
     const gt = roomData.game_type || gameType
     if (gt === "codenames") {
       navigate({ to: "/game/codenames/$gameId", params: { gameId: roomData.active_game_id } })
+    } else if (gt === "word_quiz") {
+      navigate({ to: "/game/wordquiz/$gameId", params: { gameId: roomData.active_game_id } })
     } else {
       navigate({ to: "/game/undercover/$gameId", params: { gameId: roomData.active_game_id } })
     }
@@ -167,12 +170,27 @@ function RoomLobbyPage() {
     },
   })
 
-  const isStartingGame = startUndercoverMutation.isPending || startCodenamesMutation.isPending
+  const startWordQuizMutation = useStartWordquizGameApiV1WordquizGamesRoomIdStartPost({
+    mutation: {
+      onSuccess: (data) => {
+        const d = data as { game_id: string; room_id: string }
+        navigatingToGameRef.current = true
+        storeRoomIdForGame(d.game_id, d.room_id)
+        toast.success(t("toast.gameStarting"))
+        navigate({ to: "/game/wordquiz/$gameId", params: { gameId: d.game_id } })
+      },
+      onError: (err) => toast.error(getApiErrorMessage(err, "Failed to start game")),
+    },
+  })
+
+  const isStartingGame = startUndercoverMutation.isPending || startCodenamesMutation.isPending || startWordQuizMutation.isPending
 
   const handleStartGame = () => {
     if (!roomData || isStartingGame) return
     if (gameType === "codenames") {
       startCodenamesMutation.mutate({ room_id: roomData.id })
+    } else if (gameType === "word_quiz") {
+      startWordQuizMutation.mutate({ room_id: roomData.id })
     } else {
       startUndercoverMutation.mutate({ room_id: roomData.id })
     }
@@ -217,7 +235,7 @@ function RoomLobbyPage() {
     }
   }
 
-  const minPlayers = gameType === "codenames" ? 4 : 3
+  const minPlayers = gameType === "codenames" ? 4 : gameType === "word_quiz" ? 1 : 3
 
   const copyToClipboard = useCallback((text: string, label: string) => {
     if (navigator.clipboard?.writeText) {
@@ -405,8 +423,8 @@ function RoomLobbyPage() {
         </div>
       )}
 
-      {/* Room Settings (host only) */}
-      {isHost && !isSpectator && roomData && (
+      {/* Room Settings (host only, not for word_quiz which uses defaults) */}
+      {isHost && !isSpectator && roomData && gameType !== "word_quiz" && (
         <RoomSettings
           roomId={roomData.id}
           settings={roomData.settings ?? null}
@@ -444,6 +462,18 @@ function RoomLobbyPage() {
                 )}
               >
                 Codenames
+              </button>
+              <button
+                type="button"
+                onClick={() => setGameType("word_quiz")}
+                className={cn(
+                  "flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                  gameType === "word_quiz"
+                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md shadow-primary/20"
+                    : "glass hover:bg-muted/80",
+                )}
+              >
+                {t("games.wordQuiz.name")}
               </button>
             </div>
           </div>

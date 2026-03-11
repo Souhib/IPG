@@ -23,6 +23,7 @@ from ipg.api.models.room import RoomBase, RoomType
 from ipg.api.models.shared import DBModel
 from ipg.api.models.token import EmailVerificationToken, PasswordResetToken  # noqa: F401
 from ipg.api.models.user import UserBase
+from ipg.api.models.wordquiz import QuizWord  # noqa: F401
 
 
 class Room(RoomBase, table=True):

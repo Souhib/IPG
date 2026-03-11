@@ -12,6 +12,7 @@ from ipg.api.models.shared import DBModel
 class GameType(StrEnum):
     UNDERCOVER = "undercover"
     CODENAMES = "codenames"
+    WORD_QUIZ = "word_quiz"
 
 
 class GameStatus(StrEnum):

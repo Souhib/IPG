@@ -27,12 +27,15 @@ from ipg.api.controllers.stats import StatsController
 from ipg.api.controllers.undercover import UndercoverController
 from ipg.api.controllers.undercover_game import UndercoverGameController
 from ipg.api.controllers.user import UserController
+from ipg.api.controllers.wordquiz import WordQuizController
+from ipg.api.controllers.wordquiz_game import WordQuizGameController
 from ipg.api.models.codenames import CodenamesWord, CodenamesWordPack, CodenamesWordPackCreate
 from ipg.api.models.game import GameCreate, GameType
 from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.room import RoomCreate, RoomStatus
 from ipg.api.models.table import Room, User
 from ipg.api.models.undercover import TermPair, Word, WordCreate
+from ipg.api.models.wordquiz import QuizWord
 from ipg.api.utils.cache import cache
 from ipg.settings import Settings
 
@@ -551,6 +554,116 @@ async def get_setup_codenames_game(session: AsyncSession, create_user, create_ro
             "room": room,
             "word_pack": word_pack,
             "words": words,
+        }
+
+    return _setup
+
+
+# ========== Word Quiz Fixtures ==========
+
+
+@pytest_asyncio.fixture(name="wordquiz_controller")
+async def get_wordquiz_controller(session: AsyncSession) -> WordQuizController:
+    """Create a WordQuizController instance for testing."""
+    return WordQuizController(session)
+
+
+@pytest_asyncio.fixture(name="wordquiz_game_controller")
+async def get_wordquiz_game_controller(session: AsyncSession) -> WordQuizGameController:
+    """Create a WordQuizGameController instance for testing."""
+    return WordQuizGameController(session)
+
+
+@pytest_asyncio.fixture(name="create_quiz_word")
+async def get_create_quiz_word(session: AsyncSession):
+    """Factory fixture for creating quiz words."""
+
+    async def _create_quiz_word(
+        word_en: str = "Ibrahim",
+        word_ar: str | None = "إبراهيم",
+        word_fr: str | None = "Ibrahim",
+        accepted_answers: dict | None = None,
+        category: str = "Prophets",
+        hints: dict | None = None,
+    ) -> QuizWord:
+        if accepted_answers is None:
+            accepted_answers = {"en": [word_en], "ar": [word_ar] if word_ar else [], "fr": [word_fr] if word_fr else []}
+        if hints is None:
+            hints = {
+                "1": {"en": "Hint 1", "ar": "تلميح 1", "fr": "Indice 1"},
+                "2": {"en": "Hint 2", "ar": "تلميح 2", "fr": "Indice 2"},
+                "3": {"en": "Hint 3", "ar": "تلميح 3", "fr": "Indice 3"},
+                "4": {"en": "Hint 4", "ar": "تلميح 4", "fr": "Indice 4"},
+                "5": {"en": "Hint 5", "ar": "تلميح 5", "fr": "Indice 5"},
+                "6": {"en": "Hint 6", "ar": "تلميح 6", "fr": "Indice 6"},
+            }
+        quiz_word = QuizWord(
+            word_en=word_en,
+            word_ar=word_ar,
+            word_fr=word_fr,
+            accepted_answers=accepted_answers,
+            category=category,
+            hints=hints,
+        )
+        session.add(quiz_word)
+        await session.commit()
+        await session.refresh(quiz_word)
+        return quiz_word
+
+    return _create_quiz_word
+
+
+@pytest_asyncio.fixture(name="setup_wordquiz_game")
+async def get_setup_wordquiz_game(session: AsyncSession, create_user, create_room, create_quiz_word):
+    """Factory fixture that creates N users + room + RoomUserLinks + QuizWords.
+
+    Returns a dict with users, room, quiz_words.
+    """
+
+    async def _setup(num_players: int = 2, num_words: int = 3) -> dict:
+        users = []
+        for i in range(num_players):
+            user = await create_user(
+                username=f"wqplayer{i}",
+                email=f"wqplayer{i}@test.com",
+                password="password123",
+            )
+            users.append(user)
+
+        room = await create_room(owner=users[0])
+
+        # Create RoomUserLinks for all players (connected=True)
+        for user in users:
+            existing = (
+                await session.exec(
+                    select(RoomUserLink).where(RoomUserLink.room_id == room.id).where(RoomUserLink.user_id == user.id)
+                )
+            ).first()
+            if not existing:
+                link = RoomUserLink(
+                    room_id=room.id,
+                    user_id=user.id,
+                    connected=True,
+                    last_seen_at=datetime.now(),
+                )
+                session.add(link)
+        await session.commit()
+
+        # Create quiz words
+        quiz_words = []
+        word_names = ["Ibrahim", "Musa", "Isa", "Nuh", "Yusuf", "Muhammad", "Ali", "Umar", "Bilal", "Dawud"]
+        for i in range(min(num_words, len(word_names))):
+            qw = await create_quiz_word(
+                word_en=word_names[i],
+                word_ar=f"عربي_{i}",
+                word_fr=f"Français_{i}",
+            )
+            quiz_words.append(qw)
+
+        return {
+            "users": users,
+            "room": room,
+            "quiz_words": quiz_words,
         }
 
     return _setup
