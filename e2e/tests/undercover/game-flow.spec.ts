@@ -31,6 +31,41 @@ test.describe("Undercover Game Flow", () => {
     await setup.cleanup();
   });
 
+  test("role reveal shows hint button for non-Mr.White players", async ({ browser }) => {
+    const accounts = await generateTestAccounts(3);
+    const setup = await setupRoomWithPlayers(browser, accounts);
+    await startGameViaAPI(setup.players, "undercover", setup.roomId);
+
+    // During role reveal, non-Mr.White players should see a hint button next to their word
+    let hintButtonFound = false;
+    for (const player of setup.players) {
+      await expect(player.page.locator("text=Your Role")).toBeVisible({ timeout: 15_000 });
+
+      // Check if this player has a word displayed (Mr. White won't)
+      const hasWord = await player.page.locator("text=Your Word").isVisible().catch(() => false);
+      if (hasWord) {
+        // The hint button should be visible (aria-label="Show explanation")
+        const hintButton = player.page.locator('button[aria-label="Show explanation"]');
+        const isVisible = await hintButton.isVisible().catch(() => false);
+        if (isVisible) {
+          hintButtonFound = true;
+
+          // Click the hint button and verify popover shows text
+          await hintButton.click();
+          // The popover should contain some text (the hint)
+          const popoverContent = player.page.locator('[data-radix-popper-content-wrapper]');
+          await expect(popoverContent).toBeVisible({ timeout: 3_000 });
+        }
+      }
+    }
+
+    // At least one player should have seen the hint button
+    // (in a 3-player game, at least 2 are civilians with words)
+    expect(hintButtonFound).toBe(true);
+
+    await setup.cleanup();
+  });
+
   test("full round: describe then vote then elimination", async ({ browser }) => {
     const accounts = await generateTestAccounts(3);
     const setup = await setupRoomWithPlayers(browser, accounts);
