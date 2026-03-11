@@ -36,6 +36,7 @@ export const ROUTES = {
   room: (id: string) => `/rooms/${id}`,
   undercoverGame: (id: string) => `/game/undercover/${id}`,
   codenamesGame: (id: string) => `/game/codenames/${id}`,
+  wordquizGame: (id: string) => `/game/wordquiz/${id}`,
   profile: "/profile",
   leaderboard: "/leaderboard",
   challenges: "/challenges",

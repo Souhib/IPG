@@ -399,7 +399,15 @@ Cloudflare handles DNS (proxied/orange cloud) and SSL termination (Flexible mode
 - 5x5 board of Islamic terms
 - Spymaster gives one-word clues, operatives guess
 
-### Hint System (Both Games)
+### Word Quiz (Kalimat)
+- 1+ players (solo or group)
+- Progressive hint system: 6 hints revealed every N seconds (vague → specific)
+- Players type answers — faster = more points (hint 1 = 6pts, hint 6 = 1pt)
+- Multiple rounds, highest score wins
+- Answer matching: Arabic diacritics stripped, case-insensitive, whitespace-normalized
+- Trilingual hints (EN, FR, AR) with `QuizWord` model
+
+### Hint System (All Games)
 - Words have multilingual hints (JSON `hint` column: `{en, ar, fr}`)
 - Hints shown via Info icon popover (HintButton component)
 - Hint usage tracked in `live_state.hint_usage` for achievements

@@ -60,7 +60,7 @@ export function isPageAlive(page: Page): boolean {
 export async function setupRoomWithPlayers(
   browser: Browser,
   accounts: { email: string; password: string }[],
-  gameType: "undercover" | "codenames" = "undercover",
+  gameType: "undercover" | "codenames" | "word_quiz" = "undercover",
 ): Promise<UIGameSetup> {
   // Login all players via API (parallel)
   const logins = await Promise.all(
@@ -154,7 +154,7 @@ export async function setupRoomWithPlayers(
 export async function setupRoomWithPlayersViaUI(
   browser: Browser,
   accounts: { email: string; password: string }[],
-  gameType: "undercover" | "codenames" = "undercover",
+  gameType: "undercover" | "codenames" | "word_quiz" = "undercover",
 ): Promise<UIGameSetup> {
   const logins = await Promise.all(
     accounts.map((a) => apiLogin(a.email, a.password)),
@@ -267,12 +267,13 @@ export async function setupRoomWithPlayersViaUI(
  */
 export async function startGameViaAPI(
   players: PlayerContext[],
-  gameType: "undercover" | "codenames",
+  gameType: "undercover" | "codenames" | "word_quiz",
   roomId: string,
 ): Promise<void> {
   const hostToken = players[0].login.access_token;
   const result = await apiStartGame(roomId, gameType, hostToken);
-  const gameUrl = `/game/${gameType}/${result.game_id}`;
+  const gameUrlPath = gameType === "word_quiz" ? "wordquiz" : gameType;
+  const gameUrl = `/game/${gameUrlPath}/${result.game_id}`;
 
   // Navigate all players to the game page
   await Promise.all(
@@ -283,16 +284,22 @@ export async function startGameViaAPI(
   );
 
   // Wait for game UI to load on all pages
-  const urlPattern =
-    gameType === "undercover"
-      ? /\/game\/undercover\//
-      : /\/game\/codenames\//;
+  const urlPatterns: Record<string, RegExp> = {
+    undercover: /\/game\/undercover\//,
+    codenames: /\/game\/codenames\//,
+    word_quiz: /\/game\/wordquiz\//,
+  };
+  const urlPattern = urlPatterns[gameType];
 
   for (const player of players) {
     await expect(player.page).toHaveURL(urlPattern, { timeout: 15_000 });
     if (gameType === "codenames") {
       await expect(
         player.page.locator(".grid-cols-5 button").first(),
+      ).toBeVisible({ timeout: 15_000 });
+    } else if (gameType === "word_quiz") {
+      await expect(
+        player.page.locator("h1:has-text('Word Quiz')").or(player.page.locator("h1:has-text('مسابقة الكلمات')")),
       ).toBeVisible({ timeout: 15_000 });
     } else {
       await expect(
@@ -313,7 +320,7 @@ export async function startGameViaAPI(
  */
 export async function startGameViaUI(
   players: PlayerContext[],
-  gameType: "undercover" | "codenames",
+  gameType: "undercover" | "codenames" | "word_quiz",
 ): Promise<void> {
   const hostPage = players[0].page;
 
@@ -332,9 +339,11 @@ export async function startGameViaUI(
     hostPage.locator(`text=${playerCountText}`),
   ).toBeVisible({ timeout: 15_000 });
 
-  // Select game type if codenames (undercover is default)
+  // Select game type (undercover is default)
   if (gameType === "codenames") {
     await hostPage.locator('button:has-text("Codenames")').click();
+  } else if (gameType === "word_quiz") {
+    await hostPage.locator('button:has-text("Word Quiz")').click();
   }
 
   // Click start game
@@ -347,7 +356,9 @@ export async function startGameViaUI(
   const urlPattern =
     gameType === "undercover"
       ? /\/game\/undercover\//
-      : /\/game\/codenames\//;
+      : gameType === "word_quiz"
+        ? /\/game\/wordquiz\//
+        : /\/game\/codenames\//;
 
   // Wait for host to navigate first
   let gameUrl = "";

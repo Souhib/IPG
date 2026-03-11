@@ -94,6 +94,10 @@
         "red": "Équipe Rouge",
         "blue": "Équipe Bleue"
       }
+    },
+    "wordQuiz": {
+      "name": "Quiz de Mots",
+      "description": "Devinez le terme islamique à partir d'indices progressifs ! Plus vous répondez vite, plus vous gagnez de points."
     }
   },
   "room": {
@@ -223,6 +227,28 @@
       "guesses": "Tentatives",
       "correct": "Correct",
       "wrong": "Faux"
+    },
+    "wordQuiz": {
+      "hint": "Indice",
+      "hintNumber": "Indice {{number}}/{{total}}",
+      "submitAnswer": "Envoyer",
+      "typeYourAnswer": "Tapez votre réponse...",
+      "correct": "Correct !",
+      "tryAgain": "Réessayez !",
+      "pointsEarned": "+{{points}} points",
+      "round": "Manche {{current}}/{{total}}",
+      "nextRound": "Manche suivante",
+      "correctAnswer": "La réponse était : {{answer}}",
+      "timeUp": "Temps écoulé !",
+      "answered": "A répondu",
+      "notAnswered": "N'a pas répondu",
+      "finalScores": "Scores finaux",
+      "winner": "{{username}} gagne !",
+      "score": "Score",
+      "backToRoom": "Retour au salon",
+      "waiting": "En attente des résultats...",
+      "category": "Catégorie",
+      "players": "{{count}} joueur(s)"
     }
   },
   "stats": {

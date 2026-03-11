@@ -112,7 +112,7 @@ export async function apiRefreshToken(
 
 export async function apiCreateRoom(
   token: string,
-  gameType: "undercover" | "codenames" = "undercover",
+  gameType: "undercover" | "codenames" | "word_quiz" = "undercover",
 ): Promise<RoomResponse> {
   return postJSON<RoomResponse>(
     "/api/v1/rooms",
@@ -208,12 +208,14 @@ export async function apiLeaveAllRooms(
 
 export async function apiStartGame(
   roomId: string,
-  gameType: "undercover" | "codenames",
+  gameType: "undercover" | "codenames" | "word_quiz",
   token: string,
 ): Promise<{ game_id: string; room_id: string }> {
   const path = gameType === "undercover"
     ? `/api/v1/undercover/games/${roomId}/start`
-    : `/api/v1/codenames/games/${roomId}/start`;
+    : gameType === "word_quiz"
+      ? `/api/v1/wordquiz/games/${roomId}/start`
+      : `/api/v1/codenames/games/${roomId}/start`;
   return postJSON(path, {}, token);
 }
 
@@ -362,6 +364,91 @@ export async function apiEndTurn(
 ): Promise<Record<string, unknown>> {
   return postJSON(
     `/api/v1/codenames/games/${gameId}/end-turn`,
+    {},
+    token,
+  );
+}
+
+// ─── Word Quiz Game API ────────────────────────────────────
+
+export interface WordQuizGameState {
+  game_id: string;
+  room_id: string;
+  is_host: boolean;
+  is_spectator: boolean;
+  current_round: number;
+  total_rounds: number;
+  round_phase: string;
+  hints_revealed: number;
+  hints: string[];
+  turn_duration_seconds: number;
+  hint_interval_seconds: number;
+  round_started_at: string | null;
+  players: {
+    user_id: string;
+    username: string;
+    total_score: number;
+    current_round_answered: boolean;
+    current_round_points: number;
+    answered_at_hint: number | null;
+  }[];
+  my_answered: boolean;
+  my_points: number;
+  round_results: {
+    user_id: string;
+    username: string;
+    answered_at_hint: number | null;
+    points: number;
+  }[];
+  correct_answer: string | null;
+  winner: string | null;
+  leaderboard: {
+    user_id: string;
+    username: string;
+    total_score: number;
+  }[];
+  game_over: boolean;
+}
+
+export async function apiGetWordQuizState(
+  gameId: string,
+  token: string,
+): Promise<WordQuizGameState> {
+  return getJSON<WordQuizGameState>(
+    `/api/v1/wordquiz/games/${gameId}/state`,
+    token,
+  );
+}
+
+export async function apiSubmitWordQuizAnswer(
+  gameId: string,
+  answer: string,
+  token: string,
+): Promise<{ correct: boolean; points_earned: number; hint_number: number }> {
+  return postJSON(
+    `/api/v1/wordquiz/games/${gameId}/answer`,
+    { answer },
+    token,
+  );
+}
+
+export async function apiWordQuizTimerExpired(
+  gameId: string,
+  token: string,
+): Promise<Record<string, unknown>> {
+  return postJSON(
+    `/api/v1/wordquiz/games/${gameId}/timer-expired`,
+    {},
+    token,
+  );
+}
+
+export async function apiWordQuizNextRound(
+  gameId: string,
+  token: string,
+): Promise<Record<string, unknown>> {
+  return postJSON(
+    `/api/v1/wordquiz/games/${gameId}/next-round`,
     {},
     token,
   );

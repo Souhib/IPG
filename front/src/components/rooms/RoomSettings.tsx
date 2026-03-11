@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 interface RoomSettingsProps {
   roomId: string
   settings: Record<string, unknown> | null
-  gameType: "undercover" | "codenames"
+  gameType: "undercover" | "codenames" | "word_quiz"
   playerCount: number
 }
 

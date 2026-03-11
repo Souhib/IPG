@@ -21,6 +21,8 @@ from ipg.api.controllers.stats import StatsController
 from ipg.api.controllers.undercover import UndercoverController
 from ipg.api.controllers.undercover_game import UndercoverGameController
 from ipg.api.controllers.user import UserController
+from ipg.api.controllers.wordquiz import WordQuizController
+from ipg.api.controllers.wordquiz_game import WordQuizGameController
 from ipg.api.models.table import User
 from ipg.api.schemas.error import InvalidTokenError
 from ipg.api.services.email import EmailService
@@ -180,6 +182,20 @@ async def get_challenge_controller(
 ) -> ChallengeController:
     """Get ChallengeController with injected session."""
     return ChallengeController(session)
+
+
+async def get_wordquiz_controller(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> WordQuizController:
+    """Get WordQuizController with injected session."""
+    return WordQuizController(session)
+
+
+async def get_wordquiz_game_controller(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> WordQuizGameController:
+    """Get WordQuizGameController with injected session."""
+    return WordQuizGameController(session)
 
 
 def get_email_service(

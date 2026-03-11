@@ -62,6 +62,7 @@ from ipg.api.models.room import RoomStatus, RoomType
 from ipg.api.models.stats import AchievementDefinition, UserAchievement, UserStats
 from ipg.api.models.table import Game, Room, User
 from ipg.api.models.undercover import TermPair, Word
+from ipg.api.models.wordquiz import QuizWord
 from ipg.database import create_app_engine, create_db_and_tables
 from ipg.settings import Settings
 
@@ -1108,6 +1109,480 @@ async def seed_codenames_words(session: AsyncSession) -> None:
     print(f"  Seeded {len(CODENAMES_WORD_PACKS)} Codenames word packs with {total_words} words")
 
 
+QUIZ_WORDS: list[dict] = [
+    # === Prophets (~25) ===
+    {
+        "word_en": "Ibrahim",
+        "word_ar": "إبراهيم",
+        "word_fr": "Ibrahim",
+        "accepted_answers": {"en": ["Ibrahim", "Abraham"], "ar": ["إبراهيم", "ابراهيم"], "fr": ["Ibrahim", "Abraham"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "A great patriarch", "ar": "أب عظيم", "fr": "Un grand patriarche"},
+            "2": {"en": "Known as the friend of Allah", "ar": "خليل الله", "fr": "Connu comme l'ami d'Allah"},
+            "3": {"en": "He built the Kaaba", "ar": "بنى الكعبة", "fr": "Il a construit la Kaaba"},
+            "4": {"en": "Father of Ismail and Ishaq", "ar": "والد إسماعيل وإسحاق", "fr": "Père d'Ismail et Ishaq"},
+            "5": {"en": "He was thrown into fire", "ar": "ألقي في النار", "fr": "Il a été jeté dans le feu"},
+            "6": {"en": "Khalil Allah", "ar": "خليل الله", "fr": "Khalil Allah"},
+        },
+    },
+    {
+        "word_en": "Musa",
+        "word_ar": "موسى",
+        "word_fr": "Moïse",
+        "accepted_answers": {"en": ["Musa", "Moses"], "ar": ["موسى"], "fr": ["Moïse", "Moussa"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "One of the greatest messengers", "ar": "من أولي العزم", "fr": "Un des plus grands messagers"},
+            "2": {"en": "Spoke directly to Allah", "ar": "كلّم الله مباشرة", "fr": "A parlé directement à Allah"},
+            "3": {"en": "Led his people out of Egypt", "ar": "قاد قومه من مصر", "fr": "A mené son peuple hors d'Égypte"},
+            "4": {"en": "Received the Torah", "ar": "تلقى التوراة", "fr": "A reçu la Torah"},
+            "5": {"en": "His staff turned into a snake", "ar": "عصاه تحولت إلى حية", "fr": "Son bâton s'est transformé en serpent"},
+            "6": {"en": "Kalim Allah", "ar": "كليم الله", "fr": "Kalim Allah"},
+        },
+    },
+    {
+        "word_en": "Isa",
+        "word_ar": "عيسى",
+        "word_fr": "Jésus",
+        "accepted_answers": {"en": ["Isa", "Jesus"], "ar": ["عيسى"], "fr": ["Jésus", "Issa"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Born miraculously", "ar": "ولد معجزة", "fr": "Né miraculeusement"},
+            "2": {"en": "His mother is mentioned by name in the Quran", "ar": "أمه مذكورة بالاسم في القرآن", "fr": "Sa mère est mentionnée par nom dans le Coran"},
+            "3": {"en": "Could heal the sick by Allah's permission", "ar": "كان يشفي المرضى بإذن الله", "fr": "Pouvait guérir les malades par la permission d'Allah"},
+            "4": {"en": "Spoke as a baby in the cradle", "ar": "تكلم في المهد", "fr": "A parlé bébé dans le berceau"},
+            "5": {"en": "He was raised to the heavens", "ar": "رُفع إلى السماء", "fr": "Il a été élevé aux cieux"},
+            "6": {"en": "Son of Maryam", "ar": "ابن مريم", "fr": "Fils de Maryam"},
+        },
+    },
+    {
+        "word_en": "Nuh",
+        "word_ar": "نوح",
+        "word_fr": "Noé",
+        "accepted_answers": {"en": ["Nuh", "Noah"], "ar": ["نوح"], "fr": ["Noé", "Nouh"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Lived for a very long time", "ar": "عاش طويلاً جداً", "fr": "A vécu très longtemps"},
+            "2": {"en": "Built something massive by command of Allah", "ar": "بنى شيئاً عظيماً بأمر الله", "fr": "A construit quelque chose de massif par ordre d'Allah"},
+            "3": {"en": "A great flood came", "ar": "جاء طوفان عظيم", "fr": "Un grand déluge est venu"},
+            "4": {"en": "Preached for 950 years", "ar": "دعا 950 سنة", "fr": "A prêché pendant 950 ans"},
+            "5": {"en": "His son refused to board", "ar": "رفض ابنه أن يركب", "fr": "Son fils a refusé de monter"},
+            "6": {"en": "The Ark builder", "ar": "باني السفينة", "fr": "Le constructeur de l'Arche"},
+        },
+    },
+    {
+        "word_en": "Yusuf",
+        "word_ar": "يوسف",
+        "word_fr": "Joseph",
+        "accepted_answers": {"en": ["Yusuf", "Joseph"], "ar": ["يوسف"], "fr": ["Joseph", "Youssef"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Known for his extraordinary beauty", "ar": "اشتهر بجماله الفائق", "fr": "Connu pour sa beauté extraordinaire"},
+            "2": {"en": "Had a dream about celestial bodies", "ar": "رأى حلماً عن أجرام سماوية", "fr": "A eu un rêve sur des corps célestes"},
+            "3": {"en": "Was thrown into a well by his brothers", "ar": "ألقاه إخوته في البئر", "fr": "A été jeté dans un puits par ses frères"},
+            "4": {"en": "Became a minister in Egypt", "ar": "أصبح وزيراً في مصر", "fr": "Est devenu ministre en Égypte"},
+            "5": {"en": "Could interpret dreams", "ar": "كان يفسر الأحلام", "fr": "Pouvait interpréter les rêves"},
+            "6": {"en": "His story is called the best of stories", "ar": "قصته أحسن القصص", "fr": "Son histoire est la meilleure des histoires"},
+        },
+    },
+    {
+        "word_en": "Dawud",
+        "word_ar": "داود",
+        "word_fr": "David",
+        "accepted_answers": {"en": ["Dawud", "David"], "ar": ["داود", "داوود"], "fr": ["David", "Daoud"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "A prophet who was also a king", "ar": "نبي وملك", "fr": "Un prophète qui était aussi roi"},
+            "2": {"en": "Given a beautiful voice", "ar": "أُعطي صوتاً جميلاً", "fr": "Doté d'une belle voix"},
+            "3": {"en": "Mountains and birds glorified Allah with him", "ar": "سبّحت معه الجبال والطيور", "fr": "Les montagnes et les oiseaux glorifiaient Allah avec lui"},
+            "4": {"en": "Received the Zabur", "ar": "تلقى الزبور", "fr": "A reçu le Zabour"},
+            "5": {"en": "Defeated a giant warrior", "ar": "هزم محارباً عملاقاً", "fr": "A vaincu un guerrier géant"},
+            "6": {"en": "Father of Sulayman", "ar": "والد سليمان", "fr": "Père de Sulayman"},
+        },
+    },
+    {
+        "word_en": "Sulayman",
+        "word_ar": "سليمان",
+        "word_fr": "Salomon",
+        "accepted_answers": {"en": ["Sulayman", "Solomon"], "ar": ["سليمان"], "fr": ["Salomon", "Soulayman"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Given a kingdom unlike any other", "ar": "أُعطي ملكاً لا مثيل له", "fr": "Reçu un royaume sans pareil"},
+            "2": {"en": "Could understand the language of animals", "ar": "كان يفهم لغة الحيوانات", "fr": "Pouvait comprendre le langage des animaux"},
+            "3": {"en": "Commanded the jinn", "ar": "كان يأمر الجن", "fr": "Commandait les djinns"},
+            "4": {"en": "The wind was at his service", "ar": "الريح كانت مسخرة له", "fr": "Le vent était à son service"},
+            "5": {"en": "An ant warned its colony about his army", "ar": "حذرت نملة قومها من جيشه", "fr": "Une fourmi a averti sa colonie de son armée"},
+            "6": {"en": "Son of Dawud", "ar": "ابن داود", "fr": "Fils de Dawud"},
+        },
+    },
+    {
+        "word_en": "Ayyub",
+        "word_ar": "أيوب",
+        "word_fr": "Job",
+        "accepted_answers": {"en": ["Ayyub", "Job"], "ar": ["أيوب", "ايوب"], "fr": ["Job", "Ayyoub"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Known for extraordinary patience", "ar": "اشتهر بصبره العظيم", "fr": "Connu pour sa patience extraordinaire"},
+            "2": {"en": "Lost his wealth and health", "ar": "فقد ماله وصحته", "fr": "A perdu sa richesse et sa santé"},
+            "3": {"en": "Tested severely by Allah", "ar": "ابتلاه الله ابتلاءً شديداً", "fr": "Éprouvé sévèrement par Allah"},
+            "4": {"en": "Never complained despite suffering", "ar": "لم يشكُ رغم المعاناة", "fr": "N'a jamais se plaint malgré la souffrance"},
+            "5": {"en": "Allah restored everything to him", "ar": "أعاد الله إليه كل شيء", "fr": "Allah lui a tout restitué"},
+            "6": {"en": "Symbol of patience (sabr)", "ar": "رمز الصبر", "fr": "Symbole de patience (sabr)"},
+        },
+    },
+    {
+        "word_en": "Yunus",
+        "word_ar": "يونس",
+        "word_fr": "Jonas",
+        "accepted_answers": {"en": ["Yunus", "Jonah"], "ar": ["يونس"], "fr": ["Jonas", "Younous"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "Left his people in frustration", "ar": "ترك قومه غاضباً", "fr": "A quitté son peuple frustré"},
+            "2": {"en": "Boarded a ship", "ar": "ركب سفينة", "fr": "A embarqué sur un navire"},
+            "3": {"en": "Was swallowed by a large creature", "ar": "ابتلعه مخلوق كبير", "fr": "A été avalé par une grande créature"},
+            "4": {"en": "Made dua in layers of darkness", "ar": "دعا في ظلمات", "fr": "A fait dua dans des couches de ténèbres"},
+            "5": {"en": "La ilaha illa anta subhanaka inni kuntu min az-zalimin", "ar": "لا إله إلا أنت سبحانك إني كنت من الظالمين", "fr": "La ilaha illa anta subhanaka inni kuntu min az-zalimin"},
+            "6": {"en": "The companion of the whale", "ar": "صاحب الحوت", "fr": "Le compagnon de la baleine"},
+        },
+    },
+    {
+        "word_en": "Muhammad",
+        "word_ar": "محمد",
+        "word_fr": "Mohammed",
+        "accepted_answers": {"en": ["Muhammad", "Mohammed", "Mohamed"], "ar": ["محمد"], "fr": ["Mohammed", "Muhammad", "Mohamed"]},
+        "category": "Prophets",
+        "hints": {
+            "1": {"en": "The final messenger", "ar": "الرسول الأخير", "fr": "Le dernier messager"},
+            "2": {"en": "Born in Makkah", "ar": "وُلد في مكة", "fr": "Né à La Mecque"},
+            "3": {"en": "Received the Quran", "ar": "تلقى القرآن", "fr": "A reçu le Coran"},
+            "4": {"en": "Made the Hijra to Madinah", "ar": "هاجر إلى المدينة", "fr": "A fait la Hijra vers Médine"},
+            "5": {"en": "Sallallahu alayhi wa sallam", "ar": "صلى الله عليه وسلم", "fr": "Sallallahu alayhi wa sallam"},
+            "6": {"en": "Seal of the Prophets", "ar": "خاتم الأنبياء", "fr": "Sceau des Prophètes"},
+        },
+    },
+    # === Companions (~15) ===
+    {
+        "word_en": "Abu Bakr",
+        "word_ar": "أبو بكر",
+        "word_fr": "Abou Bakr",
+        "accepted_answers": {"en": ["Abu Bakr", "Abu Bakr As-Siddiq"], "ar": ["أبو بكر", "ابو بكر"], "fr": ["Abou Bakr"]},
+        "category": "Companions",
+        "hints": {
+            "1": {"en": "A very close friend of the Prophet", "ar": "صديق قريب جداً من النبي", "fr": "Un ami très proche du Prophète"},
+            "2": {"en": "First among men to accept Islam", "ar": "أول الرجال إسلاماً", "fr": "Premier homme à accepter l'Islam"},
+            "3": {"en": "Accompanied the Prophet during the Hijra", "ar": "رافق النبي في الهجرة", "fr": "A accompagné le Prophète pendant la Hijra"},
+            "4": {"en": "Gave all his wealth for Islam", "ar": "أنفق كل ماله للإسلام", "fr": "A donné toute sa richesse pour l'Islam"},
+            "5": {"en": "The first Caliph of Islam", "ar": "أول خليفة في الإسلام", "fr": "Le premier Calife de l'Islam"},
+            "6": {"en": "As-Siddiq (The Truthful)", "ar": "الصديق", "fr": "As-Siddiq (Le Véridique)"},
+        },
+    },
+    {
+        "word_en": "Umar",
+        "word_ar": "عمر",
+        "word_fr": "Omar",
+        "accepted_answers": {"en": ["Umar", "Omar", "Umar ibn Al-Khattab"], "ar": ["عمر", "عمر بن الخطاب"], "fr": ["Omar"]},
+        "category": "Companions",
+        "hints": {
+            "1": {"en": "Known for his strong sense of justice", "ar": "اشتهر بعدله", "fr": "Connu pour son sens de la justice"},
+            "2": {"en": "His conversion strengthened the Muslims", "ar": "إسلامه قوّى المسلمين", "fr": "Sa conversion a renforcé les musulmans"},
+            "3": {"en": "Established the Islamic calendar", "ar": "أسس التقويم الهجري", "fr": "A établi le calendrier islamique"},
+            "4": {"en": "The second Caliph", "ar": "الخليفة الثاني", "fr": "Le deuxième Calife"},
+            "5": {"en": "Conquered Jerusalem peacefully", "ar": "فتح القدس سلمياً", "fr": "A conquis Jérusalem pacifiquement"},
+            "6": {"en": "Al-Faruq (The Distinguisher)", "ar": "الفاروق", "fr": "Al-Faruq (Le Distingueur)"},
+        },
+    },
+    {
+        "word_en": "Khadijah",
+        "word_ar": "خديجة",
+        "word_fr": "Khadija",
+        "accepted_answers": {"en": ["Khadijah", "Khadija"], "ar": ["خديجة"], "fr": ["Khadija", "Khadidja"]},
+        "category": "Companions",
+        "hints": {
+            "1": {"en": "A successful businesswoman", "ar": "سيدة أعمال ناجحة", "fr": "Une femme d'affaires prospère"},
+            "2": {"en": "First person to accept Islam", "ar": "أول من أسلم", "fr": "Première personne à accepter l'Islam"},
+            "3": {"en": "Was older than her husband", "ar": "كانت أكبر من زوجها سناً", "fr": "Était plus âgée que son mari"},
+            "4": {"en": "Supported the Prophet during difficult times", "ar": "ساندت النبي في الأوقات الصعبة", "fr": "A soutenu le Prophète dans les moments difficiles"},
+            "5": {"en": "Mother of Fatimah", "ar": "أم فاطمة", "fr": "Mère de Fatima"},
+            "6": {"en": "First wife of the Prophet", "ar": "أول زوجات النبي", "fr": "Première épouse du Prophète"},
+        },
+    },
+    {
+        "word_en": "Bilal",
+        "word_ar": "بلال",
+        "word_fr": "Bilal",
+        "accepted_answers": {"en": ["Bilal", "Bilal ibn Rabah"], "ar": ["بلال", "بلال بن رباح"], "fr": ["Bilal"]},
+        "category": "Companions",
+        "hints": {
+            "1": {"en": "Of Ethiopian origin", "ar": "من أصل حبشي", "fr": "D'origine éthiopienne"},
+            "2": {"en": "Was severely tortured for his faith", "ar": "عُذّب بشدة بسبب إيمانه", "fr": "A été sévèrement torturé pour sa foi"},
+            "3": {"en": "Said 'Ahad, Ahad' under persecution", "ar": "قال أحد أحد تحت التعذيب", "fr": "Disait 'Ahad, Ahad' sous la persécution"},
+            "4": {"en": "Freed by Abu Bakr", "ar": "أعتقه أبو بكر", "fr": "Libéré par Abou Bakr"},
+            "5": {"en": "Had a beautiful voice", "ar": "كان له صوت جميل", "fr": "Avait une belle voix"},
+            "6": {"en": "The first muezzin of Islam", "ar": "أول مؤذن في الإسلام", "fr": "Le premier muezzin de l'Islam"},
+        },
+    },
+    {
+        "word_en": "Ali",
+        "word_ar": "علي",
+        "word_fr": "Ali",
+        "accepted_answers": {"en": ["Ali", "Ali ibn Abi Talib"], "ar": ["علي", "علي بن أبي طالب"], "fr": ["Ali"]},
+        "category": "Companions",
+        "hints": {
+            "1": {"en": "Raised in the Prophet's household", "ar": "نشأ في بيت النبي", "fr": "Élevé dans la maison du Prophète"},
+            "2": {"en": "Known for his bravery and knowledge", "ar": "اشتهر بشجاعته وعلمه", "fr": "Connu pour sa bravoure et son savoir"},
+            "3": {"en": "Married the Prophet's daughter", "ar": "تزوج ابنة النبي", "fr": "A épousé la fille du Prophète"},
+            "4": {"en": "Slept in the Prophet's bed during the Hijra", "ar": "نام في فراش النبي ليلة الهجرة", "fr": "A dormi dans le lit du Prophète pendant la Hijra"},
+            "5": {"en": "The fourth Caliph", "ar": "الخليفة الرابع", "fr": "Le quatrième Calife"},
+            "6": {"en": "The Gate of Knowledge", "ar": "باب العلم", "fr": "La Porte du Savoir"},
+        },
+    },
+    # === Islamic Concepts (~20) ===
+    {
+        "word_en": "Tawhid",
+        "word_ar": "توحيد",
+        "word_fr": "Tawhid",
+        "accepted_answers": {"en": ["Tawhid", "Tawheed", "Monotheism"], "ar": ["توحيد", "التوحيد"], "fr": ["Tawhid", "Monothéisme"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "The most fundamental concept in Islam", "ar": "أهم مفهوم في الإسلام", "fr": "Le concept le plus fondamental en Islam"},
+            "2": {"en": "Related to the first pillar of Islam", "ar": "يتعلق بالركن الأول من الإسلام", "fr": "Lié au premier pilier de l'Islam"},
+            "3": {"en": "La ilaha illa Allah expresses this", "ar": "لا إله إلا الله تعبر عنه", "fr": "La ilaha illa Allah l'exprime"},
+            "4": {"en": "The belief in the absolute oneness of God", "ar": "الإيمان بوحدانية الله المطلقة", "fr": "La croyance en l'unicité absolue de Dieu"},
+            "5": {"en": "Opposite of shirk", "ar": "عكس الشرك", "fr": "Le contraire du shirk"},
+            "6": {"en": "Oneness of Allah", "ar": "وحدانية الله", "fr": "Unicité d'Allah"},
+        },
+    },
+    {
+        "word_en": "Taqwa",
+        "word_ar": "تقوى",
+        "word_fr": "Taqwa",
+        "accepted_answers": {"en": ["Taqwa", "God-consciousness"], "ar": ["تقوى", "التقوى"], "fr": ["Taqwa", "Piété"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "A quality highly praised in the Quran", "ar": "صفة ممدوحة في القرآن", "fr": "Une qualité très louée dans le Coran"},
+            "2": {"en": "Being mindful of the Creator", "ar": "استحضار الخالق", "fr": "Être conscient du Créateur"},
+            "3": {"en": "Protects from sin", "ar": "تحمي من الذنب", "fr": "Protège du péché"},
+            "4": {"en": "The best provision for the Hereafter", "ar": "خير الزاد", "fr": "La meilleure provision pour l'Au-delà"},
+            "5": {"en": "Awareness and fear of Allah", "ar": "الوعي بالله وخشيته", "fr": "Conscience et crainte d'Allah"},
+            "6": {"en": "God-consciousness and piety", "ar": "الوعي بالله والتقوى", "fr": "Conscience de Dieu et piété"},
+        },
+    },
+    {
+        "word_en": "Zakat",
+        "word_ar": "زكاة",
+        "word_fr": "Zakat",
+        "accepted_answers": {"en": ["Zakat", "Zakah"], "ar": ["زكاة", "الزكاة"], "fr": ["Zakat", "Aumône légale"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "One of the five pillars of Islam", "ar": "ركن من أركان الإسلام", "fr": "Un des cinq piliers de l'Islam"},
+            "2": {"en": "Related to wealth", "ar": "يتعلق بالمال", "fr": "Lié à la richesse"},
+            "3": {"en": "Usually 2.5% of savings", "ar": "عادة 2.5% من المدخرات", "fr": "Habituellement 2,5% des économies"},
+            "4": {"en": "Purifies your wealth", "ar": "تطهر المال", "fr": "Purifie votre richesse"},
+            "5": {"en": "Given to the poor and needy", "ar": "تُعطى للفقراء والمحتاجين", "fr": "Donnée aux pauvres et nécessiteux"},
+            "6": {"en": "Obligatory charity", "ar": "الصدقة الواجبة", "fr": "Charité obligatoire"},
+        },
+    },
+    {
+        "word_en": "Hajj",
+        "word_ar": "حج",
+        "word_fr": "Hajj",
+        "accepted_answers": {"en": ["Hajj", "Haj"], "ar": ["حج", "الحج"], "fr": ["Hajj", "Pèlerinage"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "One of the five pillars of Islam", "ar": "ركن من أركان الإسلام", "fr": "Un des cinq piliers de l'Islam"},
+            "2": {"en": "Required once in a lifetime", "ar": "واجب مرة في العمر", "fr": "Requis une fois dans la vie"},
+            "3": {"en": "Involves traveling to a holy city", "ar": "يتطلب السفر إلى مدينة مقدسة", "fr": "Implique un voyage vers une ville sainte"},
+            "4": {"en": "Occurs in the month of Dhul Hijjah", "ar": "يكون في شهر ذي الحجة", "fr": "A lieu au mois de Dhoul Hijja"},
+            "5": {"en": "Millions gather wearing white garments", "ar": "الملايين يجتمعون بثياب بيضاء", "fr": "Des millions se rassemblent en vêtements blancs"},
+            "6": {"en": "Pilgrimage to Makkah", "ar": "الحج إلى مكة", "fr": "Pèlerinage à La Mecque"},
+        },
+    },
+    {
+        "word_en": "Ihsan",
+        "word_ar": "إحسان",
+        "word_fr": "Ihsan",
+        "accepted_answers": {"en": ["Ihsan", "Excellence"], "ar": ["إحسان", "الإحسان", "احسان"], "fr": ["Ihsan", "Excellence"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "The highest level of faith", "ar": "أعلى مستويات الإيمان", "fr": "Le plus haut niveau de foi"},
+            "2": {"en": "Part of the Hadith of Jibreel", "ar": "جزء من حديث جبريل", "fr": "Partie du Hadith de Jibreel"},
+            "3": {"en": "To worship as if you see Him", "ar": "أن تعبد الله كأنك تراه", "fr": "Adorer comme si vous Le voyiez"},
+            "4": {"en": "Beyond Islam and Iman", "ar": "ما بعد الإسلام والإيمان", "fr": "Au-delà de l'Islam et de l'Iman"},
+            "5": {"en": "If you don't see Him, He sees you", "ar": "فإن لم تكن تراه فإنه يراك", "fr": "Si vous ne Le voyez pas, Il vous voit"},
+            "6": {"en": "Excellence in worship", "ar": "الإتقان في العبادة", "fr": "Excellence dans l'adoration"},
+        },
+    },
+    # === Quran (~10) ===
+    {
+        "word_en": "Al-Fatiha",
+        "word_ar": "الفاتحة",
+        "word_fr": "Al-Fatiha",
+        "accepted_answers": {"en": ["Al-Fatiha", "Fatiha", "The Opening"], "ar": ["الفاتحة", "سورة الفاتحة"], "fr": ["Al-Fatiha", "L'Ouverture"]},
+        "category": "Quran",
+        "hints": {
+            "1": {"en": "Recited in every salah", "ar": "تُقرأ في كل صلاة", "fr": "Récitée dans chaque salah"},
+            "2": {"en": "The most frequently recited surah", "ar": "أكثر سورة تقرأ", "fr": "La sourate la plus récitée"},
+            "3": {"en": "Has seven verses", "ar": "لها سبع آيات", "fr": "Contient sept versets"},
+            "4": {"en": "Called the Mother of the Book", "ar": "تسمى أم الكتاب", "fr": "Appelée la Mère du Livre"},
+            "5": {"en": "Begins with Bismillah", "ar": "تبدأ ببسم الله", "fr": "Commence par Bismillah"},
+            "6": {"en": "The Opening chapter of the Quran", "ar": "سورة افتتاح القرآن", "fr": "Le chapitre d'ouverture du Coran"},
+        },
+    },
+    {
+        "word_en": "Ayat Al-Kursi",
+        "word_ar": "آية الكرسي",
+        "word_fr": "Ayat Al-Kursi",
+        "accepted_answers": {"en": ["Ayat Al-Kursi", "Ayatul Kursi", "Throne Verse"], "ar": ["آية الكرسي", "اية الكرسي"], "fr": ["Ayat Al-Kursi", "Verset du Trône"]},
+        "category": "Quran",
+        "hints": {
+            "1": {"en": "The greatest verse in the Quran", "ar": "أعظم آية في القرآن", "fr": "Le plus grand verset du Coran"},
+            "2": {"en": "Found in Surah Al-Baqarah", "ar": "في سورة البقرة", "fr": "Se trouve dans Sourate Al-Baqarah"},
+            "3": {"en": "Recited for protection", "ar": "تُقرأ للحماية", "fr": "Récité pour la protection"},
+            "4": {"en": "Describes Allah's sovereignty", "ar": "تصف سيادة الله", "fr": "Décrit la souveraineté d'Allah"},
+            "5": {"en": "Verse 255 of Al-Baqarah", "ar": "الآية 255 من البقرة", "fr": "Verset 255 de Al-Baqarah"},
+            "6": {"en": "The Verse of the Throne", "ar": "آية العرش", "fr": "Le Verset du Trône"},
+        },
+    },
+    # === Islamic History (~10) ===
+    {
+        "word_en": "Battle of Badr",
+        "word_ar": "غزوة بدر",
+        "word_fr": "Bataille de Badr",
+        "accepted_answers": {"en": ["Battle of Badr", "Badr"], "ar": ["غزوة بدر", "بدر", "معركة بدر"], "fr": ["Bataille de Badr", "Badr"]},
+        "category": "Islamic History",
+        "hints": {
+            "1": {"en": "A decisive early battle in Islamic history", "ar": "معركة حاسمة في بداية الإسلام", "fr": "Une bataille décisive au début de l'Islam"},
+            "2": {"en": "Muslims were greatly outnumbered", "ar": "كان المسلمون أقل عدداً بكثير", "fr": "Les musulmans étaient largement dépassés en nombre"},
+            "3": {"en": "Occurred in the 2nd year after Hijra", "ar": "وقعت في السنة الثانية بعد الهجرة", "fr": "S'est produite la 2e année après la Hijra"},
+            "4": {"en": "313 Muslims vs about 1000 enemies", "ar": "313 مسلماً ضد نحو 1000", "fr": "313 musulmans contre environ 1000 ennemis"},
+            "5": {"en": "Angels descended to help", "ar": "نزلت الملائكة للمساعدة", "fr": "Les anges sont descendus pour aider"},
+            "6": {"en": "The first major battle of Islam", "ar": "أول معركة كبرى في الإسلام", "fr": "La première grande bataille de l'Islam"},
+        },
+    },
+    {
+        "word_en": "Hijra",
+        "word_ar": "هجرة",
+        "word_fr": "Hégire",
+        "accepted_answers": {"en": ["Hijra", "Hijrah", "Migration"], "ar": ["هجرة", "الهجرة"], "fr": ["Hégire", "Hijra"]},
+        "category": "Islamic History",
+        "hints": {
+            "1": {"en": "A pivotal event that changed Islamic history", "ar": "حدث محوري غيّر تاريخ الإسلام", "fr": "Un événement pivot qui a changé l'histoire islamique"},
+            "2": {"en": "Involved a long journey", "ar": "تضمنت رحلة طويلة", "fr": "Impliquait un long voyage"},
+            "3": {"en": "From Makkah to Madinah", "ar": "من مكة إلى المدينة", "fr": "De La Mecque à Médine"},
+            "4": {"en": "Marks the start of the Islamic calendar", "ar": "تمثل بداية التقويم الهجري", "fr": "Marque le début du calendrier islamique"},
+            "5": {"en": "The Prophet hid in a cave during this event", "ar": "اختبأ النبي في غار خلال هذا الحدث", "fr": "Le Prophète s'est caché dans une grotte"},
+            "6": {"en": "The Migration of the Prophet", "ar": "هجرة النبي", "fr": "La Migration du Prophète"},
+        },
+    },
+    # === Daily Life (~10) ===
+    {
+        "word_en": "Wudu",
+        "word_ar": "وضوء",
+        "word_fr": "Ablutions",
+        "accepted_answers": {"en": ["Wudu", "Wudhu", "Ablution"], "ar": ["وضوء", "الوضوء"], "fr": ["Ablutions", "Woudou"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "Done before an important act of worship", "ar": "يُفعل قبل عبادة مهمة", "fr": "Fait avant un acte d'adoration important"},
+            "2": {"en": "Uses water", "ar": "يستخدم الماء", "fr": "Utilise de l'eau"},
+            "3": {"en": "Involves washing specific body parts", "ar": "يتضمن غسل أعضاء محددة", "fr": "Implique le lavage de parties spécifiques du corps"},
+            "4": {"en": "Face, hands, arms, head, feet", "ar": "الوجه واليدين والذراعين والرأس والقدمين", "fr": "Visage, mains, bras, tête, pieds"},
+            "5": {"en": "Required before salah", "ar": "مطلوب قبل الصلاة", "fr": "Requis avant la salah"},
+            "6": {"en": "Ritual ablution", "ar": "الطهارة الشرعية", "fr": "Ablution rituelle"},
+        },
+    },
+    {
+        "word_en": "Adhan",
+        "word_ar": "أذان",
+        "word_fr": "Adhan",
+        "accepted_answers": {"en": ["Adhan", "Azan", "Azaan"], "ar": ["أذان", "الأذان", "اذان"], "fr": ["Adhan", "Appel à la prière"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "Heard five times a day", "ar": "يُسمع خمس مرات يومياً", "fr": "Entendu cinq fois par jour"},
+            "2": {"en": "Comes from a high place", "ar": "يأتي من مكان مرتفع", "fr": "Vient d'un endroit élevé"},
+            "3": {"en": "Contains the shahada", "ar": "يحتوي الشهادة", "fr": "Contient la shahada"},
+            "4": {"en": "Begins with Allahu Akbar", "ar": "يبدأ بالله أكبر", "fr": "Commence par Allahou Akbar"},
+            "5": {"en": "The muezzin performs this", "ar": "يؤديه المؤذن", "fr": "Le muezzin l'exécute"},
+            "6": {"en": "The call to prayer", "ar": "النداء للصلاة", "fr": "L'appel à la prière"},
+        },
+    },
+    {
+        "word_en": "Suhoor",
+        "word_ar": "سحور",
+        "word_fr": "Souhour",
+        "accepted_answers": {"en": ["Suhoor", "Suhur", "Sahur"], "ar": ["سحور", "السحور"], "fr": ["Souhour", "Suhoor"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "Happens during a special month", "ar": "يحدث في شهر خاص", "fr": "Se produit pendant un mois spécial"},
+            "2": {"en": "Eaten very early in the morning", "ar": "يُؤكل في وقت مبكر جداً", "fr": "Mangé très tôt le matin"},
+            "3": {"en": "Before dawn", "ar": "قبل الفجر", "fr": "Avant l'aube"},
+            "4": {"en": "The Prophet said it is blessed", "ar": "قال النبي إنه مبارك", "fr": "Le Prophète a dit qu'il est béni"},
+            "5": {"en": "Gives energy for fasting", "ar": "يعطي طاقة للصيام", "fr": "Donne de l'énergie pour le jeûne"},
+            "6": {"en": "Pre-dawn meal during Ramadan", "ar": "وجبة ما قبل الفجر في رمضان", "fr": "Repas avant l'aube pendant le Ramadan"},
+        },
+    },
+    {
+        "word_en": "Iftar",
+        "word_ar": "إفطار",
+        "word_fr": "Iftar",
+        "accepted_answers": {"en": ["Iftar", "Iftaar"], "ar": ["إفطار", "الإفطار", "افطار"], "fr": ["Iftar", "Rupture du jeûne"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A daily tradition during Ramadan", "ar": "تقليد يومي في رمضان", "fr": "Une tradition quotidienne pendant le Ramadan"},
+            "2": {"en": "Happens at a specific time of day", "ar": "يحدث في وقت محدد من اليوم", "fr": "Se produit à un moment précis de la journée"},
+            "3": {"en": "Often starts with dates and water", "ar": "يبدأ غالباً بالتمر والماء", "fr": "Commence souvent par des dattes et de l'eau"},
+            "4": {"en": "At sunset", "ar": "عند غروب الشمس", "fr": "Au coucher du soleil"},
+            "5": {"en": "Families gather for this", "ar": "تجتمع العائلات لهذا", "fr": "Les familles se rassemblent pour cela"},
+            "6": {"en": "Breaking the fast", "ar": "فطور الصيام", "fr": "Rupture du jeûne"},
+        },
+    },
+    {
+        "word_en": "Taraweeh",
+        "word_ar": "تراويح",
+        "word_fr": "Tarawih",
+        "accepted_answers": {"en": ["Taraweeh", "Tarawih", "Taraweeh prayers"], "ar": ["تراويح", "التراويح"], "fr": ["Tarawih", "Taraouih"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A special nightly worship", "ar": "عبادة ليلية خاصة", "fr": "Un culte nocturne spécial"},
+            "2": {"en": "Only during one month of the year", "ar": "فقط خلال شهر واحد في السنة", "fr": "Seulement pendant un mois de l'année"},
+            "3": {"en": "Prayed in congregation at the mosque", "ar": "تُصلى جماعة في المسجد", "fr": "Priées en congrégation à la mosquée"},
+            "4": {"en": "After Isha prayer during Ramadan", "ar": "بعد صلاة العشاء في رمضان", "fr": "Après la prière d'Isha pendant le Ramadan"},
+            "5": {"en": "The entire Quran is often completed", "ar": "غالباً يُختم القرآن كاملاً", "fr": "Le Coran entier est souvent complété"},
+            "6": {"en": "Ramadan night prayers", "ar": "صلاة الليل في رمضان", "fr": "Prières nocturnes du Ramadan"},
+        },
+    },
+]
+
+
+async def seed_quiz_words(session: AsyncSession) -> None:
+    """Seed Word Quiz words with trilingual hints.
+
+    Args:
+        session: The database session.
+    """
+    count = 0
+    for word_data in QUIZ_WORDS:
+        existing = (
+            await session.exec(select(QuizWord).where(QuizWord.word_en == word_data["word_en"]))
+        ).first()
+        if existing:
+            continue
+        quiz_word = QuizWord(
+            id=uuid4(),
+            word_en=word_data["word_en"],
+            word_ar=word_data.get("word_ar"),
+            word_fr=word_data.get("word_fr"),
+            accepted_answers=word_data.get("accepted_answers"),
+            category=word_data["category"],
+            hints=word_data["hints"],
+        )
+        session.add(quiz_word)
+        count += 1
+
+    await session.commit()
+    print(f"  Seeded {count} Word Quiz words")
+
+
 async def seed_achievements(session: AsyncSession) -> None:
     """Seed achievement definitions using the AchievementController.
 
@@ -1456,6 +1931,10 @@ async def generate_all_data(
         print("\n[5/12] Seeding Codenames word packs...")
         await seed_codenames_words(session)
 
+        # 5b. Seed Word Quiz words
+        print("\n[5b/12] Seeding Word Quiz words...")
+        await seed_quiz_words(session)
+
         # 6. Seed achievements
         print("\n[6/12] Seeding achievement definitions...")
         await seed_achievements(session)
@@ -1507,10 +1986,13 @@ async def seed_game_content(engine: AsyncEngine) -> None:
         print("\n[2/4] Seeding Codenames word packs...")
         await seed_codenames_words(session)
 
-        print("\n[3/4] Seeding achievement definitions...")
+        print("\n[3/5] Seeding Word Quiz words...")
+        await seed_quiz_words(session)
+
+        print("\n[4/5] Seeding achievement definitions...")
         await seed_achievements(session)
 
-        print("\n[4/4] Seeding challenge definitions...")
+        print("\n[5/5] Seeding challenge definitions...")
         await seed_challenges(session)
 
     print("\nGame content seeding complete!")

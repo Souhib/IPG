@@ -4,18 +4,22 @@ import { io, type Socket } from 'socket.io-client'
 import { getRoomStateApiV1RoomsRoomIdStateGetQueryKey } from '@/api/generated'
 import { getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryKey } from '@/api/generated'
 import { getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryKey } from '@/api/generated'
+import { getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey } from '@/api/generated'
 import { getStoredToken } from '@/lib/auth'
 
 interface UseSocketOptions {
   roomId: string | null | undefined
   gameId?: string | null
-  gameType?: 'undercover' | 'codenames'
+  gameType?: 'undercover' | 'codenames' | 'word_quiz'
   enabled?: boolean
 }
 
 function getGameQueryKeyPrefix(gameType: string, gameId: string) {
   if (gameType === 'codenames') {
     return getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryKey({ game_id: gameId })
+  }
+  if (gameType === 'word_quiz') {
+    return getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey({ game_id: gameId })
   }
   return getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryKey({ game_id: gameId })
 }

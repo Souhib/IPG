@@ -59,6 +59,9 @@ class RoomSettingsRequest(BaseModel):
     codenames_guess_timer: int | None = None
     enable_mr_white: bool | None = None
     custom_word_packs: list[str] | None = None
+    word_quiz_turn_duration: int | None = None
+    word_quiz_rounds: int | None = None
+    word_quiz_hint_interval: int | None = None
 
 
 class RoomInviteRequest(BaseModel):

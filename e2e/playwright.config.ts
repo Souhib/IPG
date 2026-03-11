@@ -69,6 +69,11 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
+      name: "wordquiz",
+      testMatch: ["**/wordquiz/**"],
+      timeout: 120_000,
+    },
+    {
       name: "websocket",
       testMatch: ["**/websocket/**"],
       timeout: 120_000,

@@ -94,6 +94,10 @@
         "red": "Red Team",
         "blue": "Blue Team"
       }
+    },
+    "wordQuiz": {
+      "name": "Word Quiz",
+      "description": "Guess the Islamic term from progressive hints! The faster you answer, the more points you earn."
     }
   },
   "room": {
@@ -235,6 +239,28 @@
       "waitingForVotes": "Waiting for operatives to vote...",
       "tieWarning": "Tie! Randomly selected between tied cards",
       "voteChanged": "Vote changed"
+    },
+    "wordQuiz": {
+      "hint": "Hint",
+      "hintNumber": "Hint {{number}}/{{total}}",
+      "submitAnswer": "Submit",
+      "typeYourAnswer": "Type your answer...",
+      "correct": "Correct!",
+      "tryAgain": "Try again!",
+      "pointsEarned": "+{{points}} points",
+      "round": "Round {{current}}/{{total}}",
+      "nextRound": "Next Round",
+      "correctAnswer": "The answer was: {{answer}}",
+      "timeUp": "Time's up!",
+      "answered": "Answered",
+      "notAnswered": "Didn't answer",
+      "finalScores": "Final Scores",
+      "winner": "{{username}} wins!",
+      "score": "Score",
+      "backToRoom": "Back to Room",
+      "waiting": "Waiting for results...",
+      "category": "Category",
+      "players": "{{count}} player(s)"
     }
   },
   "stats": {
