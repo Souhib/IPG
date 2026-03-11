@@ -63,7 +63,9 @@ class TestConnect:
 
         # Assert
         mock_sio.save_session.assert_called_once_with(sid, {"user_id": str(user_id), "room_id": "room-123"})
-        mock_sio.enter_room.assert_called_once_with(sid, "room:room-123")
+        assert mock_sio.enter_room.call_count == 2
+        mock_sio.enter_room.assert_any_call(sid, "room:room-123")
+        mock_sio.enter_room.assert_any_call(sid, f"user:{user_id}")
         mock_sio.emit.assert_called_once_with("room_state", {"id": "room-1", "players": []}, to=sid)
 
     async def test_connect_no_token_rejected(self, mock_sio):

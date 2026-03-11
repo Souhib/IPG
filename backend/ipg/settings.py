@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     log_level: str = "DEBUG"
     logfire_token: str = ""
 
+    # Server
+    port: int = 5111
+
     # Frontend
     frontend_url: str = "http://localhost:3000"
 

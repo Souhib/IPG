@@ -5,18 +5,6 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.models.chat import ChatMessage
-from ipg.api.schemas.shared import BaseModel
-
-
-class ChatMessageView(BaseModel):
-    """Chat message for API response."""
-
-    id: UUID
-    room_id: UUID
-    user_id: UUID
-    username: str
-    message: str
-    created_at: str
 
 
 class ChatController:

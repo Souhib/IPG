@@ -33,10 +33,11 @@ describe('ClueHistory', () => {
       { team: 'blue', clue_word: 'second', clue_number: 2, guesses: [] },
       { team: 'red', clue_word: 'third', clue_number: 3, guesses: [] },
     ])
+    // In timeline layout, clue word and number are in a parent span
     const entries = screen.getAllByText(/\(\d\)/)
-    expect(entries[0].textContent).toContain('third')
-    expect(entries[1].textContent).toContain('second')
-    expect(entries[2].textContent).toContain('first')
+    expect(entries[0].closest('.text-sm')?.textContent).toContain('third')
+    expect(entries[1].closest('.text-sm')?.textContent).toContain('second')
+    expect(entries[2].closest('.text-sm')?.textContent).toContain('first')
   })
 
   it('shows team color dot - red team gets bg-red-500', () => {
@@ -51,7 +52,10 @@ describe('ClueHistory', () => {
     renderClueHistory([
       { team: 'blue', clue_word: 'charity', clue_number: 4, guesses: [] },
     ])
-    expect(screen.getByText('charity (4)')).toBeInTheDocument()
+    // In timeline layout, clue word and number are in separate elements within a parent span
+    const parentSpan = screen.getByText(/charity/)
+    expect(parentSpan.textContent).toContain('charity')
+    expect(parentSpan.textContent).toContain('(4)')
   })
 
   it('shows correct guess with green styling', () => {

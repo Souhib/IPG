@@ -94,6 +94,9 @@ lint-fix = "ruff check --fix ipg/ tests/"
 format = "ruff format ipg/ tests/"
 fix = ["format", "lint-fix"]
 
+# Pre-commit
+pre-commit = "prek run --all-files"
+
 # Test commands
 test = "pytest"
 test-fast = "pytest -x"
@@ -103,5 +106,6 @@ test-verbose = "pytest -xvs"
 dev = [
     "faker>=40.4.0",
     "poethepoet>=0.41.0",
+    "prek>=0.2.2",
     "ruff>=0.15.2",
 ]

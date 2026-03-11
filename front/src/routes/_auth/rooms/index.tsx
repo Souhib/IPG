@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
 import { ArrowRight, Loader2, LogIn, Plus } from "lucide-react"
 import { useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { motion } from "motion/react"
 import { toast } from "sonner"
-import apiClient, { getApiErrorMessage } from "@/api/client"
+import { getApiErrorMessage } from "@/api/client"
+import { useJoinRoomApiV1RoomsJoinPatch, useGetActiveRoomApiV1RoomsActiveGet } from "@/api/generated"
 import { useAuth } from "@/providers/AuthProvider"
 
 export const Route = createFileRoute("/_auth/rooms/")({
@@ -18,7 +18,6 @@ function RoomsPage() {
   const navigate = useNavigate()
   const [roomCode, setRoomCode] = useState("")
   const [password, setPassword] = useState(["", "", "", ""])
-  const [isJoining, setIsJoining] = useState(false)
   const pinRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const handleRoomCodeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,8 +65,22 @@ function RoomsPage() {
     pinRefs.current[focusIndex]?.focus()
   }, [])
 
+  const joinMutation = useJoinRoomApiV1RoomsJoinPatch({
+    mutation: {
+      onSuccess: (data) => {
+        const d = data as { id?: string }
+        if (d.id) {
+          navigate({ to: "/rooms/$roomId", params: { roomId: d.id } })
+        }
+      },
+      onError: (err) => {
+        toast.error(getApiErrorMessage(err, t("room.joinFailed")))
+      },
+    },
+  })
+
   const handleJoin = useCallback(
-    async (e: React.FormEvent) => {
+    (e: React.FormEvent) => {
       e.preventDefault()
       if (roomCode.length !== 5) {
         toast.error(t("room.invalidCode"))
@@ -80,45 +93,29 @@ function RoomsPage() {
       }
       if (!user) return
 
-      setIsJoining(true)
-      try {
-        const res = await apiClient({
-          method: "PATCH",
-          url: "/api/v1/rooms/join",
-          data: {
-            user_id: user.id,
-            public_room_id: roomCode,
-            password: pin,
-          },
-        })
-        const data = res.data as { id?: string }
-        if (data.id) {
-          navigate({ to: "/rooms/$roomId", params: { roomId: data.id } })
-        }
-      } catch (err) {
-        toast.error(getApiErrorMessage(err, t("room.joinFailed")))
-      } finally {
-        setIsJoining(false)
-      }
+      joinMutation.mutate({
+        data: {
+          user_id: user.id,
+          public_room_id: roomCode,
+          password: pin,
+        },
+      })
     },
-    [roomCode, password, user, navigate, t],
+    [roomCode, password, user, t, joinMutation],
   )
+
+  const isJoining = joinMutation.isPending
 
   const isFormValid = roomCode.length === 5 && password.every((d) => d !== "")
 
-  const { data: activeRoom } = useQuery({
-    queryKey: ["active-room"],
-    queryFn: () =>
-      apiClient({ method: "GET", url: "/api/v1/rooms/active" }).then(
-        (r) => r.data as { room_id: string; public_id: string; is_connected: boolean } | null,
-      ),
-    staleTime: 10_000,
+  const { data: activeRoom } = useGetActiveRoomApiV1RoomsActiveGet({
+    query: { staleTime: 10_000 },
   })
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl px-4 py-8 animate-slide-up">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold">{t("nav.rooms")}</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight gradient-text">{t("nav.rooms")}</h1>
       </div>
 
       {/* Rejoin Room Banner */}
@@ -126,18 +123,18 @@ function RoomsPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-5 py-3.5"
+          className="mb-6 flex items-center justify-between glass rounded-2xl border-primary/30 px-5 py-4"
         >
           <div>
-            <p className="text-sm font-medium">{t("room.rejoinRoom")}</p>
+            <p className="text-sm font-extrabold tracking-tight">{t("room.rejoinRoom")}</p>
             <p className="text-xs text-muted-foreground">
-              {t("room.roomCode")}: {activeRoom.public_id}
+              {t("room.roomCode")}: <span className="font-mono tabular-nums">{activeRoom.public_id}</span>
             </p>
           </div>
           <Link
             to="/rooms/$roomId"
             params={{ roomId: activeRoom.room_id }}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg transition-all duration-200"
           >
             {t("room.rejoinButton")}
             <ArrowRight className="h-4 w-4" />
@@ -154,13 +151,16 @@ function RoomsPage() {
         >
           <Link
             to="/rooms/create"
-            className="group flex flex-col items-center gap-4 rounded-xl border bg-card p-8 text-center hover:border-primary/50 hover:shadow-md transition-all"
+            className="group card-hover flex flex-col items-center gap-4 glass rounded-2xl p-8 text-center hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/40 transition-all duration-200"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-              <Plus className="h-7 w-7" />
+            <div className="relative">
+              <div className="absolute -inset-2 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-all duration-200" />
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 group-hover:scale-105 transition-all duration-200">
+                <Plus className="h-7 w-7" />
+              </div>
             </div>
             <div>
-              <h2 className="text-lg font-semibold">{t("room.create")}</h2>
+              <h2 className="text-lg font-extrabold tracking-tight">{t("room.create")}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {t("home.createRoom")}
               </p>
@@ -174,12 +174,12 @@ function RoomsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="rounded-xl border bg-card p-8">
+          <div className="glass rounded-2xl p-8">
             <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/80 to-primary/60 text-primary-foreground shadow-lg shadow-primary/15">
                 <LogIn className="h-7 w-7" />
               </div>
-              <h2 className="text-lg font-semibold">{t("room.join")}</h2>
+              <h2 className="text-lg font-extrabold tracking-tight">{t("room.join")}</h2>
             </div>
 
             <form onSubmit={handleJoin} className="space-y-5">
@@ -196,7 +196,7 @@ function RoomsPage() {
                   placeholder={t("room.enterCode")}
                   autoFocus
                   maxLength={5}
-                  className="w-full rounded-md border bg-background px-4 py-2.5 text-center font-mono text-lg uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-sm placeholder:tracking-normal placeholder:normal-case"
+                  className="w-full rounded-xl border border-border/30 bg-background px-4 py-3 text-center font-mono text-xl font-extrabold uppercase tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-sm placeholder:tracking-normal placeholder:normal-case placeholder:font-normal transition-all duration-200"
                 />
               </div>
 
@@ -217,12 +217,12 @@ function RoomsPage() {
                       value={digit}
                       onChange={(e) => handlePinChange(index, e.target.value)}
                       onKeyDown={(e) => handlePinKeyDown(index, e)}
-                      className="h-12 w-12 rounded-md border bg-background text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="h-14 w-14 rounded-xl border border-border/30 bg-background text-center text-2xl font-mono font-extrabold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 transition-all duration-200"
                       aria-label={`Password digit ${index + 1}`}
                     />
                   ))}
                 </div>
-                <p className="mt-1.5 text-xs text-muted-foreground text-center">
+                <p className="mt-2 text-xs text-muted-foreground text-center">
                   {t("room.enterPassword")}
                 </p>
               </div>
@@ -231,7 +231,7 @@ function RoomsPage() {
               <button
                 type="submit"
                 disabled={!isFormValid || isJoining}
-                className="w-full flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-3 text-sm font-medium text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg disabled:opacity-50 transition-all duration-200"
               >
                 {isJoining ? (
                   <>

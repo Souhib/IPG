@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Calendar, CheckCircle2, Clock, Flame, Target, Trophy } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import apiClient from "@/api/client"
+import { useGetActiveChallengesApiV1ChallengesActiveGet } from "@/api/generated"
 import { useAuth } from "@/providers/AuthProvider"
 
 interface ChallengeData {
@@ -45,32 +45,22 @@ function getTimeRemaining(expiresAt: string): string {
 function ChallengesPage() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const [challenges, setChallenges] = useState<ChallengeData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    if (!user?.id) return
-
-    apiClient({
-      method: "GET",
-      url: "/api/v1/challenges/active",
-    })
-      .then((res) => setChallenges(res.data as ChallengeData[]))
-      .catch(() => setChallenges([]))
-      .finally(() => setIsLoading(false))
-  }, [user?.id])
+  const { data: challenges = [] as ChallengeData[], isLoading } = useGetActiveChallengesApiV1ChallengesActiveGet(
+    { query: { enabled: !!user?.id } },
+  ) as { data: ChallengeData[] | undefined; isLoading: boolean }
 
   const daily = useMemo(() => challenges.filter((c) => c.challenge_type === "daily"), [challenges])
   const weekly = useMemo(() => challenges.filter((c) => c.challenge_type === "weekly"), [challenges])
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">{t("challenges.title")}</h1>
+      <div className="mx-auto max-w-4xl px-4 py-8 animate-slide-up">
+        <h1 className="text-3xl font-extrabold tracking-tight gradient-text mb-8">{t("challenges.title")}</h1>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="rounded-xl border p-6 bg-muted/30 animate-pulse">
-              <div className="h-10 w-10 rounded-lg bg-muted mb-3" />
+            <div key={i} className="glass rounded-2xl p-6 animate-pulse">
+              <div className="h-10 w-10 rounded-xl bg-muted mb-3" />
               <div className="h-4 w-24 rounded bg-muted mb-2" />
               <div className="h-3 w-32 rounded bg-muted" />
             </div>
@@ -81,8 +71,8 @@ function ChallengesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{t("challenges.title")}</h1>
+    <div className="mx-auto max-w-4xl px-4 py-8 animate-slide-up">
+      <h1 className="text-3xl font-extrabold tracking-tight gradient-text mb-8">{t("challenges.title")}</h1>
 
       {challenges.length === 0 ? (
         <p className="text-muted-foreground">{t("challenges.noChallenges")}</p>
@@ -90,10 +80,12 @@ function ChallengesPage() {
         <div className="space-y-8">
           {/* Daily Challenges */}
           {daily.length > 0 && (
-            <section>
-              <div className="flex items-center gap-2 mb-4">
-                <Flame className="h-5 w-5 text-orange-500" />
-                <h2 className="text-xl font-semibold">{t("challenges.daily")}</h2>
+            <section className="animate-scale-in">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
+                  <Flame className="h-4.5 w-4.5 text-orange-500" />
+                </div>
+                <h2 className="text-xl font-extrabold tracking-tight">{t("challenges.daily")}</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {daily.map((challenge) => (
@@ -105,10 +97,12 @@ function ChallengesPage() {
 
           {/* Weekly Challenges */}
           {weekly.length > 0 && (
-            <section>
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-blue-500" />
-                <h2 className="text-xl font-semibold">{t("challenges.weekly")}</h2>
+            <section className="animate-scale-in">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
+                  <Calendar className="h-4.5 w-4.5 text-blue-500" />
+                </div>
+                <h2 className="text-xl font-extrabold tracking-tight">{t("challenges.weekly")}</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {weekly.map((challenge) => (
@@ -130,16 +124,16 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
 
   return (
     <div
-      className={`rounded-xl border p-5 transition-all ${
+      className={`card-hover rounded-2xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
         challenge.completed
-          ? "bg-primary/5 border-primary/30"
-          : "bg-card hover:shadow-sm"
+          ? "glass border-primary/30 shadow-md shadow-primary/10"
+          : "glass border-border/30"
       }`}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
           <div
-            className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+            className={`flex h-10 w-10 items-center justify-center rounded-xl ${
               challenge.completed
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground"
@@ -154,7 +148,7 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
             )}
           </div>
           <div>
-            <p className="font-medium text-sm leading-tight">{challenge.description}</p>
+            <p className="font-extrabold tracking-tight text-sm leading-tight">{challenge.description}</p>
             {challenge.game_type && (
               <span className="text-[11px] text-muted-foreground capitalize">{challenge.game_type}</span>
             )}
@@ -162,10 +156,10 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress section */}
       <div className="space-y-1.5">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>
+          <span className="font-mono tabular-nums">
             {challenge.completed
               ? t("challenges.completed")
               : t("challenges.progress", {
@@ -173,20 +167,36 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
                   target: challenge.target_count,
                 })}
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 font-mono tabular-nums">
             <Clock className="h-3 w-3" />
             {timeRemaining}
           </span>
         </div>
-        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className="h-2 rounded-full bg-muted/50 overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${
-              challenge.completed ? "bg-primary" : "bg-primary/50"
+            className={`h-full rounded-full transition-all duration-200 ${
+              challenge.completed ? "bg-gradient-to-r from-primary to-primary/80" : "bg-primary/40"
             }`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
+
+      {/* Progress ring indicator */}
+      {!challenge.completed && progressPercent > 0 && (
+        <div className="mt-3 flex items-center justify-center">
+          <svg className="h-8 w-8 -rotate-90" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="12" fill="none" strokeWidth="3" className="stroke-muted/30" />
+            <circle
+              cx="16" cy="16" r="12" fill="none" strokeWidth="3"
+              className="stroke-primary"
+              strokeLinecap="round"
+              strokeDasharray={`${progressPercent * 0.754} 100`}
+            />
+          </svg>
+          <span className="ml-2 text-xs font-mono tabular-nums text-muted-foreground">{Math.round(progressPercent)}%</span>
+        </div>
+      )}
     </div>
   )
 }

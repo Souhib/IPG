@@ -2,8 +2,7 @@ from collections.abc import Sequence
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends
-from pydantic import Field
+from fastapi import APIRouter, Depends
 from starlette.status import HTTP_201_CREATED
 
 from ipg.api.controllers.codenames import CodenamesController
@@ -15,8 +14,18 @@ from ipg.api.models.codenames import (
     CodenamesWordPackCreate,
 )
 from ipg.api.models.table import User
-from ipg.api.schemas.shared import BaseModel
-from ipg.api.ws.notify import notify_game_changed, notify_room_changed
+from ipg.api.schemas.codenames import (
+    CodenamesBoardState,
+    CodenamesHintViewedRequest,
+    EndTurnResponse,
+    GiveClueRequest,
+    GiveClueResponse,
+    GuessCardRequest,
+    GuessCardResponse,
+    StartCodenamesRequest,
+)
+from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerExpiredResponse
+from ipg.api.ws.notify import fire_notify_game_changed, fire_notify_room_changed
 from ipg.dependencies import get_codenames_controller, get_codenames_game_controller, get_current_user
 
 router = APIRouter(
@@ -26,26 +35,6 @@ router = APIRouter(
 )
 
 
-# --- Request Schemas ---
-
-
-class StartCodenamesRequest(BaseModel):
-    word_pack_ids: list[UUID] | None = None
-
-
-class GiveClueRequest(BaseModel):
-    clue_word: str
-    clue_number: int = Field(ge=0)
-
-
-class GuessCardRequest(BaseModel):
-    card_index: int
-
-
-class HintViewedRequest(BaseModel):
-    word: str
-
-
 # --- Game Action Endpoints ---
 
 
@@ -53,14 +42,13 @@ class HintViewedRequest(BaseModel):
 async def start_codenames_game(
     room_id: UUID,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
     body: StartCodenamesRequest | None = None,
-) -> dict:
+) -> GameStartResponse:
     word_pack_ids = body.word_pack_ids if body else None
     result = await controller.create_and_start(room_id, current_user.id, word_pack_ids=word_pack_ids)
-    background_tasks.add_task(notify_room_changed, str(room_id))
-    background_tasks.add_task(notify_game_changed, result["game_id"], str(room_id))
+    fire_notify_room_changed(str(room_id))
+    fire_notify_game_changed(result.game_id, str(room_id))
     return result
 
 
@@ -71,7 +59,7 @@ async def get_codenames_board(
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
     sid: str | None = None,
     lang: str = "en",
-) -> dict:
+) -> CodenamesBoardState:
     return await controller.get_board(game_id, current_user.id, sid=sid, lang=lang)
 
 
@@ -80,11 +68,10 @@ async def give_clue(
     game_id: UUID,
     body: GiveClueRequest,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
-) -> dict:
+) -> GiveClueResponse:
     result = await controller.give_clue(game_id, current_user.id, body.clue_word, body.clue_number)
-    background_tasks.add_task(notify_game_changed, str(game_id))
+    fire_notify_game_changed(str(game_id))
     return result
 
 
@@ -93,11 +80,10 @@ async def guess_card(
     game_id: UUID,
     body: GuessCardRequest,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
-) -> dict:
+) -> GuessCardResponse:
     result = await controller.guess_card(game_id, current_user.id, body.card_index)
-    background_tasks.add_task(notify_game_changed, str(game_id))
+    fire_notify_game_changed(str(game_id))
     return result
 
 
@@ -105,21 +91,20 @@ async def guess_card(
 async def timer_expired(
     game_id: UUID,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
-) -> dict:
+) -> TimerExpiredResponse:
     result = await controller.handle_timer_expired(game_id, current_user.id)
-    background_tasks.add_task(notify_game_changed, str(game_id))
+    fire_notify_game_changed(str(game_id))
     return result
 
 
 @router.post("/games/{game_id}/hint-viewed")
 async def record_hint_viewed(
     game_id: UUID,
-    body: HintViewedRequest,
+    body: CodenamesHintViewedRequest,
     current_user: Annotated[User, Depends(get_current_user)],
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
-) -> dict:
+) -> HintRecordResponse:
     return await controller.record_hint_view(game_id, current_user.id, body.word)
 
 
@@ -127,11 +112,10 @@ async def record_hint_viewed(
 async def end_turn(
     game_id: UUID,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
     controller: Annotated[CodenamesGameController, Depends(get_codenames_game_controller)],
-) -> dict:
+) -> EndTurnResponse:
     result = await controller.end_turn(game_id, current_user.id)
-    background_tasks.add_task(notify_game_changed, str(game_id))
+    fire_notify_game_changed(str(game_id))
     return result
 
 

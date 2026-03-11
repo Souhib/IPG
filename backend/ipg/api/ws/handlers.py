@@ -36,8 +36,9 @@ async def connect(sid, environ, auth):  # noqa: ARG001
     # Store session data
     await sio.save_session(sid, {"user_id": user_id, "room_id": room_id})
 
-    # Join Socket.IO room
+    # Join Socket.IO rooms: room-specific + personal user room for invites
     sio.enter_room(sid, f"room:{room_id}")
+    sio.enter_room(sid, f"user:{user_id}")
     logger.debug("Socket.IO connect: sid={} user={} room={}", sid, user_id, room_id)
 
     # Send initial room state to this client only

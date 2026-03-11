@@ -85,7 +85,7 @@ export function useSocket({ roomId, gameId, gameType, enabled = true }: UseSocke
       }
     })
 
-    // Server sends game_updated signal after mutations — invalidate to trigger re-fetch
+    // Server sends game_updated signal after mutations — invalidate to trigger REST re-fetch
     socket.on('game_updated', () => {
       if (gameIdRef.current && gameTypeRef.current) {
         const keyPrefix = getGameQueryKeyPrefix(gameTypeRef.current, gameIdRef.current)

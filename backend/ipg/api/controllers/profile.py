@@ -7,19 +7,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ipg.api.models.stats import UserStats
 from ipg.api.models.table import User
 from ipg.api.schemas.error import UserNotFoundError
-from ipg.api.schemas.shared import BaseModel
-
-
-class PublicProfile(BaseModel):
-    """Public profile visible to other users."""
-
-    user_id: UUID
-    username: str
-    bio: str | None
-    total_games_played: int
-    total_games_won: int
-    win_rate: float
-    current_win_streak: int
+from ipg.api.schemas.profile import PublicProfile
 
 
 class ProfileController:

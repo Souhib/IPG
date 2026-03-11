@@ -14,6 +14,11 @@ from ipg.api.models.error import (
     WordNotFoundByNameError,
 )
 from ipg.api.models.undercover import TermPair, Word, WordCreate, WordUpdate
+from ipg.api.utils.cache import cache
+
+WORDS_CACHE_KEY = "undercover:words"
+TERM_PAIRS_CACHE_KEY = "undercover:term_pairs"
+CACHE_TTL_SECONDS = 3600
 
 
 class UndercoverController:
@@ -26,12 +31,18 @@ class UndercoverController:
             self.session.add(new_word)
             await self.session.commit()
             await self.session.refresh(new_word)
+            cache.invalidate(WORDS_CACHE_KEY)
             return new_word
         except IntegrityError:
             raise WordAlreadyExistsError(word=word_create.word) from None
 
     async def get_words(self) -> Sequence[Word]:
-        return (await self.session.exec(select(Word))).all()
+        cached = cache.get(WORDS_CACHE_KEY)
+        if cached is not None:
+            return cached  # type: ignore[return-value]
+        words = (await self.session.exec(select(Word))).all()
+        cache.set(WORDS_CACHE_KEY, words, CACHE_TTL_SECONDS)
+        return words
 
     async def get_word_by_id(self, word_id: UUID) -> Word:
         """
@@ -57,6 +68,7 @@ class UndercoverController:
         db_word = (await self.session.exec(select(Word).where(Word.id == word_id))).one()
         await self.session.delete(db_word)
         await self.session.commit()
+        cache.invalidate(WORDS_CACHE_KEY)
 
     async def update_word(self, word_id: UUID, word_update: WordUpdate) -> Word:
         try:
@@ -79,12 +91,18 @@ class UndercoverController:
             self.session.add(new_term_pair)
             await self.session.commit()
             await self.session.refresh(new_term_pair)
+            cache.invalidate(TERM_PAIRS_CACHE_KEY)
             return new_term_pair
         except IntegrityError:
             raise TermPairAlreadyExistsError(term1=str(word1_id), term2=str(word2_id)) from None
 
     async def get_term_pairs(self) -> Sequence[TermPair]:
-        return (await self.session.exec(select(TermPair))).all()
+        cached = cache.get(TERM_PAIRS_CACHE_KEY)
+        if cached is not None:
+            return cached  # type: ignore[return-value]
+        pairs = (await self.session.exec(select(TermPair))).all()
+        cache.set(TERM_PAIRS_CACHE_KEY, pairs, CACHE_TTL_SECONDS)
+        return pairs
 
     async def get_term_pair_by_id(self, term_pair_id: UUID) -> TermPair:
         try:
@@ -103,5 +121,6 @@ class UndercoverController:
             db_term_pair = (await self.session.exec(select(TermPair).where(TermPair.id == term_pair_id))).one()
             await self.session.delete(db_term_pair)
             await self.session.commit()
+            cache.invalidate(TERM_PAIRS_CACHE_KEY)
         except NoResultFound:
             raise TermPairNotFoundError(term_pair_id=term_pair_id) from None

@@ -9,6 +9,14 @@ from starlette.testclient import TestClient
 from ipg.api.controllers.codenames_game import CodenamesGameController
 from ipg.api.models.error import GameNotFoundError
 from ipg.api.models.table import User
+from ipg.api.schemas.codenames import (
+    CodenamesBoardState,
+    CodenamesTurnState,
+    EndTurnResponse,
+    GiveClueResponse,
+    GuessCardResponse,
+)
+from ipg.api.schemas.common import GameStartResponse, HintRecordResponse
 from ipg.dependencies import get_codenames_game_controller, get_current_user
 
 BASE_URL = "/api/v1/codenames"
@@ -34,7 +42,9 @@ def test_start_game_success(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.create_and_start = AsyncMock(return_value={"game_id": str(game_id), "room_id": str(room_id)})
+    mock_controller.create_and_start = AsyncMock(
+        return_value=GameStartResponse(game_id=str(game_id), room_id=str(room_id))
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -60,7 +70,9 @@ def test_start_game_with_word_packs(test_app: FastAPI, client: TestClient) -> No
     pack_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.create_and_start = AsyncMock(return_value={"game_id": str(game_id), "room_id": str(room_id)})
+    mock_controller.create_and_start = AsyncMock(
+        return_value=GameStartResponse(game_id=str(game_id), room_id=str(room_id))
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -103,20 +115,22 @@ def test_board_get_success(test_app: FastAPI, client: TestClient) -> None:
     # Arrange
     game_id = uuid4()
     user = _mock_user()
-    board_response = {
-        "game_id": str(game_id),
-        "room_id": str(uuid4()),
-        "team": "red",
-        "role": "operative",
-        "board": [{"word": "prayer", "revealed": False}],
-        "current_team": "red",
-        "red_remaining": 9,
-        "blue_remaining": 8,
-        "status": "in_progress",
-        "current_turn": None,
-        "winner": None,
-        "players": [],
-    }
+    board_response = CodenamesBoardState(
+        game_id=str(game_id),
+        room_id=str(uuid4()),
+        team="red",
+        role="operative",
+        is_host=False,
+        board=[],
+        current_team="red",
+        red_remaining=9,
+        blue_remaining=8,
+        status="in_progress",
+        current_turn=CodenamesTurnState(team="red", clue_number=0, guesses_made=0, max_guesses=0, card_votes={}),
+        winner=None,
+        clue_history=[],
+        players=[],
+    )
     mock_controller = Mock(spec=CodenamesGameController)
     mock_controller.get_board = AsyncMock(return_value=board_response)
     test_app.dependency_overrides[get_current_user] = lambda: user
@@ -144,7 +158,24 @@ def test_board_with_sid(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.get_board = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_board = AsyncMock(
+        return_value=CodenamesBoardState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            team="red",
+            role="operative",
+            is_host=False,
+            board=[],
+            current_team="red",
+            red_remaining=9,
+            blue_remaining=8,
+            status="in_progress",
+            current_turn=CodenamesTurnState(team="red", clue_number=0, guesses_made=0, max_guesses=0, card_votes={}),
+            winner=None,
+            clue_history=[],
+            players=[],
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -208,7 +239,7 @@ def test_clue_success(test_app: FastAPI, client: TestClient) -> None:
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
     mock_controller.give_clue = AsyncMock(
-        return_value={"game_id": str(game_id), "clue_word": "prayer", "clue_number": 3}
+        return_value=GiveClueResponse(game_id=str(game_id), clue_word="prayer", clue_number=3)
     )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
@@ -279,12 +310,12 @@ def test_guess_card_success(test_app: FastAPI, client: TestClient) -> None:
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
     mock_controller.guess_card = AsyncMock(
-        return_value={
-            "game_id": str(game_id),
-            "card_index": 5,
-            "card_type": "red",
-            "result": "correct",
-        }
+        return_value=GuessCardResponse(
+            game_id=str(game_id),
+            card_index=5,
+            card_type="red",
+            result="correct",
+        )
     )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
@@ -360,7 +391,7 @@ def test_end_turn_success(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.end_turn = AsyncMock(return_value={"game_id": str(game_id), "current_team": "blue"})
+    mock_controller.end_turn = AsyncMock(return_value=EndTurnResponse(game_id=str(game_id), current_team="blue"))
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -403,7 +434,7 @@ def test_hint_viewed_success(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.record_hint_view = AsyncMock(return_value={"game_id": str(game_id), "recorded": True})
+    mock_controller.record_hint_view = AsyncMock(return_value=HintRecordResponse(game_id=str(game_id), recorded=True))
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -471,7 +502,24 @@ def test_board_with_lang_param(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.get_board = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_board = AsyncMock(
+        return_value=CodenamesBoardState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            team="red",
+            role="operative",
+            is_host=False,
+            board=[],
+            current_team="red",
+            red_remaining=9,
+            blue_remaining=8,
+            status="in_progress",
+            current_turn=CodenamesTurnState(team="red", clue_number=0, guesses_made=0, max_guesses=0, card_votes={}),
+            winner=None,
+            clue_history=[],
+            players=[],
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -492,7 +540,24 @@ def test_board_with_lang_and_sid(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.get_board = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_board = AsyncMock(
+        return_value=CodenamesBoardState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            team="red",
+            role="operative",
+            is_host=False,
+            board=[],
+            current_team="red",
+            red_remaining=9,
+            blue_remaining=8,
+            status="in_progress",
+            current_turn=CodenamesTurnState(team="red", clue_number=0, guesses_made=0, max_guesses=0, card_votes={}),
+            winner=None,
+            clue_history=[],
+            players=[],
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 
@@ -513,7 +578,24 @@ def test_board_defaults_lang_to_en(test_app: FastAPI, client: TestClient) -> Non
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=CodenamesGameController)
-    mock_controller.get_board = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_board = AsyncMock(
+        return_value=CodenamesBoardState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            team="red",
+            role="operative",
+            is_host=False,
+            board=[],
+            current_team="red",
+            red_remaining=9,
+            blue_remaining=8,
+            status="in_progress",
+            current_turn=CodenamesTurnState(team="red", clue_number=0, guesses_made=0, max_guesses=0, card_votes={}),
+            winner=None,
+            clue_history=[],
+            players=[],
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_codenames_game_controller] = lambda: mock_controller
 

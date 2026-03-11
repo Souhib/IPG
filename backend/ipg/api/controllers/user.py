@@ -6,7 +6,10 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ipg.api.controllers.shared import get_password_hash, verify_password
+from ipg.api.controllers.shared import (
+    async_get_password_hash,
+    async_verify_password,
+)
 from ipg.api.models.error import UserAlreadyExistsError, UserNotFoundError
 from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.room import RoomType
@@ -95,7 +98,7 @@ class UserController:
         except NoResultFound:
             raise UserNotFoundError(user_id=user_id) from None
 
-        if not verify_password(password, db_user.password):
+        if not await async_verify_password(password, db_user.password):
             raise InvalidCredentialsError()
 
         # Mark connected room links as disconnected
@@ -126,7 +129,7 @@ class UserController:
         """
         try:
             db_user = (await self.session.exec(select(User).where(User.id == user_id))).one()
-            db_user.password = get_password_hash(password)
+            db_user.password = await async_get_password_hash(password)
             self.session.add(db_user)
             await self.session.commit()
             await self.session.refresh(db_user)

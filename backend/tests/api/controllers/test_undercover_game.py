@@ -49,14 +49,14 @@ async def _setup_voting_phase(controller, setup_undercover_game, session):
 
     setup = await setup_undercover_game(3)
     result = await _start_game(controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     order = game.live_state["turns"][0]["description_order"]
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
 
     for uid in order:
         await controller.submit_description(game_uuid, UUID(uid), "word")
 
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     return setup, result, game
 
 
@@ -74,7 +74,7 @@ async def test_create_3_players(undercover_game_controller, setup_undercover_gam
     result = await _start_game(undercover_game_controller, room.id, users[0].id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     players = state["players"]
 
@@ -106,7 +106,7 @@ async def test_create_5_players(undercover_game_controller, setup_undercover_gam
     result = await _start_game(undercover_game_controller, room.id, users[0].id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     players = game.live_state["players"]
     roles = [p["role"] for p in players]
 
@@ -126,7 +126,7 @@ async def test_create_10_players(undercover_game_controller, setup_undercover_ga
     result = await _start_game(undercover_game_controller, room.id, users[0].id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     players = game.live_state["players"]
     roles = [p["role"] for p in players]
 
@@ -158,18 +158,18 @@ async def test_describe_stores_word_and_advances_index(undercover_game_controlle
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     first_describer_id = game.live_state["turns"][0]["description_order"][0]
 
     # Act
 
     desc_result = await undercover_game_controller.submit_description(
-        UUID(result["game_id"]), UUID(first_describer_id), "testword"
+        UUID(result.game_id), UUID(first_describer_id), "testword"
     )
 
     # Assert
-    assert desc_result["word"] == "testword"
-    game = await _get_game(session, result["game_id"])
+    assert desc_result.word == "testword"
+    game = await _get_game(session, result.game_id)
     turn = game.live_state["turns"][0]
     assert first_describer_id in turn["words"]
     assert turn["words"][first_describer_id] == "testword"
@@ -184,17 +184,17 @@ async def test_describe_all_descriptions_transitions_to_voting(
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     order = game.live_state["turns"][0]["description_order"]
 
     # Act — submit all descriptions
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     for uid in order:
         await undercover_game_controller.submit_description(game_uuid, UUID(uid), "word")
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     assert game.live_state["turns"][0]["phase"] == "voting"
 
 
@@ -204,7 +204,7 @@ async def test_describe_not_your_turn(undercover_game_controller, setup_undercov
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     order = game.live_state["turns"][0]["description_order"]
     # Find a user who is NOT the current describer
     wrong_user_id = next(str(u.id) for u in setup["users"] if str(u.id) != order[0])
@@ -212,7 +212,7 @@ async def test_describe_not_your_turn(undercover_game_controller, setup_undercov
     # Act / Assert
 
     with pytest.raises(BaseError, match="Not your turn"):
-        await undercover_game_controller.submit_description(UUID(result["game_id"]), UUID(wrong_user_id), "word")
+        await undercover_game_controller.submit_description(UUID(result.game_id), UUID(wrong_user_id), "word")
 
 
 @pytest.mark.asyncio
@@ -221,10 +221,10 @@ async def test_describe_not_in_describing_phase(undercover_game_controller, setu
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     order = game.live_state["turns"][0]["description_order"]
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
 
     # Submit all to move to voting
     for uid in order:
@@ -241,12 +241,12 @@ async def test_describe_empty_word(undercover_game_controller, setup_undercover_
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     first_describer = game.live_state["turns"][0]["description_order"][0]
 
     # Act / Assert
     with pytest.raises(BaseError, match="single word"):
-        await undercover_game_controller.submit_description(UUID(result["game_id"]), UUID(first_describer), "")
+        await undercover_game_controller.submit_description(UUID(result.game_id), UUID(first_describer), "")
 
 
 @pytest.mark.asyncio
@@ -255,12 +255,12 @@ async def test_describe_word_with_spaces(undercover_game_controller, setup_under
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     first_describer = game.live_state["turns"][0]["description_order"][0]
 
     # Act / Assert
     with pytest.raises(BaseError, match="single word"):
-        await undercover_game_controller.submit_description(UUID(result["game_id"]), UUID(first_describer), "two words")
+        await undercover_game_controller.submit_description(UUID(result.game_id), UUID(first_describer), "two words")
 
 
 @pytest.mark.asyncio
@@ -269,12 +269,12 @@ async def test_describe_word_too_long(undercover_game_controller, setup_undercov
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     first_describer = game.live_state["turns"][0]["description_order"][0]
 
     # Act / Assert
     with pytest.raises(BaseError, match="max 50"):
-        await undercover_game_controller.submit_description(UUID(result["game_id"]), UUID(first_describer), "a" * 51)
+        await undercover_game_controller.submit_description(UUID(result.game_id), UUID(first_describer), "a" * 51)
 
 
 @pytest.mark.asyncio
@@ -283,10 +283,10 @@ async def test_describe_after_all_submitted(undercover_game_controller, setup_un
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     order = game.live_state["turns"][0]["description_order"]
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     for uid in order:
         await undercover_game_controller.submit_description(game_uuid, UUID(uid), "word")
 
@@ -304,7 +304,7 @@ async def test_describe_player_not_in_game(undercover_game_controller, setup_und
 
     # Act / Assert — random UUID not in description_order
     with pytest.raises(BaseError, match="Not your turn"):
-        await undercover_game_controller.submit_description(UUID(result["game_id"]), uuid4(), "word")
+        await undercover_game_controller.submit_description(UUID(result.game_id), uuid4(), "word")
 
 
 # ========== SubmitVote ==========
@@ -316,7 +316,7 @@ async def test_vote_records_vote(undercover_game_controller, setup_undercover_ga
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     voter = setup["users"][0]
     target = next(u for u in setup["users"] if u.id != voter.id)
 
@@ -324,8 +324,8 @@ async def test_vote_records_vote(undercover_game_controller, setup_undercover_ga
     vote_result = await undercover_game_controller.submit_vote(game_uuid, voter.id, target.id)
 
     # Assert
-    assert vote_result["game_id"] == result["game_id"]
-    game = await _get_game(session, result["game_id"])
+    assert vote_result.game_id == result.game_id
+    game = await _get_game(session, result.game_id)
     assert str(voter.id) in game.live_state["turns"][0]["votes"]
 
 
@@ -335,7 +335,7 @@ async def test_vote_all_votes_eliminates_majority_target(undercover_game_control
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     users = setup["users"]
     target = users[2]  # everyone votes for player 2
 
@@ -348,7 +348,7 @@ async def test_vote_all_votes_eliminates_majority_target(undercover_game_control
             await undercover_game_controller.submit_vote(game_uuid, voter.id, target.id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     eliminated = next(p for p in state["players"] if p["user_id"] == str(target.id))
     assert eliminated["is_alive"] is False
@@ -363,7 +363,7 @@ async def test_vote_civilians_win_when_all_undercovers_eliminated(
     # Prepare — 3 players: 1 undercover, 2 civilians, 0 mr_white
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     state = game.live_state
     undercover_player = _find_player_by_role(state, UndercoverRole.UNDERCOVER.value)
     users = setup["users"]
@@ -377,7 +377,7 @@ async def test_vote_civilians_win_when_all_undercovers_eliminated(
             await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(undercover_player["user_id"]))
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     # Check if undercover was eliminated and civilians won
     uc = next(p for p in state["players"] if p["role"] == UndercoverRole.UNDERCOVER.value)
@@ -391,7 +391,7 @@ async def test_vote_dead_voter(undercover_game_controller, setup_undercover_game
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     state = game.live_state
 
     # Kill a player manually
@@ -415,7 +415,7 @@ async def test_vote_dead_target(undercover_game_controller, setup_undercover_gam
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     state = game.live_state
 
     # Kill target manually
@@ -439,7 +439,7 @@ async def test_vote_self(undercover_game_controller, setup_undercover_game, sess
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     voter = setup["users"][0]
 
     # Act / Assert
@@ -454,7 +454,7 @@ async def test_vote_not_in_voting_phase(undercover_game_controller, setup_underc
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     voter = setup["users"][0]
     target = setup["users"][1]
 
@@ -469,7 +469,7 @@ async def test_vote_twice_raises_error(undercover_game_controller, setup_underco
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     voter = setup["users"][0]
     target1 = setup["users"][1]
     target2 = setup["users"][2]
@@ -488,7 +488,7 @@ async def test_vote_player_not_in_game(undercover_game_controller, setup_underco
     # Prepare
     setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     target = setup["users"][1]
 
     # Act / Assert
@@ -506,16 +506,16 @@ async def test_next_round_appends_turn(undercover_game_controller, setup_underco
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
 
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
 
     # Act
     round_result = await undercover_game_controller.start_next_round(game_uuid, setup["room"].id, setup["users"][0].id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     assert len(game.live_state["turns"]) == 2
     assert game.live_state["turns"][1]["phase"] == "describing"
-    assert round_result["turn_number"] == 2
+    assert round_result.turn_number == 2
 
 
 # ========== GetState ==========
@@ -527,16 +527,16 @@ async def test_state_civilian_word(undercover_game_controller, setup_undercover_
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
 
     civilian = _find_player_by_role(state, UndercoverRole.CIVILIAN.value)
 
     # Act
-    player_state = await undercover_game_controller.get_state(UUID(result["game_id"]), UUID(civilian["user_id"]))
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), UUID(civilian["user_id"]))
 
     # Assert
-    assert player_state["my_word"] == state["civilian_word"]
+    assert player_state.my_word == state["civilian_word"]
 
 
 @pytest.mark.asyncio
@@ -545,16 +545,16 @@ async def test_state_undercover_word(undercover_game_controller, setup_undercove
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
 
     undercover = _find_player_by_role(state, UndercoverRole.UNDERCOVER.value)
 
     # Act
-    player_state = await undercover_game_controller.get_state(UUID(result["game_id"]), UUID(undercover["user_id"]))
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), UUID(undercover["user_id"]))
 
     # Assert
-    assert player_state["my_word"] == state["undercover_word"]
+    assert player_state.my_word == state["undercover_word"]
 
 
 @pytest.mark.asyncio
@@ -563,7 +563,7 @@ async def test_state_mr_white_message(undercover_game_controller, setup_undercov
     # Prepare — need 5 players to get mr_white
     setup = await setup_undercover_game(5)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
 
     mr_white = _find_player_by_role(state, UndercoverRole.MR_WHITE.value)
@@ -571,10 +571,10 @@ async def test_state_mr_white_message(undercover_game_controller, setup_undercov
         pytest.skip("No Mr. White in this game (random role assignment)")
 
     # Act
-    player_state = await undercover_game_controller.get_state(UUID(result["game_id"]), UUID(mr_white["user_id"]))
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), UUID(mr_white["user_id"]))
 
     # Assert
-    assert "Mr. White" in player_state["my_word"]
+    assert "Mr. White" in player_state.my_word
 
 
 @pytest.mark.asyncio
@@ -586,7 +586,7 @@ async def test_state_player_not_in_game(undercover_game_controller, setup_underc
 
     # Act / Assert
     with pytest.raises(PlayerRemovedFromGameError):
-        await undercover_game_controller.get_state(UUID(result["game_id"]), uuid4())
+        await undercover_game_controller.get_state(UUID(result.game_id), uuid4())
 
 
 # ========== EdgeCases ==========
@@ -601,8 +601,8 @@ async def test_edge_undercovers_win_when_outnumbering_civilians(
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
 
-    game_uuid = UUID(result["game_id"])
-    game = await _get_game(session, result["game_id"])
+    game_uuid = UUID(result.game_id)
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     order = state["turns"][0]["description_order"]
 
@@ -611,7 +611,7 @@ async def test_edge_undercovers_win_when_outnumbering_civilians(
         await undercover_game_controller.submit_description(game_uuid, UUID(uid), "word")
 
     # Find a civilian to eliminate
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     civilians = [p for p in state["players"] if p["role"] == UndercoverRole.CIVILIAN.value]
     target_civilian = civilians[0]
@@ -626,7 +626,7 @@ async def test_edge_undercovers_win_when_outnumbering_civilians(
             await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(target_civilian["user_id"]))
 
     # Assert — undercovers should win (1 undercover >= 1 remaining civilian)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     # Check win condition
     alive_uc = sum(
         1 for p in game.live_state["players"] if p["role"] == UndercoverRole.UNDERCOVER.value and p["is_alive"]
@@ -645,8 +645,8 @@ async def test_edge_mayor_breaks_tie_vote(undercover_game_controller, setup_unde
     setup = await setup_undercover_game(4)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
 
-    game_uuid = UUID(result["game_id"])
-    game = await _get_game(session, result["game_id"])
+    game_uuid = UUID(result.game_id)
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     order = state["turns"][0]["description_order"]
 
@@ -654,7 +654,7 @@ async def test_edge_mayor_breaks_tie_vote(undercover_game_controller, setup_unde
     for uid in order:
         await undercover_game_controller.submit_description(game_uuid, UUID(uid), "word")
 
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     mayor = next(p for p in state["players"] if p.get("is_mayor"))
     users = setup["users"]
@@ -677,7 +677,7 @@ async def test_edge_mayor_breaks_tie_vote(undercover_game_controller, setup_unde
     await undercover_game_controller.submit_vote(game_uuid, target_b.id, target_a.id)
 
     # Assert — target_a should be eliminated (has most votes or tied with mayor's vote)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     eliminated = game.live_state["eliminated_players"]
     assert len(eliminated) > 0
 
@@ -695,7 +695,7 @@ async def test_edge_mr_white_never_first_in_description_order(
         random.seed(seed)
         try:
             result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-            game = await _get_game(session, result["game_id"])
+            game = await _get_game(session, result.game_id)
             state = game.live_state
 
             mr_white = _find_player_by_role(state, UndercoverRole.MR_WHITE.value)
@@ -720,14 +720,14 @@ async def test_edge_flag_modified_persists_state(undercover_game_controller, set
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     first_describer = game.live_state["turns"][0]["description_order"][0]
 
     # Act
-    await undercover_game_controller.submit_description(UUID(result["game_id"]), UUID(first_describer), "persisted")
+    await undercover_game_controller.submit_description(UUID(result.game_id), UUID(first_describer), "persisted")
 
     # Assert — re-fetch from DB
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     assert game.live_state["turns"][0]["words"][first_describer] == "persisted"
 
 
@@ -783,15 +783,15 @@ async def test_record_hint_view_success(undercover_game_controller, setup_underc
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     user = setup["users"][0]
 
     # Act
     hint_result = await undercover_game_controller.record_hint_view(game_uuid, user.id, "mosque")
 
     # Assert
-    assert hint_result["recorded"] is True
-    game = await _get_game(session, result["game_id"])
+    assert hint_result.recorded is True
+    game = await _get_game(session, result.game_id)
     assert str(user.id) in game.live_state["hint_usage"]
     assert "mosque" in game.live_state["hint_usage"][str(user.id)]
 
@@ -802,7 +802,7 @@ async def test_record_hint_view_deduplicated(undercover_game_controller, setup_u
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     user = setup["users"][0]
 
     # Act — record twice
@@ -810,7 +810,7 @@ async def test_record_hint_view_deduplicated(undercover_game_controller, setup_u
     await undercover_game_controller.record_hint_view(game_uuid, user.id, "mosque")
 
     # Assert — only one entry
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     assert game.live_state["hint_usage"][str(user.id)].count("mosque") == 1
 
 
@@ -820,7 +820,7 @@ async def test_record_hint_view_multiple_words(undercover_game_controller, setup
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game_uuid = UUID(result["game_id"])
+    game_uuid = UUID(result.game_id)
     user = setup["users"][0]
 
     # Act
@@ -828,7 +828,7 @@ async def test_record_hint_view_multiple_words(undercover_game_controller, setup
     await undercover_game_controller.record_hint_view(game_uuid, user.id, "church")
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     user_hints = game.live_state["hint_usage"][str(user.id)]
     assert "mosque" in user_hints
     assert "church" in user_hints
@@ -844,16 +844,16 @@ async def test_state_includes_my_word_hint(undercover_game_controller, setup_und
     # Prepare
     setup = await setup_undercover_game(3)
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
 
     civilian = _find_player_by_role(state, UndercoverRole.CIVILIAN.value)
 
     # Act
-    player_state = await undercover_game_controller.get_state(UUID(result["game_id"]), UUID(civilian["user_id"]))
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), UUID(civilian["user_id"]))
 
     # Assert — my_word_hint is present in the response (can be None if word has no hint)
-    assert "my_word_hint" in player_state
+    assert hasattr(player_state, "my_word_hint")
 
 
 # ========== create_and_start hint fields ==========
@@ -869,7 +869,7 @@ async def test_create_stores_hint_in_live_state(undercover_game_controller, setu
     result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
 
     # Assert
-    game = await _get_game(session, result["game_id"])
+    game = await _get_game(session, result.game_id)
     state = game.live_state
     assert "civilian_word_hint" in state
     assert "undercover_word_hint" in state

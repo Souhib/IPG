@@ -4,9 +4,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from ipg.api.controllers.friend import FriendController, FriendEntry
+from ipg.api.controllers.friend import FriendController
 from ipg.api.models.table import User
-from ipg.api.schemas.shared import BaseModel as PydanticBaseModel
+from ipg.api.schemas.friend import FriendActionResponse, FriendEntry, FriendRequestBody
 from ipg.dependencies import get_current_user, get_friend_controller
 
 router = APIRouter(
@@ -14,10 +14,6 @@ router = APIRouter(
     tags=["friends"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class FriendRequestBody(PydanticBaseModel):
-    addressee_id: UUID
 
 
 @router.get("", response_model=Sequence[FriendEntry])
@@ -46,10 +42,10 @@ async def send_friend_request(
     body: FriendRequestBody,
     current_user: Annotated[User, Depends(get_current_user)],
     friend_controller: Annotated[FriendController, Depends(get_friend_controller)],
-) -> dict:
+) -> FriendActionResponse:
     """Send a friend request."""
     friendship = await friend_controller.send_request(current_user.id, body.addressee_id)
-    return {"friendship_id": str(friendship.id), "status": friendship.status.value}
+    return FriendActionResponse(friendship_id=str(friendship.id), status=friendship.status.value)
 
 
 @router.post("/{friendship_id}/accept")
@@ -58,10 +54,10 @@ async def accept_friend_request(
     friendship_id: UUID,
     current_user: Annotated[User, Depends(get_current_user)],
     friend_controller: Annotated[FriendController, Depends(get_friend_controller)],
-) -> dict:
+) -> FriendActionResponse:
     """Accept a pending friend request."""
     friendship = await friend_controller.accept_request(friendship_id, current_user.id)
-    return {"friendship_id": str(friendship.id), "status": friendship.status.value}
+    return FriendActionResponse(friendship_id=str(friendship.id), status=friendship.status.value)
 
 
 @router.post("/{friendship_id}/reject", status_code=204)

@@ -4,20 +4,16 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
-from ipg.api.controllers.chat import ChatController, ChatMessageView
+from ipg.api.controllers.chat import ChatController
 from ipg.api.models.chat import ChatMessage
 from ipg.api.models.table import User
-from ipg.api.schemas.shared import BaseModel as PydanticBaseModel
+from ipg.api.schemas.chat import ChatMessageView, SendMessageRequest
 from ipg.dependencies import get_chat_controller, get_current_user
 
 router = APIRouter(
     tags=["chat"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class SendMessageRequest(PydanticBaseModel):
-    message: str
 
 
 def _to_view(msg: ChatMessage) -> ChatMessageView:

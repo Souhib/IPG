@@ -10,7 +10,7 @@ FastAPI backend for real-time multiplayer Islamic board games. Uses SQLModel/SQL
 cd backend
 
 # Run the server
-uv run python main.py                    # Starts on http://localhost:5000
+uv run python main.py                    # Starts on http://localhost:5111
 
 # Code quality
 uv run poe lint                          # Ruff lint
@@ -241,6 +241,6 @@ Settings use `IPG_ENV` selector:
 
 ## API Documentation
 
-- Scalar UI: `http://localhost:5000/scalar`
-- OpenAPI JSON: `http://localhost:5000/openapi.json`
-- Health check: `http://localhost:5000/health`
+- Scalar UI: `http://localhost:5111/scalar`
+- OpenAPI JSON: `http://localhost:5111/openapi.json`
+- Health check: `http://localhost:5111/health`

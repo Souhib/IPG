@@ -22,9 +22,9 @@ export const CluePanel = memo(function CluePanel({
   const { t } = useTranslation()
 
   return (
-    <div className="rounded-xl border bg-card p-4 mb-4">
-      <h3 className="font-semibold mb-2">{t("game.codenames.giveClue")}</h3>
-      <p className="text-xs text-muted-foreground mb-3">
+    <div className="glass rounded-2xl p-5 mb-4 border-primary/10">
+      <h3 className="font-bold mb-1.5">{t("game.codenames.giveClue")}</h3>
+      <p className="text-xs text-muted-foreground mb-4">
         {t("game.codenames.guessesRemaining", { made: 0, max: clueNumber + 1 })}
       </p>
       <div className="flex gap-3">
@@ -33,7 +33,7 @@ export const CluePanel = memo(function CluePanel({
           value={clueWord}
           onChange={(e) => onClueWordChange(e.target.value)}
           placeholder={t("game.codenames.cluePlaceholder")}
-          className="flex-1 rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="flex-1 rounded-xl border border-border/50 bg-background/80 px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
         />
         <input
           type="number"
@@ -41,14 +41,14 @@ export const CluePanel = memo(function CluePanel({
           onChange={(e) => onClueNumberChange(parseInt(e.target.value) || 1)}
           min={1}
           max={9}
-          className="w-16 rounded-md border bg-background px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-16 rounded-xl border border-border/50 bg-background/80 px-3 py-2.5 text-sm font-mono font-bold text-center focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
         />
         <button
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
           className={cn(
-            "rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90",
+            "rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-px transition-all duration-200",
             isSubmitting && "opacity-50 cursor-not-allowed",
           )}
         >

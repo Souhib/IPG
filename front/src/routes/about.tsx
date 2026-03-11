@@ -71,27 +71,29 @@ function AboutPage() {
   const { t } = useTranslation()
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 space-y-16">
+    <div className="mx-auto max-w-4xl px-4 py-14 space-y-16">
       {/* ── Hero ── */}
-      <Section className="flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
+      <Section className="flex flex-col items-center gap-8 sm:flex-row sm:gap-12">
         <motion.div
           className="relative shrink-0"
           whileHover={{ scale: 1.04 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
-          <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/40 via-accent/30 to-primary/20 blur-md" />
+          {/* Gradient ring */}
+          <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-primary via-accent to-primary opacity-60 blur-md" />
+          <div className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-primary via-accent to-primary opacity-80" />
           <img
             src="/souhib.jpeg"
             alt={t('about.name')}
-            className="relative h-40 w-40 rounded-full object-cover ring-2 ring-primary/30 sm:h-48 sm:w-48"
+            className="relative h-40 w-40 rounded-full object-cover ring-2 ring-background sm:h-48 sm:w-48"
           />
         </motion.div>
 
         <div className="text-center sm:text-start">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="text-4xl font-extrabold tracking-tight gradient-text sm:text-5xl animate-scale-in">
             {t('about.name')}
           </h1>
-          <p className="mt-1 text-lg font-medium text-primary">
+          <p className="mt-2 text-lg font-semibold text-primary">
             {t('about.role')}
           </p>
           <p className="mt-4 max-w-xl text-muted-foreground leading-relaxed">
@@ -102,12 +104,12 @@ function AboutPage() {
 
       {/* ── Project Purpose ── */}
       <Section delay={0.1}>
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="glass rounded-2xl border border-border/30 p-7 shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <Sparkles className="h-5 w-5" />
             </div>
-            <h2 className="text-xl font-semibold">{t('about.projectPurpose')}</h2>
+            <h2 className="text-xl font-extrabold tracking-tight">{t('about.projectPurpose')}</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
             {t('about.projectDescription')}
@@ -117,11 +119,11 @@ function AboutPage() {
 
       {/* ── Education ── */}
       <Section delay={0.1}>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <GraduationCap className="h-5 w-5" />
           </div>
-          <h2 className="text-xl font-semibold">{t('about.education')}</h2>
+          <h2 className="text-xl font-extrabold tracking-tight">{t('about.education')}</h2>
         </div>
         <div className="space-y-3">
           {(['educationEpitech', 'educationSfsu'] as const).map((key, i) => (
@@ -131,9 +133,9 @@ function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="rounded-lg border bg-card p-4"
+              className="glass rounded-2xl border border-border/30 p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
             >
-              <p className="font-medium">{t(`about.${key}`)}</p>
+              <p className="font-semibold">{t(`about.${key}`)}</p>
             </motion.div>
           ))}
         </div>
@@ -141,11 +143,11 @@ function AboutPage() {
 
       {/* ── Experience ── */}
       <Section delay={0.1}>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Briefcase className="h-5 w-5" />
           </div>
-          <h2 className="text-xl font-semibold">{t('about.experience')}</h2>
+          <h2 className="text-xl font-extrabold tracking-tight">{t('about.experience')}</h2>
         </div>
         <div className="space-y-3">
           {([
@@ -162,10 +164,10 @@ function AboutPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="rounded-lg border bg-card p-4"
+                className="glass rounded-2xl border border-border/30 p-5 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
               >
-                <p className="font-medium">{t(`about.${key}Title`)}</p>
-                <p className="text-sm text-muted-foreground mt-1">{t(`about.${key}Period`)}</p>
+                <p className="font-semibold">{t(`about.${key}Title`)}</p>
+                <p className="text-sm text-muted-foreground mt-1.5">{t(`about.${key}Period`)}</p>
                 <p className="text-sm text-muted-foreground mt-1">{t(`about.${key}Desc`)}</p>
               </motion.div>
             ),
@@ -175,13 +177,13 @@ function AboutPage() {
 
       {/* ── Skills ── */}
       <Section delay={0.1}>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Code2 className="h-5 w-5" />
           </div>
-          <h2 className="text-xl font-semibold">{t('about.skills')}</h2>
+          <h2 className="text-xl font-extrabold tracking-tight">{t('about.skills')}</h2>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {skills.map((skill, i) => (
             <motion.span
               key={skill}
@@ -195,7 +197,7 @@ function AboutPage() {
                 delay: i * 0.04,
               }}
               whileHover={{ scale: 1.08, y: -2 }}
-              className="rounded-full border bg-secondary/60 px-3.5 py-1.5 text-sm font-medium text-secondary-foreground"
+              className="rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-border/30 px-4 py-1.5 text-sm font-medium text-foreground transition-all duration-200 hover:shadow-md"
             >
               {skill}
             </motion.span>
@@ -206,7 +208,7 @@ function AboutPage() {
       {/* ── Free Mentoring ── */}
       <Section delay={0.1}>
         <motion.div
-          className="relative overflow-hidden rounded-xl border-2 border-accent/40 bg-accent/5 p-6"
+          className="relative overflow-hidden glass rounded-2xl border-2 border-accent/40 p-7"
           animate={{
             borderColor: [
               'oklch(0.72 0.14 65 / 0.4)',
@@ -216,27 +218,27 @@ function AboutPage() {
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent-foreground">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent/15 text-accent-foreground">
               <Heart className="h-5 w-5" />
             </div>
-            <h2 className="text-xl font-semibold">{t('about.mentoringTitle')}</h2>
+            <h2 className="text-xl font-extrabold tracking-tight">{t('about.mentoringTitle')}</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
             {t('about.mentoringText')}
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <a
               href="mailto:souhib.t@icloud.com"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-primary/90 px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
             >
               <Mail className="h-4 w-4" />
               souhib.t@icloud.com
             </a>
             <a
               href="tel:+33643142020"
-              className="inline-flex items-center gap-2 rounded-lg border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+              className="inline-flex items-center gap-2 rounded-2xl border border-border/50 glass px-5 py-2.5 text-sm font-semibold hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
               <Phone className="h-4 w-4" />
               +33 6 43 14 20 20
@@ -247,7 +249,7 @@ function AboutPage() {
 
       {/* ── Contact ── */}
       <Section delay={0.1} className="pb-8">
-        <h2 className="text-xl font-semibold mb-5">{t('about.contactMe')}</h2>
+        <h2 className="text-xl font-extrabold tracking-tight mb-6">{t('about.contactMe')}</h2>
         <div className="flex flex-wrap gap-3">
           {[
             {
@@ -279,7 +281,7 @@ function AboutPage() {
               whileHover={{ scale: 1.06, y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              className="inline-flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium shadow-sm transition-colors hover:bg-secondary hover:border-primary/30"
+              className="inline-flex items-center gap-2 rounded-2xl border border-border/30 glass px-5 py-2.5 text-sm font-semibold shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200"
             >
               <link.icon className="h-4 w-4 text-primary" />
               {link.label}

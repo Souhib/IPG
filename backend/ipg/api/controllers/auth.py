@@ -7,7 +7,12 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.constants import EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS, PASSWORD_RESET_TOKEN_EXPIRE_HOURS
-from ipg.api.controllers.shared import get_password_hash, verify_password
+from ipg.api.controllers.shared import (
+    async_get_password_hash,
+    async_verify_password,
+    get_password_hash,
+    verify_password,
+)
 from ipg.api.models.table import User
 from ipg.api.models.token import EmailVerificationToken, PasswordResetToken
 from ipg.api.models.user import UserCreate
@@ -125,7 +130,7 @@ class AuthController:
         if user is None:
             raise InvalidCredentialsError(email=email)
 
-        if not self.verify_password(password, user.password):
+        if not await async_verify_password(password, user.password):
             raise InvalidCredentialsError(email=email)
 
         tokens = self.create_token_pair(str(user.id), user.email_address)
@@ -145,7 +150,7 @@ class AuthController:
         :param user_create: The user creation data.
         :return: The newly created User.
         """
-        hashed_password = self.get_password_hash(user_create.password)
+        hashed_password = await async_get_password_hash(user_create.password)
         user_data = user_create.model_dump()
         user_data["password"] = hashed_password
         new_user = User(**user_data)
@@ -194,7 +199,7 @@ class AuthController:
         if not user:
             raise UserNotFoundError(user_id=reset_token.user_id)
 
-        user.password = get_password_hash(new_password)
+        user.password = await async_get_password_hash(new_password)
         reset_token.used = True
         self.session.add(user)
         self.session.add(reset_token)

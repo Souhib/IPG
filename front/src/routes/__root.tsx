@@ -54,10 +54,10 @@ function RootLayout() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={location.pathname}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
+                      initial={{ opacity: 0, scale: 0.99, y: 8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.99, y: -8 }}
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     >
                       <Outlet />
                     </motion.div>
@@ -65,7 +65,16 @@ function RootLayout() {
                 </ErrorBoundary>
               </main>
               <Footer />
-              <Toaster position="bottom-right" richColors closeButton expand visibleToasts={3} />
+              <Toaster
+                position="bottom-right"
+                richColors
+                closeButton
+                expand
+                visibleToasts={3}
+                toastOptions={{
+                  className: "glass !rounded-2xl !border-border/50 !shadow-xl",
+                }}
+              />
               <LanguageWelcomeModal />
             </div>
             <Suspense>

@@ -9,6 +9,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.controllers.disconnect import _handle_permanent_disconnect
+from ipg.api.controllers.friend import FriendController
 from ipg.api.controllers.shared import create_random_public_id
 from ipg.api.models.error import (
     RoomNotFoundError,
@@ -22,6 +23,15 @@ from ipg.api.models.relationship import RoomActivityLink, RoomUserLink
 from ipg.api.models.room import RoomCreate, RoomJoin, RoomLeave, RoomType
 from ipg.api.models.table import Activity, Game, Room, User
 from ipg.api.schemas.error import BaseError
+from ipg.api.schemas.room import (
+    ActiveRoomResponse,
+    KickPlayerResponse,
+    RematchResponse,
+    RoomInviteResponse,
+    RoomPlayerState,
+    RoomState,
+    UpdateRoomSettingsResponse,
+)
 
 
 class RoomController:
@@ -280,7 +290,7 @@ class RoomController:
         ).one()
         return room
 
-    async def get_room_state(self, room_id: UUID, user_id: UUID, update_heartbeat: bool = True) -> dict:
+    async def get_room_state(self, room_id: UUID, user_id: UUID, update_heartbeat: bool = True) -> RoomState:
         """Get room state for all players."""
         room = await self.get_room_by_id(room_id)
 
@@ -295,19 +305,19 @@ class RoomController:
         users = (await self.session.exec(select(User).where(User.id.in_(user_ids)))).all() if user_ids else []
         user_map = {u.id: u for u in users}
 
-        players = []
+        players: list[RoomPlayerState] = []
         for rul in all_links:
             u = user_map.get(rul.user_id)
             if u:
                 players.append(
-                    {
-                        "user_id": str(u.id),
-                        "username": u.username,
-                        "is_connected": True,
-                        "is_disconnected": False,
-                        "is_host": room.owner_id == u.id,
-                        "is_spectator": rul.is_spectator,
-                    }
+                    RoomPlayerState(
+                        user_id=str(u.id),
+                        username=u.username,
+                        is_connected=True,
+                        is_disconnected=False,
+                        is_host=room.owner_id == u.id,
+                        is_spectator=rul.is_spectator,
+                    )
                 )
 
         # Get game type from active game
@@ -317,19 +327,19 @@ class RoomController:
             if game:
                 game_type = game.type.value
 
-        return {
-            "id": str(room.id),
-            "public_id": room.public_id,
-            "password": room.password,
-            "owner_id": str(room.owner_id),
-            "active_game_id": str(room.active_game_id) if room.active_game_id else None,
-            "game_type": game_type,
-            "players": players,
-            "type": room.type.value,
-            "settings": room.settings,
-        }
+        return RoomState(
+            id=str(room.id),
+            public_id=room.public_id,
+            password=room.password,
+            owner_id=str(room.owner_id),
+            active_game_id=str(room.active_game_id) if room.active_game_id else None,
+            game_type=game_type,
+            players=players,
+            type=room.type.value,
+            settings=room.settings,
+        )
 
-    async def kick_player(self, room_id: UUID, host_id: UUID, target_id: UUID) -> dict:
+    async def kick_player(self, room_id: UUID, host_id: UUID, target_id: UUID) -> KickPlayerResponse:
         """Kick a player from the room. Only the host can kick."""
         room = await self.get_room_by_id(room_id)
         if room.owner_id != host_id:
@@ -357,9 +367,9 @@ class RoomController:
             raise UserNotInRoomError(user_id=target_id, room_id=room_id)
 
         await _handle_permanent_disconnect(self.session, link)
-        return {"message": "Player kicked"}
+        return KickPlayerResponse(message="Player kicked")
 
-    async def update_room_settings(self, room_id: UUID, user_id: UUID, settings: dict) -> dict:
+    async def update_room_settings(self, room_id: UUID, user_id: UUID, settings: dict) -> UpdateRoomSettingsResponse:
         """Update room settings. Only the host can update."""
         room = await self.get_room_by_id(room_id)
         if room.owner_id != user_id:
@@ -372,17 +382,17 @@ class RoomController:
         flag_modified(room, "settings")
         self.session.add(room)
         await self.session.commit()
-        return {"room_id": str(room_id), "settings": settings}
+        return UpdateRoomSettingsResponse(room_id=str(room_id), settings=settings)
 
-    async def rematch(self, room_id: UUID, user_id: UUID) -> dict:
+    async def rematch(self, room_id: UUID, user_id: UUID) -> RematchResponse:
         """Clear active game and return to lobby. Preserves room settings and connected players."""
         room = await self.get_room_by_id(room_id)
         room.active_game_id = None
         self.session.add(room)
         await self.session.commit()
-        return {"room_id": str(room_id), "status": "lobby"}
+        return RematchResponse(room_id=str(room_id), status="lobby")
 
-    async def get_active_room_for_user(self, user_id: UUID) -> dict | None:
+    async def get_active_room_for_user(self, user_id: UUID) -> ActiveRoomResponse | None:
         """Return the user's active room (connected or recently disconnected) if any."""
         link = (
             await self.session.exec(
@@ -400,11 +410,81 @@ class RoomController:
         room = (await self.session.exec(select(Room).where(Room.id == link.room_id))).first()
         if not room:
             return None
-        return {
-            "room_id": str(room.id),
-            "public_id": room.public_id,
-            "is_connected": link.connected,
-        }
+        return ActiveRoomResponse(
+            room_id=str(room.id),
+            public_id=room.public_id,
+            is_connected=link.connected,
+        )
+
+    async def invite_friend_to_room(self, room_id: UUID, host_id: UUID, friend_user_id: UUID) -> RoomInviteResponse:
+        """Invite a friend to join the room. Validates friendship and room membership."""
+        room = await self.get_room_by_id(room_id)
+
+        # Verify the inviter is in the room
+        inviter_link = (
+            await self.session.exec(
+                select(RoomUserLink).where(
+                    RoomUserLink.room_id == room_id,
+                    RoomUserLink.user_id == host_id,
+                    RoomUserLink.connected == True,  # noqa: E712
+                )
+            )
+        ).first()
+        if not inviter_link:
+            raise BaseError(
+                message="You must be in the room to invite friends.",
+                frontend_message="You must be in the room to invite friends.",
+                status_code=400,
+            )
+
+        # Verify friendship exists
+        friend_controller = FriendController(self.session)
+        friends = await friend_controller.get_friends(host_id)
+        is_friend = any(str(f.user_id) == str(friend_user_id) for f in friends)
+        if not is_friend:
+            raise BaseError(
+                message="You can only invite friends.",
+                frontend_message="You can only invite friends.",
+                status_code=400,
+            )
+
+        # Check if the friend is already in the room
+        existing = (
+            await self.session.exec(
+                select(RoomUserLink).where(
+                    RoomUserLink.room_id == room_id,
+                    RoomUserLink.user_id == friend_user_id,
+                    RoomUserLink.connected == True,  # noqa: E712
+                )
+            )
+        ).first()
+        if existing:
+            raise BaseError(
+                message="User is already in the room.",
+                frontend_message="This user is already in the room.",
+                status_code=400,
+            )
+
+        # Emit Socket.IO invite event to the friend's personal room
+        from ipg.api.ws.server import sio  # noqa: PLC0415
+
+        inviter = (await self.session.exec(select(User).where(User.id == host_id))).first()
+        await sio.emit(
+            "room_invite",
+            {
+                "room_id": str(room.id),
+                "public_id": room.public_id,
+                "password": room.password,
+                "invited_by": inviter.username if inviter else "Someone",
+            },
+            room=f"user:{friend_user_id}",
+        )
+
+        return RoomInviteResponse(
+            room_id=str(room_id),
+            invited_user_id=str(friend_user_id),
+            message="Invite sent",
+        )
 
     async def create_room_activity(self, room_id: UUID, activity_create: EventCreate) -> Activity:
         """Create an activity."""

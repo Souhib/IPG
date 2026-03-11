@@ -27,4 +27,5 @@ app = create_app(lifespan=lifespan)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=5000)
+    settings = Settings()  # type: ignore
+    uvicorn.run(app, port=settings.port)

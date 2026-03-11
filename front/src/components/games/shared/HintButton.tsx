@@ -30,7 +30,7 @@ export const HintButton = memo(function HintButton({ hint, onView, className }: 
         <button
           type="button"
           className={cn(
-            "inline-flex items-center justify-center rounded-full p-1 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors",
+            "inline-flex items-center justify-center rounded-full p-1.5 text-muted-foreground hover:text-primary hover:bg-glow transition-all duration-200 hover:scale-110",
             className,
           )}
           aria-label="Show explanation"
@@ -40,12 +40,12 @@ export const HintButton = memo(function HintButton({ hint, onView, className }: 
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="z-50 max-w-xs rounded-lg border bg-popover p-3 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95"
+          className="z-50 max-w-xs glass rounded-2xl p-4 text-sm text-popover-foreground shadow-xl animate-scale-in"
           sideOffset={5}
           align="center"
         >
           {hint}
-          <Popover.Arrow className="fill-popover" />
+          <Popover.Arrow className="fill-[var(--surface)]" />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

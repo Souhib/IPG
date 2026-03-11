@@ -9,16 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ipg.api.models.friendship import Friendship, FriendshipStatus
 from ipg.api.models.table import User
 from ipg.api.schemas.error import BaseError, UserNotFoundError
-from ipg.api.schemas.shared import BaseModel
-
-
-class FriendEntry(BaseModel):
-    """A friend with basic info."""
-
-    friendship_id: UUID
-    user_id: UUID
-    username: str
-    status: str
+from ipg.api.schemas.friend import FriendEntry
 
 
 class FriendController:

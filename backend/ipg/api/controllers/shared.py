@@ -1,3 +1,4 @@
+import asyncio
 import secrets
 import string
 
@@ -15,6 +16,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
+async def async_verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password in a thread pool to avoid blocking the event loop."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, verify_password, plain_password, hashed_password)
+
+
 def get_password_hash(password: str) -> str:
     """
     Get the hash of a password.
@@ -23,6 +30,12 @@ def get_password_hash(password: str) -> str:
     :return: The hashed password.
     """
     return hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
+
+
+async def async_get_password_hash(password: str) -> str:
+    """Hash a password in a thread pool to avoid blocking the event loop."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, get_password_hash, password)
 
 
 def create_random_string() -> str:

@@ -50,28 +50,66 @@ export const PhaseTimer = memo(function PhaseTimer({
   const seconds = remaining % 60
   const display = minutes > 0 ? `${minutes}:${seconds.toString().padStart(2, "0")}` : `${seconds}s`
 
+  // SVG circular ring props
+  const size = 48
+  const strokeWidth = 3
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference * (1 - progress / 100)
+
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <Timer
-        className={cn(
-          "h-4 w-4",
-          isCritical ? "text-red-500 animate-pulse" : isLow ? "text-amber-500" : "text-muted-foreground",
-        )}
-      />
+    <div className={cn("flex items-center gap-3", className)}>
+      {/* Circular SVG countdown ring */}
+      <div className={cn("relative flex-shrink-0", isCritical && "animate-glow-pulse")}>
+        <svg width={size} height={size} className="-rotate-90">
+          {/* Background ring */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="var(--muted)"
+            strokeWidth={strokeWidth}
+          />
+          {/* Progress ring */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={isCritical ? "oklch(0.55 0.22 25)" : isLow ? "oklch(0.75 0.15 75)" : "var(--primary)"}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            className="transition-[stroke-dashoffset] duration-500"
+          />
+        </svg>
+        {/* Timer icon in center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Timer
+            className={cn(
+              "h-4 w-4",
+              isCritical ? "text-red-500 animate-pulse" : isLow ? "text-amber-500" : "text-muted-foreground",
+            )}
+          />
+        </div>
+      </div>
+
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <span
           className={cn(
-            "text-sm font-mono font-semibold tabular-nums",
+            "text-sm font-mono font-bold tabular-nums tracking-tight",
             isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-foreground",
           )}
         >
           {display}
         </span>
-        <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+        <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-[width] duration-500",
-              isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-primary",
+              isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-gradient-to-r from-primary to-accent",
             )}
             style={{ width: `${progress}%` }}
           />

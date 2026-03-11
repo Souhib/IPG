@@ -27,7 +27,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="rounded-md p-2 text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+      className="rounded-xl p-2 text-muted-foreground hover:text-primary hover:bg-glow transition-all duration-200"
       aria-label={`Switch to ${effectiveTheme === "light" ? "dark" : "light"} mode`}
     >
       <Icon className="h-4 w-4" />
@@ -79,25 +79,25 @@ function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+        className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-glow transition-all duration-200"
         aria-label="Switch language"
       >
         <span aria-hidden="true">{currentLang.flag}</span>
         <span lang={currentLang.code}>{currentLang.fullName}</span>
-        <ChevronDown className="h-3 w-3 opacity-50" />
+        <ChevronDown className={cn("h-3 w-3 opacity-50 transition-transform duration-200", open && "rotate-180")} />
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full mt-2 w-44 rounded-xl border bg-popover p-1.5 shadow-lg z-50">
+        <div className="absolute end-0 top-full mt-2 w-44 glass rounded-2xl p-1.5 shadow-xl shadow-black/5 animate-scale-in z-50">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
               type="button"
               onClick={() => changeLanguage(lang.code)}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
+                "flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-all duration-150",
                 i18n.language?.startsWith(lang.code)
-                  ? "bg-primary/10 text-primary"
+                  ? "bg-primary/10 text-primary font-medium"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary",
               )}
             >
@@ -141,20 +141,20 @@ function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-full bg-primary/10 pe-2.5 ps-0.5 py-0.5 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+        className="flex items-center gap-1.5 rounded-full bg-primary/10 pe-3 ps-0.5 py-0.5 text-sm font-medium text-primary hover:bg-primary/15 transition-all duration-200"
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-xs font-bold text-primary-foreground ring-2 ring-primary/20">
           {initial}
         </span>
         <span className="max-w-[80px] truncate">{user?.username}</span>
-        <ChevronDown className="h-3 w-3 opacity-60" />
+        <ChevronDown className={cn("h-3 w-3 opacity-60 transition-transform duration-200", open && "rotate-180")} />
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full mt-2 w-48 rounded-xl border bg-popover p-1.5 shadow-lg z-50">
+        <div className="absolute end-0 top-full mt-2 w-48 glass rounded-2xl p-1.5 shadow-xl shadow-black/5 animate-scale-in z-50">
           <Link
             to="/profile"
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-150"
             onClick={() => setOpen(false)}
           >
             <User className="h-4 w-4" />
@@ -162,20 +162,20 @@ function UserMenu() {
           </Link>
           <Link
             to="/friends"
-            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-150"
             onClick={() => setOpen(false)}
           >
             <Users className="h-4 w-4" />
             {t("nav.friends")}
           </Link>
-          <div className="my-1 border-t" />
+          <div className="my-1 border-t border-border/50" />
           <button
             type="button"
             onClick={() => {
               logout()
               setOpen(false)
             }}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-all duration-150"
           >
             <LogOut className="h-4 w-4" />
             {t("nav.logout")}
@@ -201,33 +201,51 @@ export function MainNav() {
     : []
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
-      {/* 3-column grid: logo | center nav | actions — center column is truly centered */}
+    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
+      {/* Gradient bottom border accent */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-px"
+        style={{
+          background: "linear-gradient(90deg, transparent, var(--gradient-start) 20%, var(--gradient-end) 80%, transparent)",
+          opacity: 0.2,
+        }}
+      />
+
+      {/* 3-column grid: logo | center nav | actions */}
       <div className="mx-auto grid h-14 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4">
         {/* Left — Logo */}
         <div className="flex items-center">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-            <BookOpen className="h-5 w-5" />
-            <span>IPG</span>
+          <Link to="/" className="flex items-center gap-2.5 font-bold text-lg group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground transition-transform duration-200 group-hover:scale-105">
+              <BookOpen className="h-4 w-4" />
+            </div>
+            <span className="gradient-text font-extrabold tracking-tight">IPG</span>
           </Link>
         </div>
 
         {/* Center — Nav links */}
         <div className="hidden md:flex items-center gap-1">
-          {centerLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                location.pathname === link.to || location.pathname.startsWith(link.to + "/")
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-primary hover:bg-secondary",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {centerLinks.map((link) => {
+            const isActive = location.pathname === link.to || location.pathname.startsWith(link.to + "/")
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={cn(
+                  "relative rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-primary hover:bg-glow",
+                )}
+              >
+                {link.label}
+                {/* Animated active indicator */}
+                {isActive && (
+                  <span className="absolute inset-x-2 -bottom-[calc(0.5rem+1px)] h-0.5 rounded-full bg-gradient-to-r from-primary to-accent" />
+                )}
+              </Link>
+            )
+          })}
         </div>
 
         {/* Right — Actions */}
@@ -241,13 +259,13 @@ export function MainNav() {
             <div className="flex items-center gap-2 ms-1">
               <Link
                 to="/auth/login"
-                className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+                className="rounded-xl px-3.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-glow transition-all duration-200"
               >
                 {t("nav.login")}
               </Link>
               <Link
                 to="/auth/register"
-                className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="rounded-xl bg-gradient-to-r from-primary to-primary/90 px-4 py-1.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-px transition-all duration-200"
               >
                 {t("nav.register")}
               </Link>
@@ -260,6 +278,7 @@ export function MainNav() {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
+            className="rounded-xl p-2 text-muted-foreground hover:text-primary hover:bg-glow transition-all duration-200"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -268,7 +287,7 @@ export function MainNav() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t bg-background px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-1 animate-slide-up">
           {isAuthenticated && (
             <>
               {[
@@ -282,10 +301,10 @@ export function MainNav() {
                   key={link.to}
                   to={link.to}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                     location.pathname === link.to
                       ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-primary hover:bg-secondary",
+                      : "text-muted-foreground hover:text-primary hover:bg-glow",
                   )}
                   onClick={() => setMobileOpen(false)}
                 >
@@ -302,31 +321,31 @@ export function MainNav() {
           </div>
           {isAuthenticated ? (
             <>
-              <div className="border-t my-1" />
+              <div className="border-t border-border/50 my-1" />
               <button
                 type="button"
                 onClick={() => {
                   logout()
                   setMobileOpen(false)
                 }}
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-150"
               >
                 <LogOut className="h-4 w-4" />
                 {t("nav.logout")}
               </button>
             </>
           ) : (
-            <div className="border-t my-1 pt-2 flex gap-2">
+            <div className="border-t border-border/50 my-1 pt-2 flex gap-2">
               <Link
                 to="/auth/login"
-                className="flex-1 rounded-lg border px-3 py-2 text-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="flex-1 rounded-xl border border-border/50 px-3 py-2.5 text-center text-sm font-medium text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-200"
                 onClick={() => setMobileOpen(false)}
               >
                 {t("nav.login")}
               </Link>
               <Link
                 to="/auth/register"
-                className="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary/90 px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all duration-200"
                 onClick={() => setMobileOpen(false)}
               >
                 {t("nav.register")}

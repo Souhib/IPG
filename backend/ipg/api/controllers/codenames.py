@@ -12,6 +12,10 @@ from ipg.api.models.codenames import (
     CodenamesWordPack,
     CodenamesWordPackCreate,
 )
+from ipg.api.utils.cache import cache
+
+WORD_PACKS_CACHE_KEY = "codenames:word_packs"
+CACHE_TTL_SECONDS = 3600
 
 
 class CodenamesWordPackNotFoundError(Exception):
@@ -68,6 +72,7 @@ class CodenamesController:
             self.session.add(new_pack)
             await self.session.commit()
             await self.session.refresh(new_pack)
+            cache.invalidate(WORD_PACKS_CACHE_KEY)
             return new_pack
         except IntegrityError:
             await self.session.rollback()
@@ -78,7 +83,12 @@ class CodenamesController:
 
         :return: List of all word packs.
         """
-        return (await self.session.exec(select(CodenamesWordPack))).all()
+        cached = cache.get(WORD_PACKS_CACHE_KEY)
+        if cached is not None:
+            return cached  # type: ignore[return-value]
+        packs = (await self.session.exec(select(CodenamesWordPack))).all()
+        cache.set(WORD_PACKS_CACHE_KEY, packs, CACHE_TTL_SECONDS)
+        return packs
 
     async def get_word_pack(self, pack_id: UUID) -> CodenamesWordPack:
         """Get a word pack by ID.
@@ -102,6 +112,7 @@ class CodenamesController:
             db_pack = (await self.session.exec(select(CodenamesWordPack).where(CodenamesWordPack.id == pack_id))).one()
             await self.session.delete(db_pack)
             await self.session.commit()
+            cache.invalidate(WORD_PACKS_CACHE_KEY)
         except NoResultFound:
             raise CodenamesWordPackNotFoundError(pack_id=pack_id) from None
 

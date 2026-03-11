@@ -22,9 +22,14 @@
     <meta property="twitter:title" content="IPG - Islamic Party Games" />
     <meta property="twitter:description" content="Play Islamized versions of your favorite party games online with friends." />
 
-    <!-- Mobile Web App -->
+    <!-- Mobile Web App / PWA -->
     <meta name="theme-color" content="#2d6a4f" />
-    <meta name="application-name" content="IPG" />
+    <meta name="application-name" content="Majlisna" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Majlisna" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,6 +39,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
     <script>
       (function() {
         var url = '%VITE_UMAMI_URL%';

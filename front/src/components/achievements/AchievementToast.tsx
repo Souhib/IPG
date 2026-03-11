@@ -24,19 +24,31 @@ const TIER_COLORS: Record<number, string> = {
   6: "text-red-500",
 }
 
+const TIER_GLOW: Record<number, string> = {
+  1: "shadow-amber-700/20",
+  2: "shadow-gray-400/20",
+  3: "shadow-yellow-500/20",
+  4: "shadow-emerald-500/20",
+  5: "shadow-purple-500/20",
+  6: "shadow-red-500/20",
+}
+
 function AchievementToastContent({ achievement }: { achievement: UnlockedAchievement }) {
   const { t } = useTranslation()
   const color = TIER_COLORS[achievement.tier] ?? "text-primary"
+  const glow = TIER_GLOW[achievement.tier] ?? "shadow-primary/20"
 
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="flex items-center gap-3"
+      className={`flex items-center gap-3 rounded-2xl`}
     >
-      <span className={`text-2xl ${color}`}>{achievement.icon}</span>
+      <div className={`text-2xl ${color} ${glow} shadow-lg rounded-xl p-1.5`}>
+        {achievement.icon}
+      </div>
       <div>
-        <p className="font-semibold text-sm">{t("achievements.unlocked")}!</p>
+        <p className="font-bold text-sm">{t("achievements.unlocked")}!</p>
         <p className="text-xs text-muted-foreground">{achievement.name}</p>
       </div>
     </motion.div>

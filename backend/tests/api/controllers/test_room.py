@@ -466,8 +466,8 @@ async def test_update_room_settings_success(
     result = await room_controller.update_room_settings(sample_room.id, sample_owner.id, settings)
 
     # Assert
-    assert result["room_id"] == str(sample_room.id)
-    assert result["settings"] == settings
+    assert result.room_id == str(sample_room.id)
+    assert result.settings == settings
 
 
 async def test_update_room_settings_not_host(create_user, create_room, room_controller: RoomController):
@@ -493,12 +493,12 @@ async def test_rematch_success(sample_owner: User, sample_room: Room, room_contr
     result = await room_controller.rematch(sample_room.id, sample_owner.id)
 
     # Assert
-    assert result["room_id"] == str(sample_room.id)
-    assert result["status"] == "lobby"
+    assert result.room_id == str(sample_room.id)
+    assert result.status == "lobby"
 
 
 async def test_get_room_state_success(sample_owner: User, sample_room: Room, room_controller: RoomController):
-    """Getting room state returns a dict with players array and correct structure."""
+    """Getting room state returns a model with players array and correct structure."""
 
     # Arrange — provided by fixtures
 
@@ -506,10 +506,10 @@ async def test_get_room_state_success(sample_owner: User, sample_room: Room, roo
     state = await room_controller.get_room_state(sample_room.id, sample_owner.id)
 
     # Assert
-    assert state["id"] == str(sample_room.id)
-    assert state["owner_id"] == str(sample_owner.id)
-    assert isinstance(state["players"], list)
-    assert len(state["players"]) >= 1
-    owner_player = next(p for p in state["players"] if p["user_id"] == str(sample_owner.id))
-    assert owner_player["is_host"] is True
-    assert owner_player["is_connected"] is True
+    assert state.id == str(sample_room.id)
+    assert state.owner_id == str(sample_owner.id)
+    assert isinstance(state.players, list)
+    assert len(state.players) >= 1
+    owner_player = next(p for p in state.players if p.user_id == str(sample_owner.id))
+    assert owner_player.is_host is True
+    assert owner_player.is_connected is True

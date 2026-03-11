@@ -1,6 +1,16 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { type ReactNode } from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { GameOverScreen } from './GameOverScreen'
+
+const mockMutateAsync = vi.fn()
+
+vi.mock('@/api/generated', () => ({
+  useRematchApiV1RoomsRoomIdRematchPost: () => ({
+    mutateAsync: mockMutateAsync,
+    isPending: false,
+  }),
+}))
 
 vi.mock('@/api/client', () => ({
   default: vi.fn(),
@@ -11,6 +21,15 @@ vi.mock('sonner', () => ({
   toast: { error: vi.fn() },
 }))
 
+import { GameOverScreen } from './GameOverScreen'
+
+function createWrapper() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  return ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+}
+
 const defaultProps = {
   winner: 'red' as const,
   roomId: 'room-123',
@@ -19,7 +38,7 @@ const defaultProps = {
 }
 
 function renderGameOver(overrides: Partial<typeof defaultProps> = {}) {
-  return render(<GameOverScreen {...defaultProps} {...overrides} />)
+  return render(<GameOverScreen {...defaultProps} {...overrides} />, { wrapper: createWrapper() })
 }
 
 describe('GameOverScreen', () => {
@@ -58,9 +77,7 @@ describe('GameOverScreen', () => {
   })
 
   it('calls API and onBackToRoom when play again is clicked', async () => {
-    const { default: apiClient } = await import('@/api/client')
-    const mockedApiClient = vi.mocked(apiClient)
-    mockedApiClient.mockResolvedValueOnce({ data: {}, status: 200, statusText: 'OK' })
+    mockMutateAsync.mockResolvedValueOnce({})
 
     const onBackToRoom = vi.fn()
     renderGameOver({ roomId: 'room-456', onBackToRoom })
@@ -68,10 +85,7 @@ describe('GameOverScreen', () => {
     fireEvent.click(screen.getByText('game.playAgain'))
 
     await waitFor(() => {
-      expect(mockedApiClient).toHaveBeenCalledWith({
-        method: 'POST',
-        url: '/api/v1/rooms/room-456/rematch',
-      })
+      expect(mockMutateAsync).toHaveBeenCalledWith({ room_id: 'room-456' })
     })
 
     await waitFor(() => {

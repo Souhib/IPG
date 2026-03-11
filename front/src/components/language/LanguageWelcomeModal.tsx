@@ -96,7 +96,7 @@ export function LanguageWelcomeModal() {
     <AnimatePresence>
       {/* Backdrop */}
       <motion.div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -104,7 +104,7 @@ export function LanguageWelcomeModal() {
       >
         {/* Modal */}
         <motion.div
-          className="relative w-full max-w-md mx-4 rounded-2xl border bg-background p-6 shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md mx-4 glass rounded-2xl p-8 shadow-2xl shadow-black/10 overflow-hidden"
           initial={shouldReduceMotion ? {} : { scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -129,18 +129,18 @@ export function LanguageWelcomeModal() {
           </motion.div>
 
           {/* Header */}
-          <div className="relative text-center mb-5">
+          <div className="relative text-center mb-6">
             <motion.div
-              className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm"
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 text-primary"
               initial={shouldReduceMotion ? {} : { scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
             >
-              <BookOpen className="h-7 w-7" />
+              <BookOpen className="h-8 w-8" />
             </motion.div>
 
             <motion.p
-              className="text-xs font-medium uppercase tracking-widest text-muted-foreground"
+              className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
               animate={ready ? { opacity: 1, y: 0 } : {}}
               transition={{ type: "spring", stiffness: 300, damping: 24, delay: 0.2 }}
@@ -149,7 +149,7 @@ export function LanguageWelcomeModal() {
             </motion.p>
 
             <motion.h2
-              className="text-2xl font-bold text-primary"
+              className="text-3xl font-extrabold tracking-tight gradient-text"
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
               animate={ready ? { opacity: 1, y: 0 } : {}}
               transition={{ type: "spring", stiffness: 300, damping: 24, delay: 0.28 }}
@@ -158,7 +158,7 @@ export function LanguageWelcomeModal() {
             </motion.h2>
 
             <motion.p
-              className="mt-2 flex items-baseline justify-center gap-2 flex-wrap text-muted-foreground"
+              className="mt-3 flex items-baseline justify-center gap-2 flex-wrap text-muted-foreground"
               initial={shouldReduceMotion ? {} : { opacity: 0 }}
               animate={ready ? { opacity: 1 } : {}}
               transition={{ duration: 0.3, delay: 0.35 }}
@@ -200,9 +200,9 @@ export function LanguageWelcomeModal() {
                   onClick={() => handleSelect(lang.code)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   className={cn(
-                    "group relative flex w-full flex-col items-center gap-2 rounded-2xl border p-4 text-center cursor-pointer transition-all duration-200",
+                    "group relative flex w-full flex-col items-center gap-2.5 rounded-2xl border p-5 text-center cursor-pointer transition-all duration-200",
                     "bg-background/60 backdrop-blur-sm border-border/40",
-                    "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5",
+                    "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     "active:scale-[0.97]",
                     selected === lang.code && "bg-primary/10 border-primary shadow-[0_0_24px_-6px_var(--primary)]",
@@ -231,7 +231,7 @@ export function LanguageWelcomeModal() {
                   <AnimatePresence>
                     {selected === lang.code && (
                       <motion.div
-                        className="absolute top-2 end-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                        className="absolute top-2 end-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground"
                         initial={shouldReduceMotion ? {} : { scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
@@ -244,7 +244,7 @@ export function LanguageWelcomeModal() {
 
                   {/* Flag */}
                   <motion.div
-                    className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50"
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/40"
                     whileHover={shouldReduceMotion ? {} : { scale: 1.1 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -254,7 +254,7 @@ export function LanguageWelcomeModal() {
                     </span>
                   </motion.div>
 
-                  <span lang={lang.code} className={cn("font-medium", lang.code === "ar" ? "text-xl" : "text-base")}>
+                  <span lang={lang.code} className={cn("font-semibold", lang.code === "ar" ? "text-xl" : "text-base")}>
                     {lang.fullName}
                   </span>
                 </button>
@@ -264,7 +264,7 @@ export function LanguageWelcomeModal() {
 
           {/* Skip button */}
           <motion.div
-            className="mt-4 text-center"
+            className="mt-5 text-center"
             initial={shouldReduceMotion ? {} : { opacity: 0 }}
             animate={ready ? { opacity: 1 } : {}}
             transition={{ duration: 0.3, delay: 0.65 }}
@@ -272,7 +272,7 @@ export function LanguageWelcomeModal() {
             <button
               type="button"
               onClick={handleSkip}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-4 py-1.5 text-sm text-muted-foreground transition-all duration-200 hover:text-foreground hover:border-border hover:bg-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Skip
               <ChevronRight className="h-3.5 w-3.5" />
