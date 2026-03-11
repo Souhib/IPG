@@ -89,6 +89,7 @@
   },
   "room": {
     "create": "Create Room",
+    "gameType": "Game Type",
     "join": "Join Room",
     "roomCode": "Room Code",
     "password": "Room Password",
