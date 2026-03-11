@@ -56,7 +56,7 @@ function HomePage() {
           className="inline-flex items-center gap-2 rounded-full border border-border/30 bg-primary/10 px-5 py-2 mb-8 shadow-sm"
         >
           <BookOpen className="h-4 w-4 text-primary" />
-          <span className="text-sm font-semibold text-primary tracking-wide">Learn & Play</span>
+          <span className="text-sm font-semibold text-primary tracking-wide">{t("home.learnAndPlay")}</span>
         </motion.div>
 
         <h1 className="text-7xl font-extrabold tracking-tighter gradient-text sm:text-8xl animate-scale-in">
