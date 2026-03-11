@@ -30,6 +30,5 @@ coverage
 *.local
 *.tsbuildinfo
 
-# Generated
+# Generated (route tree regenerated on dev server start)
 src/routeTree.gen.ts
-src/api/generated

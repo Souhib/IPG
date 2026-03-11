@@ -45,34 +45,38 @@ function CreateRoomPage() {
 
         {/* Game Type */}
         <div>
-          <label className="block text-sm font-medium mb-3">Game Type</label>
+          <label className="block text-sm font-medium mb-3">{t("room.gameType")}</label>
           <div className="grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setGameType("undercover")}
-              className={`card-hover rounded-2xl border-2 p-6 text-center transition-all duration-200 hover:-translate-y-0.5 ${
-                gameType === "undercover"
-                  ? "border-primary glass shadow-md shadow-primary/15"
-                  : "border-border/30 glass hover:border-primary/40 hover:shadow-lg"
-              }`}
-            >
-              <div className="text-3xl mb-3">🕵️</div>
-              <div className="font-extrabold tracking-tight">{t("games.undercover.name")}</div>
-              <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">3-12 players</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setGameType("codenames")}
-              className={`card-hover rounded-2xl border-2 p-6 text-center transition-all duration-200 hover:-translate-y-0.5 ${
-                gameType === "codenames"
-                  ? "border-primary glass shadow-md shadow-primary/15"
-                  : "border-border/30 glass hover:border-primary/40 hover:shadow-lg"
-              }`}
-            >
-              <div className="text-3xl mb-3">🔤</div>
-              <div className="font-extrabold tracking-tight">{t("games.codenames.name")}</div>
-              <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">4-10 players</div>
-            </button>
+            {(["undercover", "codenames"] as const).map((type) => {
+              const selected = gameType === type
+              const config = {
+                undercover: { icon: "🕵️", players: "3-12" },
+                codenames: { icon: "🔤", players: "4-10" },
+              }[type]
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setGameType(type)}
+                  className={`relative card-hover rounded-2xl border-2 p-6 text-center transition-all duration-200 hover:-translate-y-0.5 ${
+                    selected
+                      ? "border-primary bg-primary/10 shadow-lg shadow-primary/20 ring-2 ring-primary/30 scale-[1.02]"
+                      : "border-border/30 glass hover:border-primary/40 hover:shadow-lg opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  {selected && (
+                    <div className="absolute top-2.5 right-2.5 size-5 rounded-full bg-primary flex items-center justify-center">
+                      <svg className="size-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="text-3xl mb-3">{config.icon}</div>
+                  <div className={`font-extrabold tracking-tight ${selected ? "text-primary" : ""}`}>{t(`games.${type}.name`)}</div>
+                  <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">{config.players} {t("room.players")}</div>
+                </button>
+              )
+            })}
           </div>
         </div>
 

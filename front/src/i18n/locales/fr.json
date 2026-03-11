@@ -89,6 +89,7 @@
   },
   "room": {
     "create": "Créer un salon",
+    "gameType": "Type de jeu",
     "join": "Rejoindre un salon",
     "roomCode": "Code du salon",
     "password": "Mot de passe du salon",
