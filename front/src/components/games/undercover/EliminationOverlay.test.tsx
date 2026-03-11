@@ -17,7 +17,7 @@ describe('EliminationOverlay', () => {
   const defaultProps = {
     eliminatedUsername: 'Alice',
     eliminatedRole: 'civilian',
-    onNextRound: vi.fn(),
+    onDismiss: vi.fn(),
   }
 
   it('shows eliminated title', () => {
@@ -45,11 +45,11 @@ describe('EliminationOverlay', () => {
     expect(screen.getByText(/Mr. White/)).toBeInTheDocument()
   })
 
-  it('calls onNextRound when button clicked', () => {
-    const onNextRound = vi.fn()
-    render(<EliminationOverlay {...defaultProps} onNextRound={onNextRound} />)
-    fireEvent.click(screen.getByText('game.undercover.nextRound'))
-    expect(onNextRound).toHaveBeenCalledOnce()
+  it('calls onDismiss when button clicked', () => {
+    const onDismiss = vi.fn()
+    render(<EliminationOverlay {...defaultProps} onDismiss={onDismiss} />)
+    fireEvent.click(screen.getByText('game.undercover.continueGame'))
+    expect(onDismiss).toHaveBeenCalledOnce()
   })
 
   it('no username shown when undefined', () => {

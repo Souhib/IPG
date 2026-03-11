@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { motion } from "motion/react"
 import { Trophy } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import apiClient from "@/api/client"
+import { useGetLeaderboardApiV1StatsLeaderboardGet } from "@/api/generated"
 
 interface LeaderboardEntry {
   user_id: string
@@ -21,23 +21,42 @@ export const Route = createFileRoute("/leaderboard")({
   component: LeaderboardPage,
 })
 
+function RankBadge({ index }: { index: number }) {
+  if (index === 0) {
+    return (
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-sm font-bold text-white shadow-md shadow-amber-500/30">
+        1
+      </span>
+    )
+  }
+  if (index === 1) {
+    return (
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 text-sm font-bold text-white shadow-md shadow-gray-400/30">
+        2
+      </span>
+    )
+  }
+  if (index === 2) {
+    return (
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-amber-700 text-sm font-bold text-white shadow-md shadow-amber-700/30">
+        3
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex h-8 w-8 items-center justify-center text-sm font-mono tabular-nums text-muted-foreground">
+      #{index + 1}
+    </span>
+  )
+}
+
 function LeaderboardPage() {
   const { t } = useTranslation()
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [sortField, setSortField] = useState<SortField>("total_games_won")
 
-  useEffect(() => {
-    setIsLoading(true)
-    apiClient({
-      method: "GET",
-      url: "/api/v1/stats/leaderboard",
-      params: { stat_field: sortField, limit: 50 },
-    })
-      .then((res) => setEntries(res.data as LeaderboardEntry[]))
-      .catch(() => setEntries([]))
-      .finally(() => setIsLoading(false))
-  }, [sortField])
+  const { data: entries = [] as LeaderboardEntry[], isLoading } = useGetLeaderboardApiV1StatsLeaderboardGet(
+    { stat_field: sortField, limit: 50 },
+  ) as { data: LeaderboardEntry[] | undefined; isLoading: boolean }
 
   const sortTabs: { field: SortField; label: string }[] = [
     { field: "total_games_won", label: t("leaderboard.wins") },
@@ -46,28 +65,30 @@ function LeaderboardPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="mx-auto max-w-3xl px-4 py-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center gap-3 mb-8"
+        className="flex items-center gap-3 mb-10"
       >
-        <Trophy className="h-8 w-8 text-accent" />
-        <h1 className="text-3xl font-bold">{t("leaderboard.title")}</h1>
+        <div className="rounded-2xl bg-accent/10 p-3">
+          <Trophy className="h-7 w-7 text-accent" />
+        </div>
+        <h1 className="text-3xl font-extrabold tracking-tight gradient-text">{t("leaderboard.title")}</h1>
       </motion.div>
 
       {/* Sort Tabs */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-6">
         {sortTabs.map((tab) => (
           <button
             key={tab.field}
             type="button"
             onClick={() => setSortField(tab.field)}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-all duration-200 ${
               sortField === tab.field
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md shadow-primary/20"
+                : "bg-secondary/60 text-muted-foreground hover:bg-secondary hover:-translate-y-0.5"
             }`}
           >
             {tab.label}
@@ -79,27 +100,27 @@ function LeaderboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.15 }}
-        className="rounded-xl border bg-card overflow-hidden"
+        className="glass rounded-2xl border border-border/30 overflow-hidden"
       >
         <table className="w-full">
           <thead>
-            <tr className="border-b bg-muted/50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+            <tr className="border-b border-border/30 bg-muted/30">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.rank")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.player")}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.wins")}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.games")}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.winRate")}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("leaderboard.streak")}
               </th>
             </tr>
@@ -108,39 +129,49 @@ function LeaderboardPage() {
             {isLoading ? (
               <>
                 {[1, 2, 3].map((i) => (
-                  <tr key={i} className="border-b">
-                    <td colSpan={6} className="px-6 py-4">
-                      <div className="h-4 rounded bg-muted animate-pulse" />
+                  <tr key={i} className="border-b border-border/20">
+                    <td colSpan={6} className="px-6 py-5">
+                      <div className="h-4 rounded-full bg-muted animate-pulse" />
                     </td>
                   </tr>
                 ))}
               </>
             ) : entries.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                <td colSpan={6} className="px-6 py-16 text-center text-muted-foreground">
                   {t("leaderboard.noPlayers")}
                 </td>
               </tr>
             ) : (
               entries.map((entry, index) => (
-                <tr key={entry.user_id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-3 text-sm font-medium">
-                    {index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
+                <motion.tr
+                  key={entry.user_id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.03 }}
+                  className={`border-b border-border/20 last:border-b-0 transition-all duration-200 ${
+                    index < 3
+                      ? "bg-gradient-to-r from-accent/5 to-transparent hover:from-accent/10"
+                      : "hover:bg-muted/20"
+                  }`}
+                >
+                  <td className="px-6 py-4">
+                    <RankBadge index={index} />
                   </td>
-                  <td className="px-6 py-3 text-sm font-medium">
+                  <td className="px-6 py-4 text-sm font-semibold">
                     <Link
                       to="/players/$userId"
                       params={{ userId: entry.user_id }}
-                      className="hover:text-primary hover:underline transition-colors"
+                      className="hover:text-primary transition-colors duration-200"
                     >
                       {entry.username}
                     </Link>
                   </td>
-                  <td className="px-6 py-3 text-sm text-right">{entry.total_games_won}</td>
-                  <td className="px-6 py-3 text-sm text-right">{entry.total_games_played}</td>
-                  <td className="px-6 py-3 text-sm text-right">{entry.win_rate}%</td>
-                  <td className="px-6 py-3 text-sm text-right">{entry.longest_win_streak}</td>
-                </tr>
+                  <td className="px-6 py-4 text-sm text-right font-mono tabular-nums">{entry.total_games_won}</td>
+                  <td className="px-6 py-4 text-sm text-right font-mono tabular-nums text-muted-foreground">{entry.total_games_played}</td>
+                  <td className="px-6 py-4 text-sm text-right font-mono tabular-nums">{entry.win_rate}%</td>
+                  <td className="px-6 py-4 text-sm text-right font-mono tabular-nums">{entry.longest_win_streak}</td>
+                </motion.tr>
               ))
             )}
           </tbody>

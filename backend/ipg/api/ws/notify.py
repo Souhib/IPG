@@ -1,3 +1,4 @@
+import asyncio
 from uuid import UUID
 
 from loguru import logger
@@ -8,6 +9,23 @@ from ipg.api.models.table import Game
 from ipg.api.ws.server import sio
 from ipg.api.ws.state import fetch_room_state
 from ipg.database import get_engine
+
+# Strong references to prevent garbage collection of fire-and-forget tasks
+_pending_tasks: set[asyncio.Task] = set()
+
+
+def fire_notify_room_changed(room_id: str) -> None:
+    """Schedule room notification immediately (fire-and-forget)."""
+    task = asyncio.create_task(notify_room_changed(room_id))
+    _pending_tasks.add(task)
+    task.add_done_callback(_pending_tasks.discard)
+
+
+def fire_notify_game_changed(game_id: str, room_id: str | None = None) -> None:
+    """Schedule game notification immediately (fire-and-forget)."""
+    task = asyncio.create_task(notify_game_changed(game_id, room_id))
+    _pending_tasks.add(task)
+    task.add_done_callback(_pending_tasks.discard)
 
 
 async def _get_room_id_for_game(game_id: str) -> str | None:

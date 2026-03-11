@@ -1,8 +1,10 @@
-import { Settings } from "lucide-react"
+import { ChevronDown, Settings } from "lucide-react"
 import { memo, useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import apiClient, { getApiErrorMessage } from "@/api/client"
+import { getApiErrorMessage } from "@/api/client"
+import { useUpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch } from "@/api/generated"
+import { cn } from "@/lib/utils"
 
 interface RoomSettingsProps {
   roomId: string
@@ -21,7 +23,7 @@ export const RoomSettings = memo(function RoomSettings({
 }: RoomSettingsProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const settingsMutation = useUpdateRoomSettingsApiV1RoomsRoomIdSettingsPatch()
 
   const [descriptionTimer, setDescriptionTimer] = useState(0)
   const [votingTimer, setVotingTimer] = useState(0)
@@ -41,8 +43,9 @@ export const RoomSettings = memo(function RoomSettings({
 
   const timerLabel = (val: number) => (val === 0 ? t("room.noLimit") : `${val}s`)
 
+  const isSaving = settingsMutation.isPending
+
   const handleSave = useCallback(async () => {
-    setIsSaving(true)
     try {
       const payload: Record<string, unknown> = {}
       if (gameType === "undercover") {
@@ -53,38 +56,35 @@ export const RoomSettings = memo(function RoomSettings({
         payload.codenames_clue_timer = codenamesClueTimer
         payload.codenames_guess_timer = codenamesGuessTimer
       }
-      await apiClient({
-        method: "PATCH",
-        url: `/api/v1/rooms/${roomId}/settings`,
-        data: payload,
-      })
+      await settingsMutation.mutateAsync({ room_id: roomId, data: payload })
       toast.success(t("room.settingsSaved"))
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Failed to save settings"))
-    } finally {
-      setIsSaving(false)
     }
-  }, [roomId, gameType, descriptionTimer, votingTimer, codenamesClueTimer, codenamesGuessTimer, enableMrWhite, t])
+  }, [roomId, gameType, descriptionTimer, votingTimer, codenamesClueTimer, codenamesGuessTimer, enableMrWhite, t, settingsMutation])
 
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="glass rounded-2xl p-5">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 w-full text-left"
       >
-        <Settings className="h-4 w-4 text-muted-foreground" />
-        <h3 className="text-sm font-semibold flex-1">{t("room.settings")}</h3>
-        <span className="text-xs text-muted-foreground">{isOpen ? "▲" : "▼"}</span>
+        <Settings className="h-4 w-4 text-primary" />
+        <h3 className="text-sm font-bold flex-1">{t("room.settings")}</h3>
+        <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", isOpen && "rotate-180")} />
       </button>
 
-      {isOpen && (
-        <div className="mt-4 space-y-4">
+      <div className={cn(
+        "grid transition-all duration-300",
+        isOpen ? "grid-rows-[1fr] opacity-100 mt-5" : "grid-rows-[0fr] opacity-0",
+      )}>
+        <div className="overflow-hidden space-y-5">
           {gameType === "undercover" ? (
             <>
               {/* Description Timer */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-muted-foreground block mb-2">
                   {t("room.descriptionTimer")}
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
@@ -93,11 +93,12 @@ export const RoomSettings = memo(function RoomSettings({
                       key={val}
                       type="button"
                       onClick={() => setDescriptionTimer(val)}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={cn(
+                        "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         descriptionTimer === val
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted hover:bg-muted/80"
-                      }`}
+                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
+                          : "bg-muted/50 hover:bg-muted",
+                      )}
                     >
                       {timerLabel(val)}
                     </button>
@@ -107,7 +108,7 @@ export const RoomSettings = memo(function RoomSettings({
 
               {/* Voting Timer */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-muted-foreground block mb-2">
                   {t("room.votingTimer")}
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
@@ -116,11 +117,12 @@ export const RoomSettings = memo(function RoomSettings({
                       key={val}
                       type="button"
                       onClick={() => setVotingTimer(val)}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={cn(
+                        "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         votingTimer === val
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted hover:bg-muted/80"
-                      }`}
+                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
+                          : "bg-muted/50 hover:bg-muted",
+                      )}
                     >
                       {timerLabel(val)}
                     </button>
@@ -131,21 +133,24 @@ export const RoomSettings = memo(function RoomSettings({
               {/* Mr. White Toggle */}
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground">
+                  <label className="text-xs font-semibold text-muted-foreground">
                     {t("room.enableMrWhite")}
                   </label>
                   <button
                     type="button"
                     onClick={() => playerCount >= 4 && setEnableMrWhite(!enableMrWhite)}
                     disabled={playerCount < 4}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      enableMrWhite && playerCount >= 4 ? "bg-primary" : "bg-muted"
-                    } ${playerCount < 4 ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={cn(
+                      "relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200",
+                      enableMrWhite && playerCount >= 4 ? "bg-gradient-to-r from-primary to-primary/90" : "bg-muted",
+                      playerCount < 4 && "opacity-50 cursor-not-allowed",
+                    )}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        enableMrWhite && playerCount >= 4 ? "translate-x-6" : "translate-x-1"
-                      }`}
+                      className={cn(
+                        "inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200",
+                        enableMrWhite && playerCount >= 4 ? "translate-x-6" : "translate-x-1",
+                      )}
                     />
                   </button>
                 </div>
@@ -160,7 +165,7 @@ export const RoomSettings = memo(function RoomSettings({
             <>
               {/* Clue Timer */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-muted-foreground block mb-2">
                   {t("room.clueTimer")}
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
@@ -169,11 +174,12 @@ export const RoomSettings = memo(function RoomSettings({
                       key={val}
                       type="button"
                       onClick={() => setCodenamesClueTimer(val)}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={cn(
+                        "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         codenamesClueTimer === val
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted hover:bg-muted/80"
-                      }`}
+                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
+                          : "bg-muted/50 hover:bg-muted",
+                      )}
                     >
                       {timerLabel(val)}
                     </button>
@@ -183,7 +189,7 @@ export const RoomSettings = memo(function RoomSettings({
 
               {/* Guess Timer */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-muted-foreground block mb-2">
                   {t("room.guessTimer")}
                 </label>
                 <div className="flex gap-1.5 flex-wrap">
@@ -192,11 +198,12 @@ export const RoomSettings = memo(function RoomSettings({
                       key={val}
                       type="button"
                       onClick={() => setCodenamesGuessTimer(val)}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      className={cn(
+                        "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         codenamesGuessTimer === val
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted hover:bg-muted/80"
-                      }`}
+                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
+                          : "bg-muted/50 hover:bg-muted",
+                      )}
                     >
                       {timerLabel(val)}
                     </button>
@@ -210,12 +217,12 @@ export const RoomSettings = memo(function RoomSettings({
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/90 px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg disabled:opacity-50 transition-all duration-200"
           >
             {isSaving ? t("common.loading") : t("common.save")}
           </button>
         </div>
-      )}
+      </div>
     </div>
   )
 })

@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.2
+    hooks:
+      - id: ruff
+        args: [--select, "E,W,F,I,UP,B,SIM,C90,N,PL,ARG", --ignore, "E501,PLR0913,PLR2004,ARG002,B008"]
+        types: [python]
+        exclude: ^(tests/|scripts/)
+      - id: ruff-format
+        args: [--check]
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: Type checking with mypy
+        entry: uv run mypy ipg/
+        language: system
+        types: [python]
+        exclude: ^(tests/|scripts/)
+        pass_filenames: false
+
+fail_fast: false
+default_stages: [pre-commit]
+minimum_pre_commit_version: "3.0.0"
+
+exclude: |
+  (?x)(
+    ^\.git/|
+    ^\.pytest_cache/|
+    ^__pycache__/|
+    \.pyc$|
+    ^\.coverage$|
+    ^htmlcov/|
+    ^\.ruff_cache/
+  )

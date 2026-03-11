@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react"
-import { memo, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 
@@ -32,27 +32,43 @@ const roleColors: Record<string, string> = {
   mr_white: "text-purple-600 dark:text-purple-400",
 }
 
+const roleBg: Record<string, string> = {
+  civilian: "bg-green-500/5 border-green-500/20",
+  undercover: "bg-red-500/5 border-red-500/20",
+  mr_white: "bg-purple-500/5 border-purple-500/20",
+}
+
 export const VoteHistory = memo(function VoteHistory({ history }: VoteHistoryProps) {
   const { t } = useTranslation()
   const [expandedRound, setExpandedRound] = useState<number | null>(null)
 
+  // Auto-expand the latest round when history changes
+  useEffect(() => {
+    if (history.length > 0) {
+      setExpandedRound(history[history.length - 1].round)
+    }
+  }, [history.length])
+
   if (history.length === 0) return null
 
   return (
-    <div className="rounded-xl border bg-card p-4 mb-6">
-      <h3 className="font-semibold mb-3">{t("game.undercover.voteHistory")}</h3>
+    <div className="glass rounded-2xl p-5 mb-6">
+      <h3 className="font-bold mb-3">{t("game.undercover.voteHistory")}</h3>
       <div className="space-y-2">
         {history.map((round) => (
-          <div key={round.round} className="rounded-lg border bg-muted/30">
+          <div key={round.round} className={cn(
+            "rounded-xl border transition-all duration-200",
+            expandedRound === round.round ? "bg-muted/30" : "bg-muted/10 hover:bg-muted/20",
+          )}>
             <button
               type="button"
               onClick={() => setExpandedRound(expandedRound === round.round ? null : round.round)}
-              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium"
+              className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold"
             >
               <span>{t("game.undercover.round", { number: round.round })}</span>
               <div className="flex items-center gap-2">
                 {round.eliminated && (
-                  <span className={cn("text-xs", roleColors[round.eliminated.role] || "text-muted-foreground")}>
+                  <span className={cn("text-xs font-bold", roleColors[round.eliminated.role] || "text-muted-foreground")}>
                     {round.eliminated.username}
                   </span>
                 )}
@@ -64,16 +80,20 @@ export const VoteHistory = memo(function VoteHistory({ history }: VoteHistoryPro
               </div>
             </button>
             {expandedRound === round.round && (
-              <div className="px-3 pb-3 space-y-1">
+              <div className="px-4 pb-3.5 space-y-1.5">
                 {round.votes.map((vote) => (
                   <div key={vote.voter_id} className="flex items-center text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">{vote.voter}</span>
-                    <span className="mx-1">&rarr;</span>
-                    <span className="font-medium text-foreground">{vote.target}</span>
+                    <span className="font-semibold text-foreground">{vote.voter}</span>
+                    <span className="mx-1.5 text-primary">&rarr;</span>
+                    <span className="font-semibold text-foreground">{vote.target}</span>
                   </div>
                 ))}
                 {round.eliminated && (
-                  <div className={cn("text-xs font-medium mt-2 pt-2 border-t", roleColors[round.eliminated.role] || "text-muted-foreground")}>
+                  <div className={cn(
+                    "text-xs font-bold mt-2.5 pt-2.5 border-t rounded-lg px-3 py-2",
+                    roleBg[round.eliminated.role] || "",
+                    roleColors[round.eliminated.role] || "text-muted-foreground",
+                  )}>
                     {t("game.undercover.wasEliminated", {
                       username: round.eliminated.username,
                       role: round.eliminated.role,

@@ -13,41 +13,56 @@ function HomePage() {
   const { isAuthenticated } = useAuth()
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16">
+    <div className="relative mx-auto max-w-7xl px-4 py-20">
+      {/* Mesh gradient background */}
+      <div className="pointer-events-none absolute inset-0 -top-20 overflow-hidden">
+        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-primary/8 blur-[120px]" />
+        <div className="absolute right-1/4 top-20 h-[400px] w-[400px] rounded-full bg-accent/8 blur-[100px]" />
+        <div className="absolute left-1/2 top-40 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-primary/5 blur-[80px]" />
+      </div>
+
       {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center"
+        className="relative text-center"
       >
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 mb-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="inline-flex items-center gap-2 rounded-full border border-border/30 bg-primary/10 px-5 py-2 mb-8 shadow-sm"
+        >
           <BookOpen className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Learn & Play</span>
-        </div>
-        <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
+          <span className="text-sm font-semibold text-primary tracking-wide">Learn & Play</span>
+        </motion.div>
+
+        <h1 className="text-7xl font-extrabold tracking-tighter gradient-text sm:text-8xl animate-scale-in">
           {t("home.title")}
         </h1>
-        <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+
+        <p className="mt-8 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-slide-up">
           {t("home.subtitle")}
         </p>
+
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-10 flex items-center justify-center gap-4"
+          className="mt-12 flex items-center justify-center gap-4"
         >
           {isAuthenticated ? (
             <>
               <Link
                 to="/rooms/create"
-                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                className="rounded-2xl bg-gradient-to-r from-primary to-primary/90 px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
               >
                 {t("home.createRoom")}
               </Link>
               <Link
                 to="/rooms"
-                className="rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary/80 transition-colors"
+                className="rounded-2xl border border-border/50 bg-secondary/80 px-8 py-3.5 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
               >
                 {t("home.joinRoom")}
               </Link>
@@ -56,13 +71,13 @@ function HomePage() {
             <>
               <Link
                 to="/auth/register"
-                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                className="rounded-2xl bg-gradient-to-r from-primary to-primary/90 px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
               >
                 {t("home.playNow")}
               </Link>
               <Link
                 to="/auth/login"
-                className="rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary/80 transition-colors"
+                className="rounded-2xl border border-border/50 bg-secondary/80 px-8 py-3.5 text-sm font-semibold text-secondary-foreground shadow-sm hover:bg-secondary hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
               >
                 {t("nav.login")}
               </Link>
@@ -72,24 +87,24 @@ function HomePage() {
       </motion.div>
 
       {/* Games Section */}
-      <div className="mt-16 grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
+      <div className="relative mt-20 grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
         {/* Undercover */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="rounded-xl border bg-card p-8 shadow-sm hover:shadow-md transition-shadow"
+          className="glass rounded-2xl border border-border/30 p-8 card-hover hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-lg bg-primary/10 p-3">
+            <div className="rounded-2xl bg-primary/10 p-3">
               <Shield className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold">{t("games.undercover.name")}</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">{t("games.undercover.name")}</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
             {t("games.undercover.description")}
           </p>
-          <div className="mt-6 flex gap-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               {t("games.undercover.roles.civilian")}
             </span>
@@ -100,9 +115,10 @@ function HomePage() {
               {t("games.undercover.roles.mrWhite")}
             </span>
           </div>
-          <div className="mt-4 flex items-center gap-1 text-sm text-muted-foreground">
+          <div className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
-            <span>3-12 players</span>
+            <span className="font-mono tabular-nums">3-12</span>
+            <span>players</span>
           </div>
         </motion.div>
 
@@ -111,13 +127,13 @@ function HomePage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.65 }}
-          className="rounded-xl border bg-card p-8 shadow-sm hover:shadow-md transition-shadow"
+          className="glass rounded-2xl border border-border/30 p-8 card-hover hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-lg bg-accent/10 p-3">
+            <div className="rounded-2xl bg-accent/10 p-3">
               <Grid2x2 className="h-6 w-6 text-accent" />
             </div>
-            <h2 className="text-2xl font-bold">{t("games.codenames.name")}</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">{t("games.codenames.name")}</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
             {t("games.codenames.description")}
@@ -130,9 +146,10 @@ function HomePage() {
               {t("games.codenames.teams.blue")}
             </span>
           </div>
-          <div className="mt-4 flex items-center gap-1 text-sm text-muted-foreground">
+          <div className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
-            <span>4-10 players</span>
+            <span className="font-mono tabular-nums">4-10</span>
+            <span>players</span>
           </div>
         </motion.div>
       </div>

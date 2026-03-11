@@ -33,6 +33,7 @@ from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.room import RoomCreate, RoomStatus
 from ipg.api.models.table import Room, User
 from ipg.api.models.undercover import TermPair, Word, WordCreate
+from ipg.api.utils.cache import cache
 from ipg.settings import Settings
 
 # ========== PyTest Configuration ==========
@@ -77,6 +78,17 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "postgres" in item.keywords:
                 item.add_marker(skip_postgres)
+
+
+# ========== Cache Cleanup ==========
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    """Clear the TTL cache before and after each test to prevent cross-test pollution."""
+    cache.clear()
+    yield
+    cache.clear()
 
 
 # ========== Core Infrastructure ==========

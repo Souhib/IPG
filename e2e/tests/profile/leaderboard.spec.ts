@@ -48,6 +48,6 @@ test.describe("Leaderboard — Data Display", () => {
     await winRateTab.click();
 
     // After clicking, the Win Rate tab should have the active style
-    await expect(winRateTab).toHaveClass(/bg-primary/);
+    await expect(winRateTab).toHaveClass(/from-primary/);
   });
 });

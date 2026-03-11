@@ -62,9 +62,11 @@ describe('VoteHistory', () => {
 
   it('shows eliminated player name in collapsed view', () => {
     render(<VoteHistory history={sampleHistory} />)
-    // Eliminated names are shown in collapsed view
+    // Eliminated names appear in the collapsed headers.
+    // The latest round auto-expands, so 'Charlie' may appear multiple times
+    // (collapsed header + expanded vote details). Use getAllByText.
     expect(screen.getByText('Bob')).toBeInTheDocument()
-    expect(screen.getByText('Charlie')).toBeInTheDocument()
+    expect(screen.getAllByText('Charlie').length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows vote arrows (voter -> target) when expanded', () => {

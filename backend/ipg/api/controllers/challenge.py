@@ -8,25 +8,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.models.challenge import ChallengeDefinition, ChallengeType, UserChallenge
-from ipg.api.schemas.shared import BaseModel
-
-
-class ActiveChallenge(BaseModel):
-    """Challenge view for API response."""
-
-    id: UUID
-    code: str
-    description: str
-    challenge_type: str
-    target_count: int
-    game_type: str | None
-    condition: str
-    role: str | None
-    progress: int
-    completed: bool
-    assigned_at: str
-    expires_at: str
-
+from ipg.api.schemas.challenge import ActiveChallenge
 
 # Seed data for challenge definitions
 CHALLENGE_DEFINITIONS: list[dict] = [

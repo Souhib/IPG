@@ -31,7 +31,17 @@ from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.table import Game, Room, User
 from ipg.api.models.undercover import UndercoverRole
+from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerExpiredResponse
 from ipg.api.schemas.error import BaseError
+from ipg.api.schemas.undercover import (
+    EliminatedPlayer,
+    StartNextRoundResponse,
+    SubmitDescriptionResponse,
+    SubmitVoteResponse,
+    UndercoverGameState,
+    UndercoverPlayerState,
+    WordExplanations,
+)
 
 
 class UndercoverGameController:
@@ -110,7 +120,7 @@ class UndercoverGameController:
 
         return alive_ids
 
-    async def create_and_start(self, room_id: UUID, user_id: UUID) -> dict:
+    async def create_and_start(self, room_id: UUID, user_id: UUID) -> GameStartResponse:
         """Start a new Undercover game in the given room."""
         async with get_game_lock(f"room:{room_id}", self.session):
             db_room = await self._room_controller.get_room_by_id(room_id)
@@ -231,12 +241,12 @@ class UndercoverGameController:
 
             await self.session.commit()
 
-            return {
-                "game_id": str(db_game.id),
-                "room_id": str(db_room.id),
-            }
+            return GameStartResponse(
+                game_id=str(db_game.id),
+                room_id=str(db_room.id),
+            )
 
-    async def start_next_round(self, game_id: UUID, room_id: UUID, user_id: UUID) -> dict:
+    async def start_next_round(self, game_id: UUID, room_id: UUID, user_id: UUID) -> StartNextRoundResponse:
         """Start a new round (turn) in an existing game."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -275,13 +285,13 @@ class UndercoverGameController:
                 if p:
                     description_order_with_names.append({"user_id": uid, "username": p["username"]})
 
-        return {
-            "game_id": str(game_id),
-            "turn_number": len(state["turns"]),
-            "description_order": description_order_with_names,
-        }
+        return StartNextRoundResponse(
+            game_id=str(game_id),
+            turn_number=len(state["turns"]),
+            description_order=description_order_with_names,
+        )
 
-    async def submit_description(self, game_id: UUID, user_id: UUID, word: str) -> dict:
+    async def submit_description(self, game_id: UUID, user_id: UUID, word: str) -> SubmitDescriptionResponse:
         """Submit a single-word description for the current turn."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -330,13 +340,13 @@ class UndercoverGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {
-            "game_id": str(game_id),
-            "all_described": all_done,
-            "word": word,
-        }
+        return SubmitDescriptionResponse(
+            game_id=str(game_id),
+            all_described=all_done,
+            word=word,
+        )
 
-    async def submit_vote(self, game_id: UUID, user_id: UUID, voted_for: UUID) -> dict:  # noqa: C901
+    async def submit_vote(self, game_id: UUID, user_id: UUID, voted_for: UUID) -> SubmitVoteResponse:  # noqa: C901
         """Submit a vote for a player."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -377,20 +387,20 @@ class UndercoverGameController:
             alive_count = sum(1 for p in state["players"] if p["is_alive"])
             all_voted = len(state["turns"][-1]["votes"]) == alive_count
 
-            result: dict = {"game_id": str(game_id), "all_voted": all_voted}
+            result = SubmitVoteResponse(game_id=str(game_id), all_voted=all_voted)
 
             if all_voted:
                 eliminated_player, number_of_votes = self._eliminate_player_based_on_votes(state)
                 winner = self._get_winning_team(state)
 
-                result["eliminated_player"] = eliminated_player["user_id"]
-                result["eliminated_player_role"] = eliminated_player["role"]
-                result["eliminated_player_username"] = eliminated_player["username"]
-                result["number_of_votes"] = number_of_votes
+                result.eliminated_player = eliminated_player["user_id"]
+                result.eliminated_player_role = eliminated_player["role"]
+                result.eliminated_player_username = eliminated_player["username"]
+                result.number_of_votes = number_of_votes
 
                 if winner:
                     winner_label = "civilians" if winner == UndercoverRole.CIVILIAN.value else "undercovers"
-                    result["winner"] = winner_label
+                    result.winner = winner_label
                     game.game_status = GameStatus.FINISHED
                     game.end_time = datetime.now()
                     # Clear active game on room
@@ -403,7 +413,7 @@ class UndercoverGameController:
                     if newly_unlocked:
                         state["newly_unlocked_achievements"] = newly_unlocked
                 else:
-                    result["winner"] = None
+                    result.winner = None
 
             game.live_state = state
             flag_modified(game, "live_state")
@@ -443,7 +453,7 @@ class UndercoverGameController:
         elapsed = (datetime.now(UTC) - started).total_seconds()
         return elapsed >= allowed - TIMER_EXPIRATION_TOLERANCE_SECONDS
 
-    async def handle_timer_expired(self, game_id: UUID, user_id: UUID) -> dict:
+    async def handle_timer_expired(self, game_id: UUID, user_id: UUID) -> TimerExpiredResponse:
         """Handle timer expiration — auto-skip description or auto-random-vote."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -459,7 +469,7 @@ class UndercoverGameController:
                 )
 
             if not self._is_timer_actually_expired(state):
-                return {"game_id": str(game_id), "action": "timer_not_expired"}
+                return TimerExpiredResponse(game_id=str(game_id), action="timer_not_expired")
 
             current_turn = state["turns"][-1]
             action = "none"
@@ -496,7 +506,7 @@ class UndercoverGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {"game_id": str(game_id), "action": action}
+        return TimerExpiredResponse(game_id=str(game_id), action=action)
 
     def _eliminate_player_based_on_votes(self, state: dict) -> tuple[dict, int]:
         """Eliminate the player with the most votes. Returns (eliminated_player, vote_count)."""
@@ -548,78 +558,117 @@ class UndercoverGameController:
 
     async def get_state(
         self, game_id: UUID, user_id: UUID, sid: str | None = None, lang: str = "en", update_heartbeat: bool = True
-    ) -> dict:
-        """Get full game state for a player. Used for polling and initial page load."""
+    ) -> UndercoverGameState:
+        """Get full game state for a player or spectator. Used for polling and initial page load."""
         game = await self._get_game(game_id)
         state = game.live_state
 
         player = next((p for p in state["players"] if p["user_id"] == str(user_id)), None)
-        if not player:
-            raise PlayerRemovedFromGameError(user_id=str(user_id), game_id=str(game_id))
 
-        # Update heartbeat
-        if update_heartbeat:
+        # Check if user is a spectator
+        is_spectator = False
+        if not player:
             link = (
                 await self.session.exec(
                     select(RoomUserLink)
                     .where(RoomUserLink.room_id == game.room_id)
                     .where(RoomUserLink.user_id == user_id)
+                    .where(RoomUserLink.is_spectator == True)  # noqa: E712
                 )
             ).first()
-            if link:
-                link.last_seen_at = datetime.now()
-                link.connected = True
-                if link.disconnected_at is not None:
-                    link.disconnected_at = None
-                self.session.add(link)
-                await self.session.commit()
+            if not link:
+                raise PlayerRemovedFromGameError(user_id=str(user_id), game_id=str(game_id))
+            is_spectator = True
 
-        my_word = self._get_player_word(player, state)
-        my_word_hint = self._get_player_word_hint(player, state, lang)
-        turn_state = self._build_turn_state(state, str(user_id))
+        # Update heartbeat (throttled: skip if last_seen_at is recent to reduce write contention)
+        if update_heartbeat:
+            await self._update_heartbeat_throttled(game.room_id, user_id)
+
         winner = self._get_winner_label(state)
         is_host = await self._check_is_host(game.room_id, user_id)
         vote_history = self._build_vote_history(state)
 
-        result = {
-            "game_id": str(game.id),
-            "room_id": str(game.room_id),
-            "is_host": is_host,
-            "my_role": player["role"],
-            "my_word": my_word,
-            "my_word_hint": my_word_hint,
-            "is_alive": player["is_alive"],
-            "players": [
-                {
-                    "user_id": p["user_id"],
-                    "username": p["username"],
-                    "is_alive": p["is_alive"],
-                    "is_mayor": p.get("is_mayor", False),
-                }
+        if is_spectator:
+            # Spectators see descriptions/votes but NOT roles/words until game ends
+            word_explanations = None
+            my_role = "spectator"
+            my_word = ""
+            my_word_hint = None
+            if winner:
+                word_explanations = WordExplanations(
+                    civilian_word=state["civilian_word"],
+                    civilian_word_hint=self._resolve_hint(state.get("civilian_word_hint"), lang),
+                    undercover_word=state["undercover_word"],
+                    undercover_word_hint=self._resolve_hint(state.get("undercover_word_hint"), lang),
+                )
+            turn_state = self._build_turn_state(state, "")
+        else:
+            my_role = player["role"]
+            my_word = self._get_player_word(player, state)
+            my_word_hint = self._get_player_word_hint(player, state, lang)
+            turn_state = self._build_turn_state(state, str(user_id))
+            word_explanations = None
+            if winner:
+                word_explanations = WordExplanations(
+                    civilian_word=state["civilian_word"],
+                    civilian_word_hint=self._resolve_hint(state.get("civilian_word_hint"), lang),
+                    undercover_word=state["undercover_word"],
+                    undercover_word_hint=self._resolve_hint(state.get("undercover_word_hint"), lang),
+                )
+
+        return UndercoverGameState(
+            game_id=str(game.id),
+            room_id=str(game.room_id),
+            is_host=is_host,
+            is_spectator=is_spectator,
+            my_role=my_role,
+            my_word=my_word,
+            my_word_hint=my_word_hint,
+            is_alive=player["is_alive"] if player else False,
+            players=[
+                UndercoverPlayerState(
+                    user_id=p["user_id"],
+                    username=p["username"],
+                    is_alive=p["is_alive"],
+                    is_mayor=p.get("is_mayor", False),
+                )
                 for p in state["players"]
             ],
-            "eliminated_players": [
-                {"user_id": p["user_id"], "username": p["username"], "role": p["role"]}
+            eliminated_players=[
+                EliminatedPlayer(user_id=p["user_id"], username=p["username"], role=p["role"])
                 for p in state["eliminated_players"]
             ],
-            "turn_number": len(state["turns"]),
-            "winner": winner,
-            "vote_history": vote_history,
-            "timer_config": state.get("timer_config"),
-            "timer_started_at": state.get("timer_started_at"),
+            turn_number=len(state["turns"]),
+            winner=winner,
+            vote_history=vote_history,
+            timer_config=state.get("timer_config"),
+            timer_started_at=state.get("timer_started_at"),
+            word_explanations=word_explanations,
             **turn_state,
-        }
+        )
 
-        # When game is over, include word explanations for educational reveal
-        if winner:
-            result["word_explanations"] = {
-                "civilian_word": state["civilian_word"],
-                "civilian_word_hint": self._resolve_hint(state.get("civilian_word_hint"), lang),
-                "undercover_word": state["undercover_word"],
-                "undercover_word_hint": self._resolve_hint(state.get("undercover_word_hint"), lang),
-            }
-
-        return result
+    async def _update_heartbeat_throttled(self, room_id: UUID, user_id: UUID) -> None:
+        """Update heartbeat only if last_seen_at is stale (>10s) to reduce write contention."""
+        link = (
+            await self.session.exec(
+                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.user_id == user_id)
+            )
+        ).first()
+        if not link:
+            return
+        needs_update = (
+            link.disconnected_at is not None
+            or not link.connected
+            or not link.last_seen_at
+            or (datetime.now() - link.last_seen_at).total_seconds() > 10
+        )
+        if needs_update:
+            link.last_seen_at = datetime.now()
+            link.connected = True
+            if link.disconnected_at is not None:
+                link.disconnected_at = None
+            self.session.add(link)
+            await self.session.commit()
 
     async def _get_game(self, game_id: UUID) -> Game:
         """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
@@ -651,7 +700,7 @@ class UndercoverGameController:
             return None
         return hint_dict.get(lang) or hint_dict.get("en") or next(iter(hint_dict.values()), None)
 
-    async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> dict:
+    async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> HintRecordResponse:
         """Record that a player viewed a hint for a word (deduplicated)."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -668,7 +717,7 @@ class UndercoverGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {"game_id": str(game_id), "recorded": True}
+        return HintRecordResponse(game_id=str(game_id), recorded=True)
 
     def _build_turn_state(self, state: dict, user_id: str) -> dict:
         """Build the turn-specific state dict."""

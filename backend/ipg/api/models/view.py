@@ -27,10 +27,6 @@ class GameView(GameBase):
 class UserView(UserBase):
     id: UUID
 
-    class Config:
-        # Custom JSON encoders dictionary
-        json_encoders = {UUID: str}  # Convert UUIDs to strings
-
 
 class RoomView(RoomBase):
     id: UUID
@@ -41,7 +37,3 @@ class RoomView(RoomBase):
     type: RoomType
     users: list[UserView] = []
     games: list[Game] = []
-
-    class Config:
-        # Custom JSON encoders dictionary
-        json_encoders = {UUID: str}  # Convert UUIDs to strings

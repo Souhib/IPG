@@ -3,9 +3,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from ipg.api.controllers.profile import ProfileController, PublicProfile
+from ipg.api.controllers.profile import ProfileController
 from ipg.api.models.table import User
-from ipg.api.schemas.shared import BaseModel as PydanticBaseModel
+from ipg.api.schemas.profile import PublicProfile, UpdateBioRequest
 from ipg.dependencies import get_current_user, get_profile_controller
 
 router = APIRouter(
@@ -13,10 +13,6 @@ router = APIRouter(
     tags=["profiles"],
     responses={404: {"description": "Not found"}},
 )
-
-
-class UpdateBioRequest(PydanticBaseModel):
-    bio: str | None = None
 
 
 @router.get("/users/{user_id}", response_model=PublicProfile)

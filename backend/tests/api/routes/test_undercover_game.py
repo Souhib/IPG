@@ -9,6 +9,14 @@ from starlette.testclient import TestClient
 from ipg.api.controllers.undercover_game import UndercoverGameController
 from ipg.api.models.error import GameNotFoundError
 from ipg.api.models.table import User
+from ipg.api.schemas.common import GameStartResponse, HintRecordResponse
+from ipg.api.schemas.undercover import (
+    DescriptionOrderEntry,
+    StartNextRoundResponse,
+    SubmitDescriptionResponse,
+    SubmitVoteResponse,
+    UndercoverGameState,
+)
 from ipg.dependencies import get_current_user, get_undercover_game_controller
 
 BASE_URL = "/api/v1/undercover"
@@ -34,7 +42,9 @@ def test_start_game_success(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.create_and_start = AsyncMock(return_value={"game_id": str(game_id), "room_id": str(room_id)})
+    mock_controller.create_and_start = AsyncMock(
+        return_value=GameStartResponse(game_id=str(game_id), room_id=str(room_id))
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -77,26 +87,26 @@ def test_state_get_success(test_app: FastAPI, client: TestClient) -> None:
     # Arrange
     game_id = uuid4()
     user = _mock_user()
-    state_response = {
-        "game_id": str(game_id),
-        "room_id": str(uuid4()),
-        "is_host": True,
-        "my_role": "civilian",
-        "my_word": "prayer",
-        "is_alive": True,
-        "players": [
-            {"user_id": str(user.id), "username": "testplayer", "is_alive": True, "is_mayor": False},
-        ],
-        "eliminated_players": [],
-        "turn_number": 1,
-        "votes": {},
-        "has_voted": False,
-        "winner": None,
-        "turn_phase": "describing",
-        "description_order": [],
-        "current_describer_index": 0,
-        "descriptions": {},
-    }
+    state_response = UndercoverGameState(
+        game_id=str(game_id),
+        room_id=str(uuid4()),
+        is_host=True,
+        my_role="civilian",
+        my_word="prayer",
+        my_word_hint=None,
+        is_alive=True,
+        players=[],
+        eliminated_players=[],
+        turn_number=1,
+        winner=None,
+        vote_history=[],
+        votes={},
+        has_voted=False,
+        turn_phase="describing",
+        description_order=[],
+        current_describer_index=0,
+        descriptions={},
+    )
     mock_controller = Mock(spec=UndercoverGameController)
     mock_controller.get_state = AsyncMock(return_value=state_response)
     test_app.dependency_overrides[get_current_user] = lambda: user
@@ -124,7 +134,28 @@ def test_state_with_sid(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.get_state = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_state = AsyncMock(
+        return_value=UndercoverGameState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            is_host=False,
+            my_role="civilian",
+            my_word="test",
+            my_word_hint=None,
+            is_alive=True,
+            players=[],
+            eliminated_players=[],
+            turn_number=1,
+            winner=None,
+            vote_history=[],
+            votes={},
+            has_voted=False,
+            turn_phase="describing",
+            description_order=[],
+            current_describer_index=0,
+            descriptions={},
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -188,7 +219,7 @@ def test_describe_success(test_app: FastAPI, client: TestClient) -> None:
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
     mock_controller.submit_description = AsyncMock(
-        return_value={"game_id": str(game_id), "all_described": False, "word": "building"}
+        return_value=SubmitDescriptionResponse(game_id=str(game_id), all_described=False, word="building")
     )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
@@ -259,7 +290,7 @@ def test_vote_success(test_app: FastAPI, client: TestClient) -> None:
     voted_for = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.submit_vote = AsyncMock(return_value={"game_id": str(game_id), "all_voted": False})
+    mock_controller.submit_vote = AsyncMock(return_value=SubmitVoteResponse(game_id=str(game_id), all_voted=False))
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -288,12 +319,12 @@ def test_vote_all_voted(test_app: FastAPI, client: TestClient) -> None:
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
     mock_controller.submit_vote = AsyncMock(
-        return_value={
-            "game_id": str(game_id),
-            "all_voted": True,
-            "eliminated_player": str(eliminated_id),
-            "winner": None,
-        }
+        return_value=SubmitVoteResponse(
+            game_id=str(game_id),
+            all_voted=True,
+            eliminated_player=str(eliminated_id),
+            winner=None,
+        )
     )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
@@ -387,13 +418,13 @@ def test_next_round_success(test_app: FastAPI, client: TestClient) -> None:
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
     mock_controller.start_next_round = AsyncMock(
-        return_value={
-            "game_id": str(game_id),
-            "turn_number": 2,
-            "description_order": [
-                {"user_id": str(uuid4()), "username": "player1"},
+        return_value=StartNextRoundResponse(
+            game_id=str(game_id),
+            turn_number=2,
+            description_order=[
+                DescriptionOrderEntry(user_id=str(uuid4()), username="player1"),
             ],
-        }
+        )
     )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
@@ -463,7 +494,7 @@ def test_hint_viewed_success(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.record_hint_view = AsyncMock(return_value={"game_id": str(game_id), "recorded": True})
+    mock_controller.record_hint_view = AsyncMock(return_value=HintRecordResponse(game_id=str(game_id), recorded=True))
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -531,7 +562,28 @@ def test_state_with_lang_param(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.get_state = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_state = AsyncMock(
+        return_value=UndercoverGameState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            is_host=False,
+            my_role="civilian",
+            my_word="test",
+            my_word_hint=None,
+            is_alive=True,
+            players=[],
+            eliminated_players=[],
+            turn_number=1,
+            winner=None,
+            vote_history=[],
+            votes={},
+            has_voted=False,
+            turn_phase="describing",
+            description_order=[],
+            current_describer_index=0,
+            descriptions={},
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -552,7 +604,28 @@ def test_state_with_lang_and_sid(test_app: FastAPI, client: TestClient) -> None:
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.get_state = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_state = AsyncMock(
+        return_value=UndercoverGameState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            is_host=False,
+            my_role="civilian",
+            my_word="test",
+            my_word_hint=None,
+            is_alive=True,
+            players=[],
+            eliminated_players=[],
+            turn_number=1,
+            winner=None,
+            vote_history=[],
+            votes={},
+            has_voted=False,
+            turn_phase="describing",
+            description_order=[],
+            current_describer_index=0,
+            descriptions={},
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 
@@ -573,7 +646,28 @@ def test_state_defaults_lang_to_en(test_app: FastAPI, client: TestClient) -> Non
     game_id = uuid4()
     user = _mock_user()
     mock_controller = Mock(spec=UndercoverGameController)
-    mock_controller.get_state = AsyncMock(return_value={"game_id": str(game_id)})
+    mock_controller.get_state = AsyncMock(
+        return_value=UndercoverGameState(
+            game_id=str(game_id),
+            room_id=str(uuid4()),
+            is_host=False,
+            my_role="civilian",
+            my_word="test",
+            my_word_hint=None,
+            is_alive=True,
+            players=[],
+            eliminated_players=[],
+            turn_number=1,
+            winner=None,
+            vote_history=[],
+            votes={},
+            has_voted=False,
+            turn_phase="describing",
+            description_order=[],
+            current_describer_index=0,
+            descriptions={},
+        )
+    )
     test_app.dependency_overrides[get_current_user] = lambda: user
     test_app.dependency_overrides[get_undercover_game_controller] = lambda: mock_controller
 

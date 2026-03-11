@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from ipg.api.controllers.game import GameController
 from ipg.api.models.game import GameCreate, GameUpdate
 from ipg.api.models.table import Game
-from ipg.api.schemas.game import GameHistoryEntry
+from ipg.api.schemas.game import GameHistoryEntry, GameSummary
 from ipg.dependencies import get_game_controller
 
 router = APIRouter(
@@ -42,6 +42,16 @@ async def get_games_by_user(
 ) -> list[GameHistoryEntry]:
     """Get a user's game history, most recent first."""
     return list(await game_controller.get_games_by_user(user_id, limit=limit))
+
+
+@router.get("/{game_id}/summary", response_model=GameSummary)
+async def get_game_summary(
+    *,
+    game_id: UUID,
+    game_controller: Annotated[GameController, Depends(get_game_controller)],
+) -> GameSummary:
+    """Get a detailed game summary with players, roles, and history."""
+    return await game_controller.get_game_summary(game_id)
 
 
 @router.get("/{game_id}", response_model=Game)

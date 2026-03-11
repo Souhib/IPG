@@ -4,12 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
-   IBG Theme - Islamic Board Games
-   Warm forest green primary with amber/gold accent
-   Inspired by Islamic tilework, manuscripts & mosque interiors
+   Majlisna — "Luxe Arcade" Design System
+   Premium gaming feel (Apple Game Center) +
+   warm Islamic geometric art.
+   Glassmorphism, gradient accents, bold type,
+   micro-interactions, game-specific color IDs.
    ============================================ */
 :root {
-  /* Light Mode — Warm ivory / parchment feel */
+  /* Light Mode — warm ivory / parchment feel */
   --background: oklch(0.97 0.008 85);
   --foreground: oklch(0.2 0.03 155);
 
@@ -19,7 +21,8 @@
   --popover: oklch(0.985 0.006 85);
   --popover-foreground: oklch(0.2 0.03 155);
 
-  --primary: oklch(0.45 0.12 155);
+  /* Richer jewel-toned emerald */
+  --primary: oklch(0.52 0.15 160);
   --primary-foreground: oklch(0.98 0.005 155);
 
   --secondary: oklch(0.94 0.015 155);
@@ -28,7 +31,8 @@
   --muted: oklch(0.95 0.01 85);
   --muted-foreground: oklch(0.5 0.02 155);
 
-  --accent: oklch(0.72 0.14 65);
+  /* True regal gold */
+  --accent: oklch(0.78 0.15 75);
   --accent-foreground: oklch(0.22 0.03 65);
 
   --destructive: oklch(0.55 0.22 25);
@@ -36,10 +40,29 @@
 
   --border: oklch(0.9 0.015 85);
   --input: oklch(0.9 0.015 85);
-  --ring: oklch(0.45 0.12 155);
+  --ring: oklch(0.52 0.15 160);
 
-  --chart-1: oklch(0.45 0.12 155);
-  --chart-2: oklch(0.72 0.14 65);
+  /* Semantic tokens */
+  --success: oklch(0.60 0.18 145);
+  --success-foreground: oklch(0.98 0.005 145);
+  --warning: oklch(0.78 0.15 75);
+  --warning-foreground: oklch(0.22 0.03 75);
+  --info: oklch(0.60 0.12 240);
+  --info-foreground: oklch(0.98 0.005 240);
+
+  /* Glass surface */
+  --surface: oklch(0.99 0.004 85 / 0.7);
+  --surface-foreground: oklch(0.2 0.03 155);
+
+  /* Hover glow */
+  --glow: oklch(0.52 0.15 160 / 0.15);
+
+  /* Gradient anchors */
+  --gradient-start: oklch(0.52 0.15 160);
+  --gradient-end: oklch(0.78 0.15 75);
+
+  --chart-1: oklch(0.52 0.15 160);
+  --chart-2: oklch(0.78 0.15 75);
   --chart-3: oklch(0.55 0.14 25);
   --chart-4: oklch(0.55 0.10 240);
   --chart-5: oklch(0.58 0.16 280);
@@ -48,58 +71,77 @@
 
   --sidebar-background: oklch(0.97 0.008 85);
   --sidebar-foreground: oklch(0.2 0.03 155);
-  --sidebar-primary: oklch(0.45 0.12 155);
+  --sidebar-primary: oklch(0.52 0.15 160);
   --sidebar-primary-foreground: oklch(0.98 0.005 155);
-  --sidebar-accent: oklch(0.72 0.14 65);
+  --sidebar-accent: oklch(0.78 0.15 75);
   --sidebar-accent-foreground: oklch(0.22 0.03 65);
   --sidebar-border: oklch(0.9 0.015 85);
-  --sidebar-ring: oklch(0.45 0.12 155);
+  --sidebar-ring: oklch(0.52 0.15 160);
 }
 
 .dark {
-  /* Dark Mode — Warm dark charcoal (aged wood, earth tones) */
-  --background: oklch(0.16 0.025 80);
+  /* Dark Mode — subtle blue undertone for night-game feel */
+  --background: oklch(0.13 0.02 260);
   --foreground: oklch(0.94 0.008 85);
 
-  --card: oklch(0.20 0.025 80);
+  --card: oklch(0.18 0.02 260);
   --card-foreground: oklch(0.94 0.008 85);
 
-  --popover: oklch(0.20 0.025 80);
+  --popover: oklch(0.18 0.02 260);
   --popover-foreground: oklch(0.94 0.008 85);
 
-  --primary: oklch(0.62 0.14 155);
-  --primary-foreground: oklch(0.15 0.025 80);
+  --primary: oklch(0.65 0.16 160);
+  --primary-foreground: oklch(0.13 0.02 260);
 
-  --secondary: oklch(0.25 0.02 80);
+  --secondary: oklch(0.22 0.02 260);
   --secondary-foreground: oklch(0.94 0.008 85);
 
-  --muted: oklch(0.25 0.02 80);
+  --muted: oklch(0.22 0.02 260);
   --muted-foreground: oklch(0.68 0.01 85);
 
-  --accent: oklch(0.75 0.13 65);
-  --accent-foreground: oklch(0.18 0.025 80);
+  --accent: oklch(0.80 0.14 75);
+  --accent-foreground: oklch(0.13 0.02 260);
 
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.94 0.008 85);
 
-  --border: oklch(0.30 0.02 80);
-  --input: oklch(0.30 0.02 80);
-  --ring: oklch(0.58 0.12 155);
+  --border: oklch(0.26 0.02 260);
+  --input: oklch(0.26 0.02 260);
+  --ring: oklch(0.65 0.16 160);
 
-  --chart-1: oklch(0.62 0.14 155);
-  --chart-2: oklch(0.75 0.13 65);
+  /* Semantic tokens */
+  --success: oklch(0.65 0.16 145);
+  --success-foreground: oklch(0.13 0.02 260);
+  --warning: oklch(0.80 0.14 75);
+  --warning-foreground: oklch(0.13 0.02 260);
+  --info: oklch(0.65 0.12 240);
+  --info-foreground: oklch(0.13 0.02 260);
+
+  /* Glass surface */
+  --surface: oklch(0.18 0.02 260 / 0.8);
+  --surface-foreground: oklch(0.94 0.008 85);
+
+  /* Hover glow */
+  --glow: oklch(0.65 0.16 160 / 0.15);
+
+  /* Gradient anchors */
+  --gradient-start: oklch(0.65 0.16 160);
+  --gradient-end: oklch(0.80 0.14 75);
+
+  --chart-1: oklch(0.65 0.16 160);
+  --chart-2: oklch(0.80 0.14 75);
   --chart-3: oklch(0.58 0.12 25);
   --chart-4: oklch(0.62 0.10 240);
   --chart-5: oklch(0.62 0.14 280);
 
-  --sidebar-background: oklch(0.16 0.025 80);
+  --sidebar-background: oklch(0.13 0.02 260);
   --sidebar-foreground: oklch(0.94 0.008 85);
-  --sidebar-primary: oklch(0.62 0.14 155);
-  --sidebar-primary-foreground: oklch(0.15 0.025 80);
-  --sidebar-accent: oklch(0.75 0.13 65);
-  --sidebar-accent-foreground: oklch(0.18 0.025 80);
-  --sidebar-border: oklch(0.30 0.02 80);
-  --sidebar-ring: oklch(0.58 0.12 155);
+  --sidebar-primary: oklch(0.65 0.16 160);
+  --sidebar-primary-foreground: oklch(0.13 0.02 260);
+  --sidebar-accent: oklch(0.80 0.14 75);
+  --sidebar-accent-foreground: oklch(0.13 0.02 260);
+  --sidebar-border: oklch(0.26 0.02 260);
+  --sidebar-ring: oklch(0.65 0.16 160);
 }
 
 /* ============================================
@@ -125,6 +167,17 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-glow: var(--glow);
+  --color-gradient-start: var(--gradient-start);
+  --color-gradient-end: var(--gradient-end);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -175,4 +228,117 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* ============================================
+   Luxe Arcade — Utility Classes
+   ============================================ */
+
+/* Glassmorphism card */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Islamic geometric pattern background */
+.pattern-bg {
+  position: relative;
+}
+
+.pattern-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='none' stroke='currentColor' stroke-width='0.5' opacity='0.06'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='currentColor' stroke-width='0.3' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 25px -5px oklch(0 0 0 / 0.08),
+    0 0 15px -3px var(--glow);
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px var(--glow); }
+  50% { box-shadow: 0 0 20px 6px var(--glow); }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out both;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
 }

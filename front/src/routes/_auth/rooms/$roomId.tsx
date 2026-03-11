@@ -259,7 +259,7 @@ function RoomLobbyPage() {
   if (queryError && !roomData) {
     return (
       <div className="mx-auto max-w-lg px-4 py-8">
-        <div className="rounded-md bg-destructive/10 p-4 text-center text-destructive">
+        <div className="glass rounded-2xl p-6 text-center text-destructive border-destructive/30">
           {getApiErrorMessage(queryError, "Failed to load room details")}
         </div>
       </div>
@@ -267,25 +267,25 @@ function RoomLobbyPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
+    <div className="mx-auto max-w-lg px-4 py-8 animate-slide-up">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold">{t("room.lobby")}</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight gradient-text">{t("room.lobby")}</h1>
       </div>
 
       {/* Room Info */}
       {roomData && (
-        <div className="rounded-xl border bg-card p-6 mb-6">
-          <div className="flex items-center justify-between mb-3">
+        <div className="glass rounded-2xl p-6 mb-6 animate-scale-in">
+          <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-muted-foreground">Room Code</span>
             <button
               type="button"
               onClick={() => copyToClipboard(roomData.public_id, "Room Code")}
               className={cn(
-                "flex items-center gap-2 rounded-md px-3 py-1.5 font-mono text-lg font-bold transition-colors",
-                copied === "Room Code" ? "bg-primary/10 text-primary" : "bg-muted hover:bg-muted/80",
+                "flex items-center gap-2.5 rounded-xl px-4 py-2 font-mono text-2xl font-extrabold transition-all duration-200",
+                copied === "Room Code" ? "bg-primary/10 text-primary shadow-md shadow-primary/10" : "bg-muted/50 hover:bg-muted/80",
               )}
             >
-              <span className="tracking-widest">{roomData.public_id}</span>
+              <span className="tracking-[0.3em] tabular-nums">{roomData.public_id}</span>
               {copied === "Room Code" ? (
                 <Check className="h-4 w-4 text-primary" />
               ) : (
@@ -293,18 +293,18 @@ function RoomLobbyPage() {
               )}
             </button>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-4 border-t border-border/30">
             <span className="text-sm text-muted-foreground">Password</span>
             <button
               type="button"
               onClick={() => copyToClipboard(roomData.password, "Password")}
               className={cn(
-                "flex items-center gap-2 rounded-md px-3 py-1.5 font-mono text-lg font-bold transition-colors",
-                copied === "Password" ? "bg-primary/10 text-primary" : "bg-muted hover:bg-muted/80",
+                "flex items-center gap-2.5 rounded-xl px-4 py-2 font-mono text-xl font-extrabold transition-all duration-200",
+                copied === "Password" ? "bg-primary/10 text-primary shadow-md shadow-primary/10" : "bg-muted/50 hover:bg-muted/80",
               )}
             >
               <KeyRound className="h-4 w-4 text-muted-foreground" />
-              <span className="tracking-widest">{roomData.password}</span>
+              <span className="tracking-[0.3em] tabular-nums">{roomData.password}</span>
               {copied === "Password" ? (
                 <Check className="h-4 w-4 text-primary" />
               ) : (
@@ -316,11 +316,11 @@ function RoomLobbyPage() {
       )}
 
       {/* Players */}
-      <div className="rounded-xl border bg-card p-6 mb-6">
+      <div className="glass rounded-2xl p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
-          <Users className="h-5 w-5 text-muted-foreground" />
-          <h2 className="font-semibold">
-            {t("room.players")} ({players.length})
+          <Users className="h-5 w-5 text-primary" />
+          <h2 className="font-extrabold tracking-tight">
+            {t("room.players")} <span className="font-mono tabular-nums">({players.length})</span>
           </h2>
         </div>
 
@@ -331,12 +331,17 @@ function RoomLobbyPage() {
             {players.map((player) => (
               <div
                 key={player.id}
-                className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-2.5"
+                className="flex items-center justify-between rounded-xl bg-muted/30 px-4 py-3 border border-border/30 hover:bg-muted/50 transition-all duration-200"
               >
-                <span className="text-sm font-medium">{player.username}</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xs font-bold text-primary-foreground shadow-sm">
+                    {player.username.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium">{player.username}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   {player.is_host && (
-                    <span className="flex items-center gap-1 text-xs text-accent">
+                    <span className="flex items-center gap-1 rounded-lg bg-accent/10 px-2 py-1 text-xs font-bold text-accent">
                       <Crown className="h-3 w-3" />
                       {t("room.host")}
                     </span>
@@ -345,7 +350,7 @@ function RoomLobbyPage() {
                     <button
                       type="button"
                       onClick={() => handleKickPlayer(player.id)}
-                      className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                       title={t("room.kick")}
                     >
                       <X className="h-4 w-4" />
@@ -360,16 +365,16 @@ function RoomLobbyPage() {
 
       {/* Spectators */}
       {spectators.length > 0 && (
-        <div className="rounded-xl border bg-card p-6 mb-6">
+        <div className="glass rounded-2xl p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="h-5 w-5 text-muted-foreground" />
-            <h2 className="font-semibold">
-              {t("room.spectators")} ({spectators.length})
+            <h2 className="font-extrabold tracking-tight">
+              {t("room.spectators")} <span className="font-mono tabular-nums">({spectators.length})</span>
             </h2>
           </div>
           <div className="space-y-2">
             {spectators.map((spec) => (
-              <div key={spec.id} className="flex items-center rounded-lg bg-muted/30 px-4 py-2">
+              <div key={spec.id} className="flex items-center rounded-xl bg-muted/20 border border-border/30 px-4 py-2.5 transition-all duration-200">
                 <Eye className="mr-2 h-3 w-3 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">{spec.username}</span>
               </div>
@@ -384,7 +389,7 @@ function RoomLobbyPage() {
           <button
             type="button"
             onClick={() => setShowInviteModal(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 px-4 py-3.5 text-sm font-medium text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-200"
           >
             <UserPlus className="h-4 w-4" />
             {t("room.inviteFriend")}
@@ -405,17 +410,17 @@ function RoomLobbyPage() {
       {/* Game Type Selector + Start Button (host only) */}
       {isHost && !isSpectator && (
         <div className="mt-4 space-y-4">
-          <div className="rounded-xl border bg-card p-4">
-            <h3 className="text-sm font-semibold mb-3">Game Type</h3>
+          <div className="glass rounded-2xl p-5">
+            <h3 className="text-sm font-extrabold tracking-tight mb-3">Game Type</h3>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setGameType("undercover")}
                 className={cn(
-                  "flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-colors",
+                  "flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
                   gameType === "undercover"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted hover:bg-muted/80",
+                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md shadow-primary/20"
+                    : "glass hover:bg-muted/80",
                 )}
               >
                 Undercover
@@ -424,10 +429,10 @@ function RoomLobbyPage() {
                 type="button"
                 onClick={() => setGameType("codenames")}
                 className={cn(
-                  "flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-colors",
+                  "flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
                   gameType === "codenames"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted hover:bg-muted/80",
+                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md shadow-primary/20"
+                    : "glass hover:bg-muted/80",
                 )}
               >
                 Codenames
@@ -436,7 +441,7 @@ function RoomLobbyPage() {
           </div>
 
           {players.length < minPlayers && (
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground font-mono tabular-nums">
               {t("room.minPlayers", { count: minPlayers })}
             </p>
           )}
@@ -444,7 +449,7 @@ function RoomLobbyPage() {
             type="button"
             onClick={handleStartGame}
             disabled={players.length < minPlayers || isStartingGame}
-            className="w-full rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-3.5 text-base font-extrabold tracking-tight text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-50 transition-all duration-200"
           >
             {isStartingGame ? t("common.loading") : t("room.startGame")}
           </button>
@@ -455,7 +460,7 @@ function RoomLobbyPage() {
       <button
         type="button"
         onClick={handleLeaveRoom}
-        className="mt-6 w-full flex items-center justify-center gap-2 rounded-md border border-destructive/30 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+        className="mt-6 w-full flex items-center justify-center gap-2 rounded-xl border border-destructive/30 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-200"
       >
         <LogOut className="h-4 w-4" />
         {t("room.leave")}

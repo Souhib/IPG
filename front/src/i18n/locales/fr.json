@@ -11,7 +11,8 @@
     "submit": "Envoyer",
     "close": "Fermer",
     "or": "ou",
-    "goHome": "Retour à l'accueil"
+    "goHome": "Retour à l'accueil",
+    "retry": "Réessayer"
   },
   "nav": {
     "home": "Accueil",
@@ -112,7 +113,13 @@
     "guessTimer": "Chrono devinette (secondes)",
     "enableMrWhite": "Activer le rôle Mr. White",
     "spectators": "Spectateurs",
-    "watchGame": "Regarder"
+    "watchGame": "Regarder",
+    "kick": "Expulser",
+    "noLimit": "Sans limite",
+    "inviteFriend": "Inviter un ami",
+    "inviteSent": "Invitation envoyée !",
+    "inviteReceived": "{{username}} vous invite à rejoindre son salon",
+    "joinInvite": "Rejoindre"
   },
   "toast": {
     "playerJoined": "{{username}} a rejoint le salon",
@@ -151,6 +158,8 @@
     "backToRoom": "Retour au salon",
     "wordExplanations": "Explications des mots",
     "hintButton": "Afficher l'explication",
+    "spectating": "Spectateur",
+    "spectatorView": "Vous regardez cette partie",
     "undercover": {
       "iUnderstand": "J'ai compris",
       "nextRound": "Manche suivante",
@@ -179,7 +188,14 @@
       "voteHistory": "Historique des votes",
       "round": "Manche {{number}}",
       "votedForPlayer": "{{voter}} a voté contre {{target}}",
-      "wasEliminated": "{{username}} a été éliminé ({{role}})"
+      "wasEliminated": "{{username}} a été éliminé ({{role}})",
+      "describingTitle": "{{username}} décrit...",
+      "yourTurnToDescribe": "C'est votre tour de décrire !",
+      "voteProgress": "{{current}} / {{total}} ont voté",
+      "youHaveVoted": "Vous avez voté",
+      "playerHasVoted": "{{username}} a voté",
+      "voteBreakdown": "Détail des votes",
+      "continueGame": "Continuer"
     },
     "codenames": {
       "giveClue": "Donner un indice",
@@ -222,7 +238,14 @@
     "yourWins": "Vos victoires",
     "theirWins": "Leurs victoires",
     "draws": "Nuls",
-    "totalGames": "{{count}} parties ensemble"
+    "totalGames": "{{count}} parties ensemble",
+    "duration": "Durée",
+    "gameDetail": "Détail de la partie",
+    "playerRoles": "Rôles des joueurs",
+    "inProgress": "En cours",
+    "viewDetails": "Voir les détails",
+    "voteHistory": "Historique des votes",
+    "clueHistory": "Historique des indices"
   },
   "achievements": {
     "title": "Succès",
@@ -316,6 +339,7 @@
     "challengeCompleted": "Defi termine !"
   },
   "errors": {
+    "loadFailed": "Échec du chargement des données. Veuillez réessayer.",
     "api": {
       "userNotFound": "Utilisateur introuvable.",
       "userAlreadyExists": "Un compte avec cet e-mail existe déjà.",

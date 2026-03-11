@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react"
-import apiClient from "@/api/client"
+import { getMeApiV1AuthMeGet, refreshTokenApiV1AuthRefreshPost, logoutApiV1AuthLogoutPost } from "@/api/generated"
 import {
   clearAuthData,
   getStoredToken,
@@ -55,14 +55,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     isRefreshingRef.current = true
     try {
-      const response = await apiClient({
-        method: "POST",
-        url: "/api/v1/auth/refresh",
-        // Send refresh token as param if available (cookie is sent automatically)
-        params: storedRefreshToken ? { refresh_token: storedRefreshToken } : undefined,
-      })
+      const data = await refreshTokenApiV1AuthRefreshPost(
+        storedRefreshToken ? { refresh_token: storedRefreshToken } : undefined,
+      )
 
-      const { access_token, refresh_token, expires_in } = response.data as {
+      const { access_token, refresh_token, expires_in } = data as {
         access_token: string
         refresh_token: string
         expires_in: number
@@ -119,11 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       // First, try cookie-based auth via /me
       try {
-        const response = await apiClient({
-          method: "GET",
-          url: "/api/v1/auth/me",
-        })
-        const userData = response.data as UserData
+        const userData = await getMeApiV1AuthMeGet() as UserData
         setUser(userData)
         setToken("cookie-auth") // sentinel value — actual token is in httpOnly cookie
         setIsLoading(false)
@@ -172,7 +165,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     // Call backend logout to clear cookies
     try {
-      await apiClient({ method: "POST", url: "/api/v1/auth/logout" })
+      await logoutApiV1AuthLogoutPost()
     } catch {
       // Ignore — we clear local state regardless
     }

@@ -108,7 +108,8 @@ function CodenamesGamePage() {
     {
       query: {
         refetchOnWindowFocus: true,
-        refetchInterval: socketConnected ? false : 2_000,
+        refetchInterval: socketConnected ? 3_000 : 2_000,
+        refetchIntervalInBackground: true,
         enabled: !!user,
       },
     },
@@ -289,8 +290,8 @@ function CodenamesGamePage() {
   if (cancelMessage) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="rounded-xl border bg-destructive/10 p-8 text-center">
-          <h2 className="text-xl font-bold text-destructive mb-2">{t("game.gameOver")}</h2>
+        <div className="glass rounded-2xl border-border/30 p-8 text-center bg-destructive/10">
+          <h2 className="text-xl font-extrabold tracking-tight text-destructive mb-2">{t("game.gameOver")}</h2>
           <p className="text-muted-foreground">{cancelMessage}</p>
           <p className="text-sm text-muted-foreground mt-2">Redirecting...</p>
         </div>
@@ -308,13 +309,13 @@ function CodenamesGamePage() {
     }
     return (
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="rounded-xl border bg-destructive/10 p-8 text-center">
-          <h2 className="text-xl font-bold text-destructive mb-2">{t("common.error")}</h2>
+        <div className="glass rounded-2xl border-border/30 p-8 text-center bg-destructive/10">
+          <h2 className="text-xl font-extrabold tracking-tight text-destructive mb-2">{t("common.error")}</h2>
           <p className="text-muted-foreground">Failed to load game state. The game may no longer exist.</p>
           <button
             type="button"
             onClick={() => navigate({ to: "/" })}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="mt-4 rounded-2xl bg-gradient-to-r from-primary to-primary/90 px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-all duration-200"
           >
             {t("common.goHome")}
           </button>
@@ -341,7 +342,7 @@ function CodenamesGamePage() {
   const isVotingActive = !!gameState.current_turn?.clue_word && totalOperatives > 1 && votedCount > 0 && gameState.status === "in_progress"
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="mx-auto max-w-4xl px-4 py-6 min-h-screen">
       {/* Game Over Transition Overlay */}
       <AnimatePresence>
         {showGameOverTransition && (
@@ -349,21 +350,21 @@ function CodenamesGamePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-md"
           >
-            <motion.div className="text-center space-y-4">
+            <motion.div className="glass rounded-2xl border-border/30 p-10 text-center space-y-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.2 }}
               >
-                <Trophy className="h-16 w-16 mx-auto text-yellow-500" />
+                <Trophy className="h-16 w-16 mx-auto text-yellow-500 drop-shadow-lg" />
               </motion.div>
               <motion.h2
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-2xl font-bold"
+                className="text-2xl font-extrabold tracking-tight gradient-text"
               >
                 {t("game.gameOver")}
               </motion.h2>
@@ -393,7 +394,7 @@ function CodenamesGamePage() {
       {/* Spectator Badge */}
       {isSpectator && (
         <div className="mb-4 flex justify-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+          <div className="glass inline-flex items-center gap-1.5 rounded-full border-border/30 px-4 py-1.5 text-xs font-medium text-muted-foreground transition-all duration-200">
             <Eye className="h-3 w-3" />
             {t("game.spectating")}
           </div>
@@ -418,7 +419,7 @@ function CodenamesGamePage() {
 
       {/* Vote Progress */}
       {isVotingActive && (
-        <div className="mb-4 rounded-lg bg-muted/50 p-2 text-center text-sm text-muted-foreground">
+        <div className="mb-4 glass rounded-2xl border-border/30 p-3 text-center text-sm text-muted-foreground transition-all duration-200">
           {t("game.codenames.votesProgress", { current: votedCount, total: totalOperatives })}
         </div>
       )}
@@ -452,7 +453,7 @@ function CodenamesGamePage() {
         <button
           type="button"
           onClick={handleEndTurn}
-          className="w-full rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
+          className="w-full rounded-2xl border border-border/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2.5 text-sm font-medium text-primary hover:from-primary/20 hover:to-primary/10 transition-all duration-200"
         >
           {t("game.codenames.endTurn")}
         </button>
@@ -471,42 +472,48 @@ function CodenamesGamePage() {
 
       {/* Player List */}
       {gameState.players.length > 0 && (
-        <div className="mt-6 rounded-xl border bg-card p-4">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="mt-6 glass rounded-2xl border-border/30 p-5">
+          <div className="flex items-center gap-2 mb-4">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-semibold text-sm">{t("game.codenames.players")}</h3>
+            <h3 className="font-extrabold tracking-tight text-sm">{t("game.codenames.players")}</h3>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {/* Red Team */}
-            <div>
-              <h4 className="text-xs font-semibold text-red-600 dark:text-red-400 mb-2">
-                {t("games.codenames.teams.red")}
-              </h4>
-              <div className="space-y-1">
-                {redPlayers.map((p) => (
-                  <div key={p.user_id} className="flex items-center justify-between rounded px-2 py-1 bg-red-50 dark:bg-red-950/20 text-sm">
-                    <span>{p.username}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {p.role === "spymaster" ? t("games.codenames.roles.spymaster") : t("games.codenames.roles.operative")}
-                    </span>
-                  </div>
-                ))}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 w-1 rounded-full bg-red-500/70" />
+              <div className="pl-4">
+                <h4 className="text-xs font-extrabold tracking-tight text-red-600 dark:text-red-400 mb-2">
+                  {t("games.codenames.teams.red")}
+                </h4>
+                <div className="space-y-1.5">
+                  {redPlayers.map((p) => (
+                    <div key={p.user_id} className="flex items-center justify-between rounded-2xl px-3 py-1.5 bg-red-50/80 dark:bg-red-950/30 border border-red-200/30 dark:border-red-800/20 text-sm transition-all duration-200 hover:bg-red-100/80 dark:hover:bg-red-950/50">
+                      <span className="font-medium">{p.username}</span>
+                      <span className="text-xs text-muted-foreground font-mono tabular-nums">
+                        {p.role === "spymaster" ? t("games.codenames.roles.spymaster") : t("games.codenames.roles.operative")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             {/* Blue Team */}
-            <div>
-              <h4 className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">
-                {t("games.codenames.teams.blue")}
-              </h4>
-              <div className="space-y-1">
-                {bluePlayers.map((p) => (
-                  <div key={p.user_id} className="flex items-center justify-between rounded px-2 py-1 bg-blue-50 dark:bg-blue-950/20 text-sm">
-                    <span>{p.username}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {p.role === "spymaster" ? t("games.codenames.roles.spymaster") : t("games.codenames.roles.operative")}
-                    </span>
-                  </div>
-                ))}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 w-1 rounded-full bg-blue-500/70" />
+              <div className="pl-4">
+                <h4 className="text-xs font-extrabold tracking-tight text-blue-600 dark:text-blue-400 mb-2">
+                  {t("games.codenames.teams.blue")}
+                </h4>
+                <div className="space-y-1.5">
+                  {bluePlayers.map((p) => (
+                    <div key={p.user_id} className="flex items-center justify-between rounded-2xl px-3 py-1.5 bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/30 dark:border-blue-800/20 text-sm transition-all duration-200 hover:bg-blue-100/80 dark:hover:bg-blue-950/50">
+                      <span className="font-medium">{p.username}</span>
+                      <span className="text-xs text-muted-foreground font-mono tabular-nums">
+                        {p.role === "spymaster" ? t("games.codenames.roles.spymaster") : t("games.codenames.roles.operative")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -520,11 +527,11 @@ function CodenamesGamePage() {
 
       {/* My Info */}
       {!isSpectator && (
-        <div className="mt-6 rounded-lg bg-muted/50 p-3 text-center text-sm text-muted-foreground">
+        <div className="mt-6 glass rounded-2xl border-border/30 p-4 text-center text-sm text-muted-foreground transition-all duration-200">
           {t("game.codenames.youAre")}{" "}
           <span
             className={cn(
-              "font-semibold",
+              "font-extrabold tracking-tight",
               gameState.my_team === "red" ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400",
             )}
           >
@@ -532,7 +539,7 @@ function CodenamesGamePage() {
               ? t("games.codenames.teams.red")
               : t("games.codenames.teams.blue")}
           </span>{" "}
-          <span className="font-semibold">
+          <span className="font-extrabold tracking-tight">
             {gameState.my_role === "spymaster"
               ? t("games.codenames.roles.spymaster")
               : t("games.codenames.roles.operative")}

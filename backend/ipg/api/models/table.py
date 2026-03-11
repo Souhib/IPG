@@ -28,7 +28,7 @@ from ipg.api.models.user import UserBase
 class Room(RoomBase, table=True):
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, unique=True)
     public_id: str = Field(min_length=5, max_length=5, unique=True, index=True)
-    owner_id: UUID | None = Field(default=None, foreign_key="user.id", nullable=False)
+    owner_id: UUID | None = Field(default=None, foreign_key="user.id", nullable=False, index=True)
     created_at: datetime = Field(default_factory=datetime.now)
     type: RoomType = RoomType.ACTIVE
     settings: dict | None = Field(default=None, sa_column=Column(JSON))
@@ -47,8 +47,8 @@ class Room(RoomBase, table=True):
 
 class Game(GameBase, table=True):
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, unique=True)
-    room_id: UUID | None = Field(foreign_key="room.id")
-    user_id: UUID | None = Field(foreign_key="user.id")
+    room_id: UUID | None = Field(foreign_key="room.id", index=True)
+    user_id: UUID | None = Field(foreign_key="user.id", index=True)
     room: Room = Relationship(back_populates="games", link_model=RoomGameLink)
     users: list["User"] = Relationship(back_populates="games", link_model=UserGameLink)
     turns: list["Turn"] = Relationship(back_populates="game", link_model=GameTurnLink)

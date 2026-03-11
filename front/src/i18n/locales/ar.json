@@ -11,7 +11,8 @@
     "submit": "إرسال",
     "close": "إغلاق",
     "or": "أو",
-    "goHome": "العودة للرئيسية"
+    "goHome": "العودة للرئيسية",
+    "retry": "إعادة المحاولة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -118,7 +119,11 @@
     "spectators": "المشاهدون",
     "watchGame": "مشاهدة",
     "kick": "طرد",
-    "noLimit": "بلا حد"
+    "noLimit": "بلا حد",
+    "inviteFriend": "دعوة صديق",
+    "inviteSent": "تم إرسال الدعوة!",
+    "inviteReceived": "{{username}} دعاك للانضمام لغرفته",
+    "joinInvite": "انضم"
   },
   "toast": {
     "playerJoined": "{{username}} انضم للغرفة",
@@ -160,6 +165,8 @@
     "backToRoom": "العودة للغرفة",
     "wordExplanations": "شرح الكلمات",
     "hintButton": "عرض الشرح",
+    "spectating": "مشاهدة",
+    "spectatorView": "أنت تشاهد هذه اللعبة",
     "undercover": {
       "iUnderstand": "فهمت",
       "nextRound": "الجولة التالية",
@@ -188,7 +195,14 @@
       "voteHistory": "سجل التصويت",
       "round": "الجولة {{number}}",
       "votedForPlayer": "{{voter}} صوّت ضد {{target}}",
-      "wasEliminated": "{{username}} تم إقصاؤه ({{role}})"
+      "wasEliminated": "{{username}} تم إقصاؤه ({{role}})",
+      "describingTitle": "{{username}} يصف...",
+      "yourTurnToDescribe": "دورك للوصف!",
+      "voteProgress": "{{current}} / {{total}} صوّتوا",
+      "youHaveVoted": "لقد صوّتت",
+      "playerHasVoted": "{{username}} صوّت",
+      "voteBreakdown": "تفاصيل التصويت",
+      "continueGame": "متابعة"
     },
     "codenames": {
       "giveClue": "أعطِ تلميحاً",
@@ -236,7 +250,14 @@
     "yourWins": "انتصاراتك",
     "theirWins": "انتصاراتهم",
     "draws": "تعادل",
-    "totalGames": "{{count}} لعبة معاً"
+    "totalGames": "{{count}} لعبة معاً",
+    "duration": "المدة",
+    "gameDetail": "تفاصيل اللعبة",
+    "playerRoles": "أدوار اللاعبين",
+    "inProgress": "جارية",
+    "viewDetails": "عرض التفاصيل",
+    "voteHistory": "سجل التصويت",
+    "clueHistory": "سجل التلميحات"
   },
   "achievements": {
     "title": "الإنجازات",
@@ -342,6 +363,7 @@
     "challengeCompleted": "تم إكمال التحدي!"
   },
   "errors": {
+    "loadFailed": "فشل تحميل البيانات. يرجى المحاولة مرة أخرى.",
     "api": {
       "userNotFound": "المستخدم غير موجود.",
       "userAlreadyExists": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",

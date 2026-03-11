@@ -1,7 +1,6 @@
-import { Clock } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Clock, Timer, Trophy, Zap } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import apiClient from "@/api/client"
+import { useGetDurationStatsApiV1StatsUsersUserIdDurationGet } from "@/api/generated"
 
 interface DurationData {
   average_seconds: number
@@ -22,55 +21,49 @@ function formatDuration(seconds: number | null): string {
 
 export function DurationStats({ userId }: { userId: string }) {
   const { t } = useTranslation()
-  const [data, setData] = useState<DurationData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    apiClient({ method: "GET", url: `/api/v1/stats/users/${userId}/duration` })
-      .then((res) => setData(res.data as DurationData))
-      .catch(() => {})
-      .finally(() => setIsLoading(false))
-  }, [userId])
+  const { data, isLoading } = useGetDurationStatsApiV1StatsUsersUserIdDurationGet(
+    { user_id: userId },
+  ) as { data: DurationData | undefined; isLoading: boolean }
 
   if (isLoading) return null
   if (!data || data.total_games_with_duration === 0) return null
 
+  const stats = [
+    { label: t("stats.avgDuration"), value: formatDuration(data.average_seconds), icon: Clock },
+    { label: t("stats.fastestGame"), value: formatDuration(data.fastest_seconds), icon: Zap },
+    { label: t("stats.longestGame"), value: formatDuration(data.longest_seconds), icon: Trophy },
+    { label: t("stats.gamesTracked"), value: String(data.total_games_with_duration), icon: Timer },
+  ]
+
   return (
-    <div className="rounded-xl border bg-card p-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+    <div className="glass rounded-2xl p-6">
+      <h3 className="text-lg font-bold mb-5 flex items-center gap-2">
         <Clock className="h-5 w-5 text-primary" />
         {t("stats.gameDuration")}
       </h3>
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-        <div>
-          <p className="text-sm text-muted-foreground">{t("stats.avgDuration")}</p>
-          <p className="text-xl font-bold mt-1">{formatDuration(data.average_seconds)}</p>
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">{t("stats.fastestGame")}</p>
-          <p className="text-xl font-bold mt-1">{formatDuration(data.fastest_seconds)}</p>
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">{t("stats.longestGame")}</p>
-          <p className="text-xl font-bold mt-1">{formatDuration(data.longest_seconds)}</p>
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">{t("stats.gamesTracked")}</p>
-          <p className="text-xl font-bold mt-1">{data.total_games_with_duration}</p>
-        </div>
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-xl bg-muted/30 border border-border/30 p-3.5">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <stat.icon className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground font-medium">{stat.label}</p>
+            </div>
+            <p className="text-xl font-bold font-mono tabular-nums">{stat.value}</p>
+          </div>
+        ))}
       </div>
       {(data.undercover_avg_seconds || data.codenames_avg_seconds) && (
-        <div className="grid gap-4 grid-cols-2 mt-4 pt-4 border-t">
+        <div className="grid gap-4 grid-cols-2 mt-4 pt-4 border-t border-border/30">
           {data.undercover_avg_seconds && (
-            <div>
-              <p className="text-sm text-muted-foreground">{t("games.undercover.name")}</p>
-              <p className="text-lg font-semibold">{formatDuration(data.undercover_avg_seconds)}</p>
+            <div className="rounded-xl bg-muted/30 border border-border/30 p-3.5">
+              <p className="text-xs text-muted-foreground font-medium">{t("games.undercover.name")}</p>
+              <p className="text-lg font-bold font-mono tabular-nums mt-1">{formatDuration(data.undercover_avg_seconds)}</p>
             </div>
           )}
           {data.codenames_avg_seconds && (
-            <div>
-              <p className="text-sm text-muted-foreground">{t("games.codenames.name")}</p>
-              <p className="text-lg font-semibold">{formatDuration(data.codenames_avg_seconds)}</p>
+            <div className="rounded-xl bg-muted/30 border border-border/30 p-3.5">
+              <p className="text-xs text-muted-foreground font-medium">{t("games.codenames.name")}</p>
+              <p className="text-lg font-bold font-mono tabular-nums mt-1">{formatDuration(data.codenames_avg_seconds)}</p>
             </div>
           )}
         </div>

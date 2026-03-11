@@ -153,6 +153,8 @@ test.describe("WebSocket Real-time Updates", () => {
     await expect(
       refreshPlayer.page
         .locator('h2:has-text("Your Role")')
+        .or(refreshPlayer.page.locator("text=turn to describe"))
+        .or(refreshPlayer.page.locator("text=is describing"))
         .or(refreshPlayer.page.locator("text=Describe your word"))
         .or(refreshPlayer.page.locator("text=Discuss and vote"))
         .or(refreshPlayer.page.locator('h2:has-text("Game Over")'))

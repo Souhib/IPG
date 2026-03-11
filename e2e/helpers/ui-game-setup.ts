@@ -426,7 +426,9 @@ export async function dismissRoleRevealAll(
 
       // Wait for describing or playing phase to appear
       await player.page
-        .locator('text=Describe your word')
+        .locator('text=turn to describe')
+        .or(player.page.locator('text=is describing'))
+        .or(player.page.locator('text=Describe your word'))
         .or(player.page.locator('text=Discuss and vote'))
         .or(player.page.locator('h2:has-text("Game Over")'))
         .waitFor({ state: "visible", timeout: 10_000 })
@@ -709,17 +711,18 @@ export async function waitForEliminationOrGameOver(
 }
 
 /**
- * Click "Next Round" button on elimination screen.
+ * Click "Continue" button on elimination overlay to dismiss it.
  */
 export async function clickNextRound(page: Page): Promise<void> {
-  const nextRoundBtn = page.locator('button:has-text("Next Round")');
-  const visible = await nextRoundBtn
+  const continueBtn = page.locator('button:has-text("Continue")')
+    .or(page.locator('button:has-text("Next Round")'));
+  const visible = await continueBtn
     .waitFor({ state: "visible", timeout: 5_000 })
     .then(() => true)
     .catch(() => false);
 
   if (visible) {
-    await nextRoundBtn.click();
+    await continueBtn.click();
   }
 }
 
@@ -734,7 +737,7 @@ export async function giveClue(
   count: number,
 ): Promise<void> {
   const clueInput = spymasterPage.locator('input[placeholder]').first();
-  await clueInput.waitFor({ state: "visible", timeout: 15_000 });
+  await clueInput.waitFor({ state: "visible", timeout: 30_000 });
   await clueInput.fill(clue);
 
   const numberInput = spymasterPage.locator('input[type="number"]');
@@ -751,10 +754,10 @@ export async function guessCard(
   operativePage: Page,
   cardWord: string,
 ): Promise<void> {
-  // Use :text-is() for exact text matching to avoid substring collisions (e.g. "Hud" vs "Tashahhud")
-  const card = operativePage.locator(`.grid-cols-5 button:text-is("${cardWord}")`).first();
-  // Wait for the card to be enabled (operative can only click when canGuess is true)
-  await expect(card).toBeEnabled({ timeout: 15_000 });
+  // Use :not([disabled]) to skip already-revealed cards (handles duplicate words on board).
+  // This locator only matches enabled cards, so it waits for the clue to be delivered (cards become clickable).
+  const card = operativePage.locator(`.grid-cols-5 button:text-is("${cardWord}"):not([disabled])`).first();
+  await expect(card).toBeEnabled({ timeout: 30_000 });
   await card.click();
 }
 

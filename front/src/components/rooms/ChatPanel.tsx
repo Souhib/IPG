@@ -2,7 +2,8 @@ import { MessageCircle, Send, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-import apiClient, { getApiErrorMessage } from "@/api/client"
+import { getApiErrorMessage } from "@/api/client"
+import { getMessagesApiV1RoomsRoomIdMessagesGet, sendMessageApiV1RoomsRoomIdMessagesPost } from "@/api/generated"
 import { cn } from "@/lib/utils"
 
 interface ChatMessage {
@@ -40,12 +41,10 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
       if (lastMessageIdRef.current) {
         params.after_id = lastMessageIdRef.current
       }
-      const res = await apiClient({
-        method: "GET",
-        url: `/api/v1/rooms/${roomId}/messages`,
-        params,
-      })
-      const newMessages = res.data as ChatMessage[]
+      const newMessages = await getMessagesApiV1RoomsRoomIdMessagesGet(
+        { room_id: roomId },
+        params as Record<string, string | number>,
+      ) as ChatMessage[]
       if (newMessages.length > 0) {
         lastMessageIdRef.current = newMessages[newMessages.length - 1].id
         if (lastMessageIdRef.current && messages.length > 0) {
@@ -89,11 +88,7 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
     if (!trimmed || isSending) return
     setIsSending(true)
     try {
-      await apiClient({
-        method: "POST",
-        url: `/api/v1/rooms/${roomId}/messages`,
-        data: { message: trimmed },
-      })
+      await sendMessageApiV1RoomsRoomIdMessagesPost({ room_id: roomId }, { message: trimmed })
       setNewMessage("")
       // Immediately fetch to show the sent message
       await fetchMessages()
@@ -109,11 +104,11 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-primary p-4 text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-primary/90 p-4 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200"
       >
         <MessageCircle className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground shadow-sm animate-scale-in">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -122,17 +117,17 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex w-80 flex-col rounded-xl border bg-card shadow-xl sm:w-96">
+    <div className="fixed bottom-6 right-6 z-40 flex w-80 flex-col glass rounded-2xl shadow-2xl shadow-black/10 sm:w-96 animate-scale-in">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border/30 px-4 py-3">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">{t("chat.title")}</h3>
+          <h3 className="text-sm font-bold">{t("chat.title")}</h3>
         </div>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="rounded-md p-1 text-muted-foreground hover:text-foreground transition-colors"
+          className="rounded-xl p-1.5 text-muted-foreground hover:text-foreground hover:bg-glow transition-all duration-200"
         >
           <X className="h-4 w-4" />
         </button>
@@ -146,14 +141,16 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
           messages.map((msg) => {
             const isOwn = msg.user_id === currentUserId
             return (
-              <div key={msg.id} className={cn("flex flex-col", isOwn ? "items-end" : "items-start")}>
+              <div key={msg.id} className={cn("flex flex-col animate-slide-up", isOwn ? "items-end" : "items-start")}>
                 {!isOwn && (
-                  <span className="mb-0.5 text-[10px] font-medium text-muted-foreground">{msg.username}</span>
+                  <span className="mb-0.5 text-[10px] font-semibold text-muted-foreground">{msg.username}</span>
                 )}
                 <div
                   className={cn(
-                    "max-w-[75%] rounded-lg px-3 py-2 text-sm break-words",
-                    isOwn ? "bg-primary text-primary-foreground" : "bg-muted",
+                    "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm break-words",
+                    isOwn
+                      ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground"
+                      : "bg-muted/60",
                   )}
                 >
                   {msg.message}
@@ -166,7 +163,7 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
       </div>
 
       {/* Input */}
-      <div className="border-t px-3 py-2">
+      <div className="border-t border-border/30 px-3 py-2.5">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -174,7 +171,7 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={t("chat.placeholder")}
             maxLength={500}
-            className="flex-1 rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex-1 rounded-xl border border-border/50 bg-background/80 px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()
@@ -186,7 +183,7 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
             type="button"
             onClick={handleSend}
             disabled={isSending || !newMessage.trim()}
-            className="rounded-md bg-primary p-2 text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="rounded-xl bg-gradient-to-r from-primary to-primary/90 p-2.5 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
           </button>

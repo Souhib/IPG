@@ -36,26 +36,28 @@ export function RoleDistributionChart({
       {
         data: [timesCivilian, timesUndercover, timesMrWhite, timesSpymaster, timesOperative],
         backgroundColor: [
-          "hsl(142, 76%, 36%)",
-          "hsl(0, 72%, 51%)",
-          "hsl(271, 91%, 65%)",
-          "hsl(217, 91%, 60%)",
-          "hsl(45, 93%, 47%)",
+          "oklch(0.60 0.18 145)",
+          "oklch(0.55 0.22 25)",
+          "oklch(0.58 0.16 280)",
+          "oklch(0.55 0.12 240)",
+          "oklch(0.78 0.15 75)",
         ],
         borderWidth: 0,
+        hoverOffset: 8,
       },
     ],
   }
 
   return (
-    <div className="rounded-xl border bg-card p-6">
-      <h3 className="text-lg font-semibold mb-4">{t("stats.roleDistribution")}</h3>
+    <div className="glass rounded-2xl p-6">
+      <h3 className="text-lg font-bold mb-4">{t("stats.roleDistribution")}</h3>
       <div className="h-64 flex items-center justify-center">
         <Doughnut
           data={data}
           options={{
             responsive: true,
             maintainAspectRatio: false,
+            cutout: "65%",
             plugins: {
               legend: { position: "bottom" },
             },

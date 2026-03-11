@@ -16,6 +16,7 @@ from ipg.api.schemas.stats import DailyGameRecord, GameDurationStats, HeadToHead
 from ipg.api.utils.cache import cache
 
 LEADERBOARD_TTL_SECONDS = 30
+USER_STATS_TTL_SECONDS = 300
 
 
 class StatsController:
@@ -46,8 +47,14 @@ class StatsController:
         :return: The user's stats record.
         :raises UserNotFoundError: If no stats record exists for this user.
         """
+        cache_key = f"user_stats:{user_id}"
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return cached  # type: ignore[return-value]
         try:
-            return (await self.session.exec(select(UserStats).where(UserStats.user_id == user_id))).one()
+            stats = (await self.session.exec(select(UserStats).where(UserStats.user_id == user_id))).one()
+            cache.set(cache_key, stats, USER_STATS_TTL_SECONDS)
+            return stats
         except NoResultFound:
             raise UserNotFoundError(user_id=user_id) from None
 
@@ -139,6 +146,7 @@ class StatsController:
         await self.session.commit()
         await self.session.refresh(stats)
 
+        cache.invalidate(f"user_stats:{user_id}")
         cache.invalidate_prefix("leaderboard:")
 
         return stats

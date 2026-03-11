@@ -45,6 +45,14 @@ from ipg.api.models.error import (
 from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.table import Game, Room, User
+from ipg.api.schemas.codenames import (
+    CodenamesBoardState,
+    CodenamesPlayerView,
+    EndTurnResponse,
+    GiveClueResponse,
+    GuessCardResponse,
+)
+from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerExpiredResponse
 from ipg.api.schemas.error import BaseError
 
 
@@ -68,7 +76,7 @@ class CodenamesGameController:
         room_id: UUID,
         user_id: UUID,
         word_pack_ids: list[UUID] | None = None,
-    ) -> dict:
+    ) -> GameStartResponse:
         """Start a new Codenames game in the given room."""
         async with get_game_lock(f"room:{room_id}", self.session):
             db_room = await self._room_controller.get_room_by_id(room_id)
@@ -171,12 +179,12 @@ class CodenamesGameController:
             self.session.add(db_room)
             await self.session.commit()
 
-            return {
-                "game_id": str(db_game.id),
-                "room_id": str(db_room.id),
-            }
+            return GameStartResponse(
+                game_id=str(db_game.id),
+                room_id=str(db_room.id),
+            )
 
-    async def give_clue(self, game_id: UUID, user_id: UUID, clue_word: str, clue_number: int) -> dict:
+    async def give_clue(self, game_id: UUID, user_id: UUID, clue_word: str, clue_number: int) -> GiveClueResponse:
         """Process a spymaster giving a clue."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -232,13 +240,13 @@ class CodenamesGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {
-            "game_id": str(game_id),
-            "clue_word": clue_word,
-            "clue_number": clue_number,
-        }
+        return GiveClueResponse(
+            game_id=str(game_id),
+            clue_word=clue_word,
+            clue_number=clue_number,
+        )
 
-    async def guess_card(self, game_id: UUID, user_id: UUID, card_index: int) -> dict:
+    async def guess_card(self, game_id: UUID, user_id: UUID, card_index: int) -> GuessCardResponse:
         """Process an operative voting for a card (or instant reveal if solo operative)."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -271,26 +279,26 @@ class CodenamesGameController:
                 self.session.add(game)
                 await self.session.commit()
 
-                return {
-                    "game_id": str(game_id),
-                    "all_voted": False,
-                    "vote_changed": vote_changed,
-                    "card_votes_count": voted_count,
-                    "total_operatives": total_operatives,
-                }
+                return GuessCardResponse(
+                    game_id=str(game_id),
+                    all_voted=False,
+                    vote_changed=vote_changed,
+                    card_votes_count=voted_count,
+                    total_operatives=total_operatives,
+                )
 
             # All operatives voted — resolve
             winning_index, was_tied = self._resolve_votes(state)
             state["current_turn"]["card_votes"] = {}
 
             result = await self._reveal_card(game, state, winning_index)
-            result["all_voted"] = True
-            result["tied"] = was_tied
-            result["card_votes_count"] = total_operatives
-            result["total_operatives"] = total_operatives
+            result.all_voted = True
+            result.tied = was_tied
+            result.card_votes_count = total_operatives
+            result.total_operatives = total_operatives
             return result
 
-    async def _reveal_card(self, game: Game, state: dict, card_index: int) -> dict:
+    async def _reveal_card(self, game: Game, state: dict, card_index: int) -> GuessCardResponse:
         """Reveal a card and process the result. Commits to DB."""
         card = state["board"][card_index]
         card["revealed"] = True
@@ -334,14 +342,14 @@ class CodenamesGameController:
         self.session.add(game)
         await self.session.commit()
 
-        return {
-            "game_id": str(game.id),
-            "card_index": card_index,
-            "card_type": card["card_type"],
-            "result": result,
-        }
+        return GuessCardResponse(
+            game_id=str(game.id),
+            card_index=card_index,
+            card_type=card["card_type"],
+            result=result,
+        )
 
-    async def end_turn(self, game_id: UUID, user_id: UUID) -> dict:
+    async def end_turn(self, game_id: UUID, user_id: UUID) -> EndTurnResponse:
         """Allow an operative to voluntarily end their turn."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -364,24 +372,42 @@ class CodenamesGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {
-            "game_id": str(game_id),
-            "current_team": state["current_team"],
-        }
+        return EndTurnResponse(
+            game_id=str(game_id),
+            current_team=state["current_team"],
+        )
 
     async def get_board(
         self, game_id: UUID, user_id: UUID, sid: str | None = None, lang: str = "en", update_heartbeat: bool = True
-    ) -> dict:
-        """Get the current board state for a player. Used for polling."""
+    ) -> CodenamesBoardState:
+        """Get the current board state for a player or spectator. Used for polling."""
         game = await self._get_game(game_id)
         state = game.live_state
 
-        player = get_player_from_game(state["players"], str(user_id))
+        # Try to find the user as a player first
+        is_spectator = False
+        try:
+            player = get_player_from_game(state["players"], str(user_id))
+        except Exception:
+            # Check if user is a spectator
+            link = (
+                await self.session.exec(
+                    select(RoomUserLink)
+                    .where(RoomUserLink.room_id == game.room_id)
+                    .where(RoomUserLink.user_id == user_id)
+                    .where(RoomUserLink.is_spectator == True)  # noqa: E712
+                )
+            ).first()
+            if not link:
+                raise
+            is_spectator = True
+            player = None
+
         word_hints = state.get("word_hints", {})
-        is_spymaster = player["role"] == CodenamesRole.SPYMASTER.value
+        is_spymaster = player["role"] == CodenamesRole.SPYMASTER.value if player else False
         is_finished = state["status"] == CodenamesGameStatus.FINISHED.value
 
-        # End-game board reveal: show all card types when game is finished
+        # End-game board reveal or spectator view: show all card types when game is finished
         if is_finished:
             board_view = [
                 {
@@ -390,6 +416,20 @@ class CodenamesGameController:
                     "revealed": True,
                     "card_type": card["card_type"],
                     "hint": self._resolve_hint(word_hints.get(card["word"]), lang),
+                }
+                for i, card in enumerate(state["board"])
+            ]
+        elif is_spectator:
+            # Spectators see operative view (revealed cards only, no card types for unrevealed)
+            board_view = [
+                {
+                    "index": i,
+                    "word": card["word"],
+                    "revealed": card.get("revealed", False),
+                    "card_type": card["card_type"] if card.get("revealed", False) else None,
+                    "hint": self._resolve_hint(word_hints.get(card["word"]), lang)
+                    if card.get("revealed", False)
+                    else None,
                 }
                 for i, card in enumerate(state["board"])
             ]
@@ -407,51 +447,39 @@ class CodenamesGameController:
         room = (await self.session.exec(select(Room).where(Room.id == game.room_id))).first()
         is_host = bool(room and room.owner_id == user_id)
 
-        # Update heartbeat
+        # Update heartbeat (throttled: skip if last_seen_at is recent to reduce write contention)
         if update_heartbeat:
-            link = (
-                await self.session.exec(
-                    select(RoomUserLink)
-                    .where(RoomUserLink.room_id == game.room_id)
-                    .where(RoomUserLink.user_id == user_id)
-                )
-            ).first()
-            if link:
-                link.last_seen_at = datetime.now()
-                link.connected = True
-                if link.disconnected_at is not None:
-                    link.disconnected_at = None
-                self.session.add(link)
-                await self.session.commit()
+            await self._update_heartbeat_throttled(game.room_id, user_id)
 
-        return {
-            "game_id": str(game.id),
-            "room_id": str(game.room_id),
-            "team": player["team"],
-            "role": player["role"],
-            "is_host": is_host,
-            "board": board_view,
-            "current_team": state["current_team"],
-            "red_remaining": state["red_remaining"],
-            "blue_remaining": state["blue_remaining"],
-            "status": state["status"],
-            "current_turn": state["current_turn"],
-            "winner": state["winner"],
-            "clue_history": state.get("clue_history", []),
-            "timer_config": state.get("timer_config"),
-            "timer_started_at": state.get("timer_started_at"),
-            "players": [
-                {
-                    "user_id": p["user_id"],
-                    "username": p["username"],
-                    "team": p["team"],
-                    "role": p["role"],
-                }
+        return CodenamesBoardState(
+            game_id=str(game.id),
+            room_id=str(game.room_id),
+            team=player["team"] if player else "spectator",
+            role=player["role"] if player else "spectator",
+            is_host=is_host,
+            is_spectator=is_spectator,
+            board=board_view,
+            current_team=state["current_team"],
+            red_remaining=state["red_remaining"],
+            blue_remaining=state["blue_remaining"],
+            status=state["status"],
+            current_turn=state["current_turn"],
+            winner=state["winner"],
+            clue_history=state.get("clue_history", []),
+            timer_config=state.get("timer_config"),
+            timer_started_at=state.get("timer_started_at"),
+            players=[
+                CodenamesPlayerView(
+                    user_id=p["user_id"],
+                    username=p["username"],
+                    team=p["team"],
+                    role=p["role"],
+                )
                 for p in state["players"]
             ],
-        }
+        )
 
-    async def handle_timer_expired(self, game_id: UUID, user_id: UUID) -> dict:
+    async def handle_timer_expired(self, game_id: UUID, user_id: UUID) -> TimerExpiredResponse:
         """Handle timer expiration — auto end-turn. Validates timer actually expired."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -480,14 +508,14 @@ class CodenamesGameController:
                 else:
                     allowed = timer_config.get("clue_seconds", DEFAULT_CODENAMES_CLUE_TIMER_SECONDS)
                 if allowed == 0:
-                    return {"game_id": str(game_id), "action": "timer_not_expired"}
+                    return TimerExpiredResponse(game_id=str(game_id), action="timer_not_expired")
                 started = datetime.fromisoformat(timer_started_at)
                 if started.tzinfo is None:
                     started = started.replace(tzinfo=UTC)
                 now = datetime.now(UTC)
                 elapsed = (now - started).total_seconds()
                 if elapsed < allowed - TIMER_EXPIRATION_TOLERANCE_SECONDS:
-                    return {"game_id": str(game_id), "action": "timer_not_expired"}
+                    return TimerExpiredResponse(game_id=str(game_id), action="timer_not_expired")
 
             self._switch_turn(state)
 
@@ -496,7 +524,30 @@ class CodenamesGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {"game_id": str(game_id), "action": "auto_end_turn"}
+        return TimerExpiredResponse(game_id=str(game_id), action="auto_end_turn")
+
+    async def _update_heartbeat_throttled(self, room_id: UUID, user_id: UUID) -> None:
+        """Update heartbeat only if last_seen_at is stale (>10s) to reduce write contention."""
+        link = (
+            await self.session.exec(
+                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.user_id == user_id)
+            )
+        ).first()
+        if not link:
+            return
+        needs_update = (
+            link.disconnected_at is not None
+            or not link.connected
+            or not link.last_seen_at
+            or (datetime.now() - link.last_seen_at).total_seconds() > 10
+        )
+        if needs_update:
+            link.last_seen_at = datetime.now()
+            link.connected = True
+            if link.disconnected_at is not None:
+                link.disconnected_at = None
+            self.session.add(link)
+            await self.session.commit()
 
     async def _get_game(self, game_id: UUID) -> Game:
         """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
@@ -583,7 +634,7 @@ class CodenamesGameController:
             return None
         return hint_dict.get(lang) or hint_dict.get("en") or next(iter(hint_dict.values()), None)
 
-    async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> dict:
+    async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> HintRecordResponse:
         """Record that a player viewed a hint for a word (deduplicated)."""
         async with get_game_lock(str(game_id), self.session):
             game = await self._get_game(game_id)
@@ -600,7 +651,7 @@ class CodenamesGameController:
             self.session.add(game)
             await self.session.commit()
 
-        return {"game_id": str(game_id), "recorded": True}
+        return HintRecordResponse(game_id=str(game_id), recorded=True)
 
     async def _process_game_end_stats(self, state: dict, winner: str) -> list[dict]:
         """Update stats and check achievements for all players after game ends.

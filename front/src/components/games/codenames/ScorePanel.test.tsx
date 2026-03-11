@@ -76,13 +76,13 @@ describe('ScorePanel', () => {
       },
     })
     // Progress bar outer container
-    const progressBar = container.querySelector('.h-1\\.5.w-full.rounded-full.bg-muted')
+    const progressBar = container.querySelector('.h-2.w-full.rounded-full')
     expect(progressBar).toBeInTheDocument()
   })
 
   it('hides progress bar when no clue is given', () => {
     const { container } = renderScorePanel({ currentTurn: null })
-    const progressBar = container.querySelector('.h-1\\.5.w-full.rounded-full.bg-muted')
+    const progressBar = container.querySelector('.h-2.w-full.rounded-full')
     expect(progressBar).not.toBeInTheDocument()
   })
 })

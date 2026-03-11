@@ -9,11 +9,21 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ipg.api.models.error import GameNotFoundError, NoTurnInsideGameError, RoomIsNotActiveError
 from ipg.api.models.event import EventCreate
-from ipg.api.models.game import GameCreate, GameUpdate
+from ipg.api.models.game import GameCreate, GameType, GameUpdate
 from ipg.api.models.relationship import GameTurnLink, RoomGameLink, TurnEventLink, UserGameLink
 from ipg.api.models.room import RoomType
 from ipg.api.models.table import Event, Game, Room, Turn
-from ipg.api.schemas.game import GameHistoryEntry
+from ipg.api.schemas.game import (
+    ClueGuess,
+    ClueHistoryEntry,
+    EliminatedInfo,
+    GameHistoryEntry,
+    GameSummary,
+    GameSummaryPlayer,
+    UndercoverWordExplanations,
+    VoteHistoryEntry,
+    VoteRound,
+)
 
 
 class GameController:
@@ -107,11 +117,11 @@ class GameController:
         await self.session.commit()
 
     async def get_games_by_user(self, user_id: UUID, limit: int = 20) -> Sequence[GameHistoryEntry]:
-        """Get a user's game history, most recent first.
+        """Get a user's game history with enriched data, most recent first.
 
         :param user_id: The id of the user.
         :param limit: Maximum number of results to return.
-        :return: A list of GameHistoryEntry records.
+        :return: A list of enriched GameHistoryEntry records.
         """
         results = await self.session.exec(
             select(Game)
@@ -121,8 +131,34 @@ class GameController:
             .limit(limit)
         )
         games = results.all()
+        str_uid = str(user_id)
         entries: list[GameHistoryEntry] = []
         for game in games:
+            state = game.live_state or {}
+            winner = state.get("winner")
+            game_status = game.game_status.value if game.game_status else None
+            user_role = None
+            user_won = None
+
+            players = state.get("players", [])
+            for p in players:
+                if p.get("user_id") == str_uid:
+                    user_role = p.get("role")
+                    if winner:
+                        if game.type == GameType.UNDERCOVER:
+                            if (
+                                winner == "civilians"
+                                and user_role == "civilian"
+                                or winner == "undercovers"
+                                and user_role in ("undercover", "mr_white")
+                            ):
+                                user_won = True
+                            else:
+                                user_won = False
+                        elif game.type == GameType.CODENAMES:
+                            user_won = p.get("team") == winner
+                    break
+
             entries.append(
                 GameHistoryEntry(
                     id=game.id,  # type: ignore[arg-type]
@@ -130,9 +166,106 @@ class GameController:
                     start_time=game.start_time,
                     end_time=game.end_time,
                     number_of_players=game.number_of_players,
+                    winner=winner,
+                    user_role=user_role,
+                    user_won=user_won,
+                    game_status=game_status,
                 )
             )
         return entries
+
+    async def get_game_summary(self, game_id: UUID) -> GameSummary:
+        """Get a detailed game summary for the detail modal.
+
+        :param game_id: The id of the game.
+        :return: A GameSummary with full player list and history.
+        """
+        game = (await self.session.exec(select(Game).where(Game.id == game_id))).first()
+        if not game:
+            raise GameNotFoundError(game_id=game_id)
+
+        state = game.live_state or {}
+        players_data = state.get("players", [])
+
+        summary_players = []
+        for p in players_data:
+            summary_players.append(
+                GameSummaryPlayer(
+                    user_id=p.get("user_id", ""),
+                    username=p.get("username", ""),
+                    role=p.get("role", ""),
+                    team=p.get("team"),
+                )
+            )
+
+        vote_history: list[VoteRound] | None = None
+        clue_history: list[ClueHistoryEntry] | None = None
+        word_explanations: UndercoverWordExplanations | None = None
+
+        if game.type == GameType.UNDERCOVER:
+            # Build vote history from turns
+            turns = state.get("turns", [])
+            eliminated = state.get("eliminated_players", [])
+            players_map = {p.get("user_id", ""): p.get("username", "") for p in players_data}
+            history: list[VoteRound] = []
+            for i, turn in enumerate(turns):
+                votes = turn.get("votes", {})
+                if not votes:
+                    continue
+                vote_entries = [
+                    VoteHistoryEntry(voter=players_map.get(vid, ""), target=players_map.get(tid, ""))
+                    for vid, tid in votes.items()
+                ]
+                raw_elim = eliminated[i] if i < len(eliminated) else None
+                elim_info = (
+                    EliminatedInfo(
+                        username=raw_elim.get("username", ""),
+                        role=raw_elim.get("role", ""),
+                        user_id=raw_elim.get("user_id"),
+                    )
+                    if raw_elim
+                    else None
+                )
+                history.append(VoteRound(round=i + 1, votes=vote_entries, eliminated=elim_info))
+            vote_history = history
+
+            word_explanations = UndercoverWordExplanations(
+                civilian_word=state.get("civilian_word"),
+                undercover_word=state.get("undercover_word"),
+            )
+
+        elif game.type == GameType.CODENAMES:
+            raw_clues = state.get("clue_history", [])
+            clue_history = [
+                ClueHistoryEntry(
+                    team=c.get("team", ""),
+                    clue_word=c.get("clue_word", ""),
+                    clue_number=c.get("clue_number", 0),
+                    guesses=[
+                        ClueGuess(
+                            word=g.get("word", ""),
+                            card_type=g.get("card_type", ""),
+                            correct=g.get("correct", False),
+                        )
+                        for g in c.get("guesses", [])
+                    ],
+                )
+                for c in raw_clues
+            ]
+
+        return GameSummary(
+            id=game.id,  # type: ignore[arg-type]
+            type=game.type,
+            start_time=game.start_time,
+            end_time=game.end_time,
+            number_of_players=game.number_of_players,
+            winner=state.get("winner"),
+            game_status=game.game_status.value if game.game_status else None,
+            players=summary_players,
+            vote_history=vote_history,
+            clue_history=clue_history,
+            word_explanations=word_explanations,
+        )
 
     async def create_turn(self, game_id: UUID) -> Turn:
         """

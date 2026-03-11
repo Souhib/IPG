@@ -113,7 +113,8 @@ function UndercoverGamePage() {
     {
       query: {
         refetchOnWindowFocus: true,
-        refetchInterval: socketConnected ? false : 2_000,
+        refetchInterval: socketConnected ? 3_000 : 2_000,
+        refetchIntervalInBackground: true,
         enabled: !!user,
       },
     },
@@ -403,8 +404,8 @@ function UndercoverGamePage() {
   if (cancelMessage) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8">
-        <div className="rounded-xl border bg-destructive/10 p-8 text-center">
-          <h2 className="text-xl font-bold text-destructive mb-2">{t("game.gameOver")}</h2>
+        <div className="glass rounded-2xl border-border/30 p-8 text-center bg-destructive/10">
+          <h2 className="text-xl font-extrabold tracking-tight text-destructive mb-2">{t("game.gameOver")}</h2>
           <p className="text-muted-foreground">{cancelMessage}</p>
           <p className="text-sm text-muted-foreground mt-2">Redirecting...</p>
         </div>
@@ -413,7 +414,7 @@ function UndercoverGamePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl px-4 py-8 min-h-screen">
       {/* Game Over Transition Overlay */}
       <AnimatePresence>
         {showGameOverTransition && (
@@ -421,21 +422,21 @@ function UndercoverGamePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-md"
           >
-            <motion.div className="text-center space-y-4">
+            <motion.div className="glass rounded-2xl border-border/30 p-10 text-center space-y-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.2 }}
               >
-                <Trophy className="h-16 w-16 mx-auto text-yellow-500" />
+                <Trophy className="h-16 w-16 mx-auto text-yellow-500 drop-shadow-lg" />
               </motion.div>
               <motion.h2
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-2xl font-bold"
+                className="text-2xl font-extrabold tracking-tight gradient-text"
               >
                 {t("game.gameOver")}
               </motion.h2>
@@ -459,21 +460,21 @@ function UndercoverGamePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-md"
           >
-            <motion.div className="text-center space-y-4">
+            <motion.div className="glass rounded-2xl border-border/30 p-10 text-center space-y-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.2 }}
               >
-                <MessageCircle className="h-16 w-16 mx-auto text-primary" />
+                <MessageCircle className="h-16 w-16 mx-auto text-primary drop-shadow-lg" />
               </motion.div>
               <motion.h2
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-2xl font-bold"
+                className="text-2xl font-extrabold tracking-tight gradient-text"
               >
                 {t("game.undercover.allDescriptionsIn")}
               </motion.h2>
@@ -492,10 +493,10 @@ function UndercoverGamePage() {
 
       {/* Game Header */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold">{t("games.undercover.name")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">Round {gameState.round}</p>
+        <h1 className="text-3xl font-extrabold tracking-tight gradient-text">{t("games.undercover.name")}</h1>
+        <p className="text-sm text-muted-foreground mt-2 font-mono tabular-nums">Round {gameState.round}</p>
         {isSpectator && (
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+          <div className="mt-3 glass inline-flex items-center gap-1.5 rounded-full border-border/30 px-4 py-1.5 text-xs font-medium text-muted-foreground transition-all duration-200">
             <Eye className="h-3 w-3" />
             {t("game.spectating")}
           </div>
@@ -504,7 +505,7 @@ function UndercoverGamePage() {
 
       {/* Loading State */}
       {isLoading && !gameState.my_role && (
-        <div className="rounded-xl border bg-card p-8 text-center mb-8">
+        <div className="glass rounded-2xl border-border/30 p-8 text-center mb-8 transition-all duration-200">
           <Loader2 className="h-10 w-10 mx-auto animate-spin text-primary mb-4" />
           <p className="text-muted-foreground">{t("common.loading")}</p>
         </div>
@@ -605,8 +606,8 @@ function UndercoverGamePage() {
       )}
 
       {/* Player List */}
-      <div className="rounded-xl border bg-card p-6">
-        <h3 className="font-semibold mb-3">
+      <div className="glass rounded-2xl border-border/30 p-6 transition-all duration-200">
+        <h3 className="font-extrabold tracking-tight mb-4">
           {t("room.players")} ({gameState.players.filter((p) => p.is_alive).length}/
           {gameState.players.length})
         </h3>
@@ -615,15 +616,17 @@ function UndercoverGamePage() {
             <div
               key={player.id}
               className={cn(
-                "flex items-center justify-between rounded-lg px-4 py-2",
-                player.is_alive ? "bg-muted/50" : "bg-destructive/5 line-through opacity-50",
+                "flex items-center justify-between rounded-2xl px-4 py-2.5 border transition-all duration-200",
+                player.is_alive
+                  ? "glass border-border/30 hover:border-border/50"
+                  : "bg-destructive/5 border-destructive/10 line-through opacity-50",
               )}
             >
-              <span className="text-sm flex items-center gap-2">
+              <span className="text-sm flex items-center gap-2 font-medium">
                 {player.username}
-                {player.is_mayor && <Crown className="h-3 w-3 text-yellow-500" />}
+                {player.is_mayor && <Crown className="h-3 w-3 text-yellow-500 drop-shadow-sm" />}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">
                 {player.is_alive ? t("game.alive") : t("game.eliminated")}
               </span>
             </div>
@@ -633,11 +636,11 @@ function UndercoverGamePage() {
 
       {/* Leave Game Button */}
       {gameState.phase !== "game_over" && gameState.phase !== "role_reveal" && (
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <button
             type="button"
             onClick={handleLeaveRoom}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-all duration-200 rounded-2xl px-4 py-2 hover:bg-destructive/5"
           >
             <LogOut className="h-4 w-4" />
             {t("game.undercover.leaveGame")}

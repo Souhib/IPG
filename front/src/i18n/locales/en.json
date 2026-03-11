@@ -11,7 +11,8 @@
     "submit": "Submit",
     "close": "Close",
     "or": "or",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "retry": "Retry"
   },
   "nav": {
     "home": "Home",
@@ -118,7 +119,11 @@
     "spectators": "Spectators",
     "watchGame": "Watch",
     "kick": "Kick",
-    "noLimit": "No limit"
+    "noLimit": "No limit",
+    "inviteFriend": "Invite Friend",
+    "inviteSent": "Invite sent!",
+    "inviteReceived": "{{username}} invited you to join their room",
+    "joinInvite": "Join"
   },
   "toast": {
     "playerJoined": "{{username}} joined the room",
@@ -160,6 +165,8 @@
     "backToRoom": "Back to Room",
     "wordExplanations": "Word Explanations",
     "hintButton": "Show explanation",
+    "spectating": "Spectating",
+    "spectatorView": "You are spectating this game",
     "undercover": {
       "iUnderstand": "I Understand",
       "nextRound": "Next Round",
@@ -188,7 +195,14 @@
       "voteHistory": "Vote History",
       "round": "Round {{number}}",
       "votedForPlayer": "{{voter}} voted for {{target}}",
-      "wasEliminated": "{{username}} was eliminated ({{role}})"
+      "wasEliminated": "{{username}} was eliminated ({{role}})",
+      "describingTitle": "{{username}} is describing...",
+      "yourTurnToDescribe": "Your turn to describe!",
+      "voteProgress": "{{current}} / {{total}} voted",
+      "youHaveVoted": "You have voted",
+      "playerHasVoted": "{{username}} voted",
+      "voteBreakdown": "Vote Breakdown",
+      "continueGame": "Continue"
     },
     "codenames": {
       "giveClue": "Give a Clue",
@@ -236,7 +250,14 @@
     "yourWins": "Your Wins",
     "theirWins": "Their Wins",
     "draws": "Draws",
-    "totalGames": "{{count}} games together"
+    "totalGames": "{{count}} games together",
+    "duration": "Duration",
+    "gameDetail": "Game Detail",
+    "playerRoles": "Player Roles",
+    "inProgress": "In Progress",
+    "viewDetails": "View Details",
+    "voteHistory": "Vote History",
+    "clueHistory": "Clue History"
   },
   "achievements": {
     "title": "Achievements",
@@ -342,6 +363,7 @@
     "challengeCompleted": "Challenge completed!"
   },
   "errors": {
+    "loadFailed": "Failed to load data. Please try again.",
     "api": {
       "userNotFound": "User not found.",
       "userAlreadyExists": "An account with this email already exists.",

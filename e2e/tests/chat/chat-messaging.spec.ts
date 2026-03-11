@@ -62,7 +62,7 @@ test.describe("Chat Messaging in Room", () => {
     // Open chat for player 2 and verify message appears (via polling)
     await openChatPanel(page2);
     await expect(
-      page2.getByText("Assalamu Alaikum!"),
+      page2.getByText("Assalamu Alaikum!").first(),
     ).toBeVisible({ timeout: 15_000 });
 
     // Player 2 sends a reply
@@ -72,7 +72,7 @@ test.describe("Chat Messaging in Room", () => {
 
     // Player 1 should see the reply
     await expect(
-      page1.getByText("Wa Alaikum Assalam!"),
+      page1.getByText("Wa Alaikum Assalam!").first(),
     ).toBeVisible({ timeout: 15_000 });
 
     await setup.cleanup();

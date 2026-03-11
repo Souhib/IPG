@@ -74,7 +74,7 @@ describe('CardCell', () => {
     const button = container.querySelector('button')!
     expect(button.className).toContain('ring-2')
     expect(button.className).toContain('ring-primary')
-    expect(button.className).toContain('ring-offset-1')
+    expect(button.className).toContain('ring-offset-2')
   })
 
   it('does not apply ring class when isMyVote but revealed', () => {
@@ -100,7 +100,7 @@ describe('CardCell', () => {
     const { container } = render(<CardCell {...defaultProps({ isSpymaster: false, card: makeCard({ card_type: 'blue', revealed: false }) })} />)
     const button = container.querySelector('button')!
     // Operative should see the neutral card background, not blue
-    expect(button.className).toContain('bg-card')
+    expect(button.className).toContain('bg-surface')
     expect(button.className).not.toContain('bg-blue-200')
     expect(button.className).not.toContain('bg-blue-500')
   })
