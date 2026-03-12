@@ -1,12 +1,17 @@
 # Dokploy deployment for IPG
 # Access via IP:
-#   - Frontend: http://141.253.103.145:30819
-#   - Backend:  http://141.253.103.145:33648
+#   - Frontend:  http://141.253.103.145:30819
+#   - Backend:   http://141.253.103.145:33648
+#   - Umami:     http://141.253.103.145:31200  (analytics.majlisna.app)
+#   - GlitchTip: http://141.253.103.145:31300  (glitchtip.majlisna.app)
+
+name: majlisna
 
 services:
   # ─── Databases (internal only) ───────────────────────────────
 
   db:
+    container_name: majlisna-db
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: ipg
@@ -26,6 +31,7 @@ services:
   # ─── PgBouncer ───────────────────────────────────────────────
 
   pgbouncer:
+    container_name: majlisna-pgbouncer
     image: edoburu/pgbouncer:v1.25.1-p0
     environment:
       DATABASE_URL: postgres://ipg:${DB_PASSWORD}@db:5432/ipg
@@ -49,6 +55,7 @@ services:
   # ─── Redis ─────────────────────────────────────────────────
 
   redis:
+    container_name: majlisna-redis
     image: redis:7-alpine
     command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
     healthcheck:
@@ -63,6 +70,7 @@ services:
   # ─── Backend API ─────────────────────────────────────────────
 
   backend:
+    container_name: majlisna-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -104,6 +112,7 @@ services:
   # ─── Frontend SPA ────────────────────────────────────────────
 
   frontend:
+    container_name: majlisna-frontend
     build:
       context: ./front
       dockerfile: Dockerfile
@@ -113,6 +122,7 @@ services:
         VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
         VITE_UMAMI_URL: ${VITE_UMAMI_URL:-}
         VITE_UMAMI_WEBSITE_ID: ${VITE_UMAMI_WEBSITE_ID:-}
+        VITE_GLITCHTIP_DSN: ${VITE_GLITCHTIP_DSN:-}
         VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
     depends_on:
       - backend
@@ -131,6 +141,7 @@ services:
   # ─── Umami Analytics ─────────────────────────────────────────
 
   umami-db:
+    container_name: majlisna-umami-db
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: umami
@@ -148,6 +159,7 @@ services:
     restart: always
 
   umami:
+    container_name: majlisna-umami
     image: ghcr.io/umami-software/umami:postgresql-latest
     environment:
       DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami
@@ -155,15 +167,104 @@ services:
       umami-db:
         condition: service_healthy
     ports:
-      - "3100:3000"
+      - "31200:3000"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLED:-false}"
+      - "traefik.http.routers.majlisna-umami.rule=Host(`analytics.${DOMAIN:-ipg.local}`)"
+      - "traefik.http.routers.majlisna-umami.entrypoints=web,websecure"
+      - "traefik.http.services.majlisna-umami.loadbalancer.server.port=3000"
     networks:
       - internal
       - dokploy-network
     restart: always
 
+  # ─── GlitchTip Error Tracking ──────────────────────────────
+
+  glitchtip-db:
+    container_name: majlisna-glitchtip-db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD}
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+    restart: always
+
+  glitchtip-redis:
+    container_name: majlisna-glitchtip-redis
+    image: redis:7-alpine
+    command: redis-server --maxmemory 32mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+    restart: always
+
+  glitchtip:
+    container_name: majlisna-glitchtip
+    image: glitchtip/glitchtip:latest
+    environment:
+      DATABASE_URL: postgresql://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip
+      REDIS_URL: redis://glitchtip-redis:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY}
+      PORT: 8000
+      GLITCHTIP_DOMAIN: https://glitchtip.${DOMAIN:-ipg.local}
+      DEFAULT_FROM_EMAIL: noreply@${DOMAIN:-ipg.local}
+      CELERY_WORKER_AUTOSCALE: "1,3"
+      CELERY_WORKER_MAX_TASKS_PER_CHILD: 10000
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-redis:
+        condition: service_healthy
+    ports:
+      - "31300:8000"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLED:-false}"
+      - "traefik.http.routers.majlisna-glitchtip.rule=Host(`glitchtip.${DOMAIN:-ipg.local}`)"
+      - "traefik.http.routers.majlisna-glitchtip.entrypoints=web,websecure"
+      - "traefik.http.services.majlisna-glitchtip.loadbalancer.server.port=8000"
+    networks:
+      - internal
+      - dokploy-network
+    restart: always
+
+  glitchtip-worker:
+    container_name: majlisna-glitchtip-worker
+    image: glitchtip/glitchtip:latest
+    command: bin/run-celery-with-beat.sh
+    environment:
+      DATABASE_URL: postgresql://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip
+      REDIS_URL: redis://glitchtip-redis:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY}
+      GLITCHTIP_DOMAIN: https://glitchtip.${DOMAIN:-ipg.local}
+      DEFAULT_FROM_EMAIL: noreply@${DOMAIN:-ipg.local}
+      CELERY_WORKER_AUTOSCALE: "1,3"
+      CELERY_WORKER_MAX_TASKS_PER_CHILD: 10000
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-redis:
+        condition: service_healthy
+    networks:
+      - internal
+    restart: always
+
 volumes:
   postgres_data:
   umami_postgres_data:
+  glitchtip_postgres_data:
 
 networks:
   internal:
