@@ -1029,8 +1029,15 @@ async def seed_undercover_words(session: AsyncSession) -> dict[str, Word]:
         Dictionary mapping word text to Word objects.
     """
     word_map: dict[str, Word] = {}
+    new_count = 0
 
     for word_data in UNDERCOVER_WORDS:
+        existing = (
+            await session.exec(select(Word).where(Word.word == word_data["word"]))
+        ).first()
+        if existing:
+            word_map[word_data["word"]] = existing
+            continue
         word = Word(
             id=uuid4(),
             word=word_data["word"],
@@ -1041,12 +1048,13 @@ async def seed_undercover_words(session: AsyncSession) -> dict[str, Word]:
         )
         session.add(word)
         word_map[word_data["word"]] = word
+        new_count += 1
 
     await session.commit()
     for word in word_map.values():
         await session.refresh(word)
 
-    print(f"  Seeded {len(word_map)} Undercover words")
+    print(f"  Seeded {new_count} new Undercover words ({len(word_map)} total)")
     return word_map
 
 
@@ -1065,6 +1073,14 @@ async def seed_undercover_pairs(session: AsyncSession, word_map: dict[str, Word]
             print(f"    Warning: Skipping pair ({word1_text}, {word2_text}) - word not found")
             continue
 
+        existing = (
+            await session.exec(
+                select(TermPair).where(TermPair.word1_id == w1.id, TermPair.word2_id == w2.id)
+            )
+        ).first()
+        if existing:
+            continue
+
         pair = TermPair(
             id=uuid4(),
             word1_id=w1.id,
@@ -1074,7 +1090,7 @@ async def seed_undercover_pairs(session: AsyncSession, word_map: dict[str, Word]
         count += 1
 
     await session.commit()
-    print(f"  Seeded {count} Undercover word pairs")
+    print(f"  Seeded {count} new Undercover word pairs")
 
 
 async def seed_codenames_words(session: AsyncSession) -> None:
@@ -1084,18 +1100,36 @@ async def seed_codenames_words(session: AsyncSession) -> None:
         session: The database session.
     """
     total_words = 0
+    new_packs = 0
 
     for pack_name, words in CODENAMES_WORD_PACKS.items():
-        pack = CodenamesWordPack(
-            id=uuid4(),
-            name=pack_name,
-            description=f"Islamic terms related to {pack_name.lower()}",
-            is_active=True,
-        )
-        session.add(pack)
-        await session.flush()
+        existing_pack = (
+            await session.exec(select(CodenamesWordPack).where(CodenamesWordPack.name == pack_name))
+        ).first()
+        if existing_pack:
+            pack = existing_pack
+        else:
+            pack = CodenamesWordPack(
+                id=uuid4(),
+                name=pack_name,
+                description=f"Islamic terms related to {pack_name.lower()}",
+                is_active=True,
+            )
+            session.add(pack)
+            await session.flush()
+            new_packs += 1
 
         for word_data in words:
+            existing_word = (
+                await session.exec(
+                    select(CodenamesWord).where(
+                        CodenamesWord.word == word_data["word"],
+                        CodenamesWord.word_pack_id == pack.id,
+                    )
+                )
+            ).first()
+            if existing_word:
+                continue
             word = CodenamesWord(
                 id=uuid4(),
                 word=word_data["word"],
@@ -1106,7 +1140,7 @@ async def seed_codenames_words(session: AsyncSession) -> None:
             total_words += 1
 
     await session.commit()
-    print(f"  Seeded {len(CODENAMES_WORD_PACKS)} Codenames word packs with {total_words} words")
+    print(f"  Seeded {new_packs} new Codenames packs, {total_words} new words")
 
 
 QUIZ_WORDS: list[dict] = [
