@@ -57,6 +57,7 @@ interface WordQuizState {
     points: number
   }[]
   correct_answer: string | null
+  explanation: string | null
   winner: string | null
   leaderboard: {
     user_id: string
@@ -322,6 +323,7 @@ function WordQuizGamePage() {
           {state.round_phase === "results" && (
             <RoundResults
               correctAnswer={state.correct_answer || ""}
+              explanation={state.explanation}
               roundResults={state.round_results}
               isHost={state.is_host}
               onNextRound={handleNextRound}

@@ -1,13 +1,30 @@
 from ipg.api.schemas.shared import BaseModel
 
 
+class TrilingualText(BaseModel):
+    """A text value in English, Arabic, and French."""
+
+    en: str
+    ar: str = ""
+    fr: str = ""
+
+
+class TrilingualAnswers(BaseModel):
+    """Accepted answers per language."""
+
+    en: list[str] = []
+    ar: list[str] = []
+    fr: list[str] = []
+
+
 class QuizWordCreate(BaseModel):
     word_en: str
     word_ar: str | None = None
     word_fr: str | None = None
-    accepted_answers: dict | None = None
+    accepted_answers: TrilingualAnswers | None = None
     category: str
-    hints: dict
+    hints: dict[str, TrilingualText]
+    explanation: TrilingualText | None = None
 
 
 class SubmitAnswerRequest(BaseModel):
@@ -60,6 +77,7 @@ class WordQuizGameState(BaseModel):
     my_points: int
     round_results: list[WordQuizRoundResult]
     correct_answer: str | None = None
+    explanation: str | None = None
     winner: str | None = None
     leaderboard: list[WordQuizPlayerState]
     game_over: bool

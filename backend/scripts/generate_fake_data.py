@@ -1159,6 +1159,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "He was thrown into fire", "ar": "ألقي في النار", "fr": "Il a été jeté dans le feu"},
             "6": {"en": "Khalil Allah", "ar": "خليل الله", "fr": "Khalil Allah"},
         },
+        "explanation": {
+            "en": "Ibrahim (Abraham) is one of the greatest prophets in Islam, known as the 'Friend of Allah' (Khalilullah). He built the Kaaba in Makkah with his son Ismail and is considered the father of monotheism.",
+            "ar": "إبراهيم عليه السلام من أعظم الأنبياء في الإسلام، يُلقب بخليل الله. بنى الكعبة في مكة مع ابنه إسماعيل ويُعتبر أبا التوحيد.",
+            "fr": "Ibrahim (Abraham) est l'un des plus grands prophètes de l'Islam, connu comme 'l'Ami d'Allah' (Khalilullah). Il a construit la Kaaba à La Mecque avec son fils Ismaïl et est considéré comme le père du monothéisme.",
+        },
     },
     {
         "word_en": "Musa",
@@ -1173,6 +1178,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Received the Torah", "ar": "تلقى التوراة", "fr": "A reçu la Torah"},
             "5": {"en": "His staff turned into a snake", "ar": "عصاه تحولت إلى حية", "fr": "Son bâton s'est transformé en serpent"},
             "6": {"en": "Kalim Allah", "ar": "كليم الله", "fr": "Kalim Allah"},
+        },
+        "explanation": {
+            "en": "Musa (Moses) is one of the five greatest prophets (Ulul Azm) in Islam. He confronted Pharaoh, parted the sea by Allah's command, and received the Torah on Mount Sinai. He is called Kalim Allah — the one who spoke directly to God.",
+            "ar": "موسى عليه السلام من أولي العزم من الرسل. واجه فرعون وشق البحر بأمر الله وتلقى التوراة على جبل سيناء. يُلقب بكليم الله لأنه كلّم الله مباشرة.",
+            "fr": "Moussa (Moïse) est l'un des cinq plus grands prophètes (Ouloul Azm) de l'Islam. Il a affronté Pharaon, fendu la mer par l'ordre d'Allah et reçu la Torah sur le mont Sinaï. Il est appelé Kalim Allah — celui qui a parlé directement à Dieu.",
         },
     },
     {
@@ -1189,6 +1199,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "He was raised to the heavens", "ar": "رُفع إلى السماء", "fr": "Il a été élevé aux cieux"},
             "6": {"en": "Son of Maryam", "ar": "ابن مريم", "fr": "Fils de Maryam"},
         },
+        "explanation": {
+            "en": "Isa (Jesus) is a revered prophet in Islam, born miraculously to Maryam (Mary) without a father. He performed miracles by Allah's permission including healing the sick, and spoke as a newborn in the cradle to defend his mother's honor.",
+            "ar": "عيسى عليه السلام نبي مُبجّل في الإسلام، وُلد بمعجزة لمريم عليها السلام بدون أب. أجرى معجزات بإذن الله منها شفاء المرضى، وتكلم في المهد صبياً دفاعاً عن شرف أمه.",
+            "fr": "Issa (Jésus) est un prophète révéré en Islam, né miraculeusement de Maryam (Marie) sans père. Il a accompli des miracles par la permission d'Allah, dont la guérison des malades, et a parlé au berceau pour défendre l'honneur de sa mère.",
+        },
     },
     {
         "word_en": "Nuh",
@@ -1203,6 +1218,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Preached for 950 years", "ar": "دعا 950 سنة", "fr": "A prêché pendant 950 ans"},
             "5": {"en": "His son refused to board", "ar": "رفض ابنه أن يركب", "fr": "Son fils a refusé de monter"},
             "6": {"en": "The Ark builder", "ar": "باني السفينة", "fr": "Le constructeur de l'Arche"},
+        },
+        "explanation": {
+            "en": "Nuh (Noah) is one of the five greatest prophets in Islam. He preached monotheism for 950 years and built the Ark by Allah's command to save the believers and pairs of animals from the Great Flood.",
+            "ar": "نوح عليه السلام من أولي العزم من الرسل. دعا قومه للتوحيد 950 سنة وبنى السفينة بأمر الله لإنقاذ المؤمنين وأزواج الحيوانات من الطوفان العظيم.",
+            "fr": "Noé (Nuh) est l'un des cinq plus grands prophètes de l'Islam. Il a prêché le monothéisme pendant 950 ans et construit l'Arche sur ordre d'Allah pour sauver les croyants et les couples d'animaux du Déluge.",
         },
     },
     {
@@ -1219,6 +1239,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Could interpret dreams", "ar": "كان يفسر الأحلام", "fr": "Pouvait interpréter les rêves"},
             "6": {"en": "His story is called the best of stories", "ar": "قصته أحسن القصص", "fr": "Son histoire est la meilleure des histoires"},
         },
+        "explanation": {
+            "en": "Yusuf (Joseph) is known for his extraordinary beauty and his story of patience through betrayal, slavery, and imprisonment. His story in Surah Yusuf is called 'the best of stories' (Ahsan al-Qasas) in the Quran.",
+            "ar": "يوسف عليه السلام يُعرف بجماله الاستثنائي وقصة صبره عبر الخيانة والعبودية والسجن. قصته في سورة يوسف توصف بأحسن القصص في القرآن.",
+            "fr": "Youssouf (Joseph) est connu pour sa beauté extraordinaire et son histoire de patience à travers la trahison, l'esclavage et l'emprisonnement. Son histoire dans la sourate Youssouf est appelée 'le meilleur des récits' (Ahsan al-Qasas) dans le Coran.",
+        },
     },
     {
         "word_en": "Dawud",
@@ -1233,6 +1258,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Received the Zabur", "ar": "تلقى الزبور", "fr": "A reçu le Zabour"},
             "5": {"en": "Defeated a giant warrior", "ar": "هزم محارباً عملاقاً", "fr": "A vaincu un guerrier géant"},
             "6": {"en": "Father of Sulayman", "ar": "والد سليمان", "fr": "Père de Sulayman"},
+        },
+        "explanation": {
+            "en": "Dawud (David) was both a prophet and a king of Israel. Allah gave him the Zabur (Psalms) and blessed him with a beautiful voice that made mountains and birds glorify Allah alongside him.",
+            "ar": "داود عليه السلام كان نبياً وملكاً لبني إسرائيل. آتاه الله الزبور وباركه بصوت جميل جعل الجبال والطيور تسبح الله معه.",
+            "fr": "Dawoud (David) était à la fois prophète et roi d'Israël. Allah lui a donné le Zabour (Psaumes) et l'a béni d'une belle voix qui faisait que les montagnes et les oiseaux glorifiaient Allah avec lui.",
         },
     },
     {
@@ -1249,6 +1279,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "An ant warned its colony about his army", "ar": "حذرت نملة قومها من جيشه", "fr": "Une fourmi a averti sa colonie de son armée"},
             "6": {"en": "Son of Dawud", "ar": "ابن داود", "fr": "Fils de Dawud"},
         },
+        "explanation": {
+            "en": "Sulayman (Solomon) was a prophet-king who was given dominion over humans, jinn, animals, and the wind. He could understand the language of birds and ants, and he built a magnificent temple with the help of jinn.",
+            "ar": "سليمان عليه السلام كان نبياً وملكاً سُخّر له الإنس والجن والحيوانات والرياح. كان يفهم لغة الطيور والنمل وبنى معبداً عظيماً بمساعدة الجن.",
+            "fr": "Soulaymane (Salomon) était un prophète-roi à qui Allah a donné pouvoir sur les humains, les djinns, les animaux et le vent. Il comprenait le langage des oiseaux et des fourmis et a bâti un temple magnifique avec l'aide des djinns.",
+        },
     },
     {
         "word_en": "Ayyub",
@@ -1263,6 +1298,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Never complained despite suffering", "ar": "لم يشكُ رغم المعاناة", "fr": "N'a jamais se plaint malgré la souffrance"},
             "5": {"en": "Allah restored everything to him", "ar": "أعاد الله إليه كل شيء", "fr": "Allah lui a tout restitué"},
             "6": {"en": "Symbol of patience (sabr)", "ar": "رمز الصبر", "fr": "Symbole de patience (sabr)"},
+        },
+        "explanation": {
+            "en": "Ayyub (Job) is the ultimate symbol of patience in Islam. He endured years of severe illness, loss of wealth, and loss of family, yet never complained to anyone but Allah. His patience was rewarded with full restoration.",
+            "ar": "أيوب عليه السلام رمز الصبر في الإسلام. تحمّل سنوات من المرض الشديد وفقدان المال والأهل ولم يشكُ إلا لله. كوفئ صبره باسترداد كل شيء.",
+            "fr": "Ayyoub (Job) est le symbole ultime de la patience en Islam. Il a enduré des années de maladie grave, la perte de ses biens et de sa famille, sans jamais se plaindre qu'à Allah. Sa patience fut récompensée par une restauration complète.",
         },
     },
     {
@@ -1279,6 +1319,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "La ilaha illa anta subhanaka inni kuntu min az-zalimin", "ar": "لا إله إلا أنت سبحانك إني كنت من الظالمين", "fr": "La ilaha illa anta subhanaka inni kuntu min az-zalimin"},
             "6": {"en": "The companion of the whale", "ar": "صاحب الحوت", "fr": "Le compagnon de la baleine"},
         },
+        "explanation": {
+            "en": "Yunus (Jonah) is known for being swallowed by a great whale after leaving his people without Allah's permission. Inside the whale's belly, he made the famous supplication that led to his miraculous rescue.",
+            "ar": "يونس عليه السلام يُعرف بأنه ابتلعه حوت عظيم بعد أن ترك قومه دون إذن الله. في بطن الحوت دعا بالدعاء المشهور الذي أدى إلى إنقاذه بمعجزة.",
+            "fr": "Younous (Jonas) est connu pour avoir été avalé par une grande baleine après avoir quitté son peuple sans la permission d'Allah. Dans le ventre de la baleine, il fit la célèbre invocation qui mena à son sauvetage miraculeux.",
+        },
     },
     {
         "word_en": "Muhammad",
@@ -1293,6 +1338,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Made the Hijra to Madinah", "ar": "هاجر إلى المدينة", "fr": "A fait la Hijra vers Médine"},
             "5": {"en": "Sallallahu alayhi wa sallam", "ar": "صلى الله عليه وسلم", "fr": "Sallallahu alayhi wa sallam"},
             "6": {"en": "Seal of the Prophets", "ar": "خاتم الأنبياء", "fr": "Sceau des Prophètes"},
+        },
+        "explanation": {
+            "en": "Muhammad (peace be upon him) is the final prophet and messenger of Allah, sent as a mercy to all of humanity. He received the Quran over 23 years and established the foundations of Islamic civilization in Madinah.",
+            "ar": "محمد صلى الله عليه وسلم خاتم الأنبياء والمرسلين، أُرسل رحمة للعالمين. تلقى القرآن على مدى 23 سنة وأسس حضارة الإسلام في المدينة المنورة.",
+            "fr": "Muhammad (paix et bénédictions sur lui) est le dernier prophète et messager d'Allah, envoyé comme miséricorde pour toute l'humanité. Il a reçu le Coran sur 23 ans et a établi les fondements de la civilisation islamique à Médine.",
         },
     },
     # === Companions (~15) ===
@@ -1310,6 +1360,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "The first Caliph of Islam", "ar": "أول خليفة في الإسلام", "fr": "Le premier Calife de l'Islam"},
             "6": {"en": "As-Siddiq (The Truthful)", "ar": "الصديق", "fr": "As-Siddiq (Le Véridique)"},
         },
+        "explanation": {
+            "en": "Abu Bakr al-Siddiq was the Prophet's closest companion and the first adult male to embrace Islam. He became the first Caliph after the Prophet's death and is known for his unwavering faith and generosity.",
+            "ar": "أبو بكر الصديق كان أقرب صحابي للنبي وأول رجل بالغ يعتنق الإسلام. أصبح أول خليفة بعد وفاة النبي ويُعرف بإيمانه الراسخ وكرمه.",
+            "fr": "Abou Bakr al-Siddiq était le compagnon le plus proche du Prophète et le premier homme adulte à embrasser l'Islam. Il devint le premier calife après la mort du Prophète et est connu pour sa foi inébranlable et sa générosité.",
+        },
     },
     {
         "word_en": "Umar",
@@ -1324,6 +1379,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The second Caliph", "ar": "الخليفة الثاني", "fr": "Le deuxième Calife"},
             "5": {"en": "Conquered Jerusalem peacefully", "ar": "فتح القدس سلمياً", "fr": "A conquis Jérusalem pacifiquement"},
             "6": {"en": "Al-Faruq (The Distinguisher)", "ar": "الفاروق", "fr": "Al-Faruq (Le Distingueur)"},
+        },
+        "explanation": {
+            "en": "Umar ibn al-Khattab was the second Caliph of Islam, known for his justice, strength, and administrative genius. His conversion to Islam was a turning point — the Prophet had prayed for either Umar or Abu Jahl to embrace the faith.",
+            "ar": "عمر بن الخطاب الخليفة الثاني في الإسلام، يُعرف بعدله وقوته وعبقريته الإدارية. كان إسلامه نقطة تحول — دعا النبي أن يعز الله الإسلام بأحد العمرين.",
+            "fr": "Omar ibn al-Khattab fut le deuxième calife de l'Islam, connu pour sa justice, sa force et son génie administratif. Sa conversion à l'Islam fut un tournant — le Prophète avait prié pour que l'un des deux Omar embrasse la foi.",
         },
     },
     {
@@ -1340,6 +1400,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Mother of Fatimah", "ar": "أم فاطمة", "fr": "Mère de Fatima"},
             "6": {"en": "First wife of the Prophet", "ar": "أول زوجات النبي", "fr": "Première épouse du Prophète"},
         },
+        "explanation": {
+            "en": "Khadijah bint Khuwaylid was the Prophet's first wife and the first person to accept Islam. She was a successful businesswoman who supported the Prophet emotionally and financially during the difficult early years of revelation.",
+            "ar": "خديجة بنت خويلد كانت أول زوجات النبي وأول من آمن بالإسلام. كانت سيدة أعمال ناجحة دعمت النبي عاطفياً ومادياً خلال سنوات الوحي الأولى الصعبة.",
+            "fr": "Khadija bint Khuwaylid était la première épouse du Prophète et la première personne à accepter l'Islam. C'était une femme d'affaires prospère qui a soutenu le Prophète émotionnellement et financièrement pendant les difficiles premières années de la révélation.",
+        },
     },
     {
         "word_en": "Bilal",
@@ -1355,6 +1420,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Had a beautiful voice", "ar": "كان له صوت جميل", "fr": "Avait une belle voix"},
             "6": {"en": "The first muezzin of Islam", "ar": "أول مؤذن في الإسلام", "fr": "Le premier muezzin de l'Islam"},
         },
+        "explanation": {
+            "en": "Bilal ibn Rabah was an Abyssinian companion who became the first muezzin (caller to prayer) in Islam. He was tortured for his faith but remained steadfast, famously repeating 'Ahad, Ahad' (One, One) under persecution.",
+            "ar": "بلال بن رباح صحابي حبشي أصبح أول مؤذن في الإسلام. عُذّب بسبب إيمانه لكنه ظل صامداً وكان يردد 'أحد أحد' تحت التعذيب.",
+            "fr": "Bilal ibn Rabah était un compagnon abyssinien qui devint le premier muezzin (appelant à la prière) en Islam. Il fut torturé pour sa foi mais resta ferme, répétant célèbrement 'Ahad, Ahad' (Un, Un) sous la persécution.",
+        },
     },
     {
         "word_en": "Ali",
@@ -1369,6 +1439,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Slept in the Prophet's bed during the Hijra", "ar": "نام في فراش النبي ليلة الهجرة", "fr": "A dormi dans le lit du Prophète pendant la Hijra"},
             "5": {"en": "The fourth Caliph", "ar": "الخليفة الرابع", "fr": "Le quatrième Calife"},
             "6": {"en": "The Gate of Knowledge", "ar": "باب العلم", "fr": "La Porte du Savoir"},
+        },
+        "explanation": {
+            "en": "Ali ibn Abi Talib was the Prophet's cousin, son-in-law, and the fourth Caliph. Known as 'the Gate to the City of Knowledge,' he was the first young boy to accept Islam and was renowned for his bravery and wisdom.",
+            "ar": "علي بن أبي طالب ابن عم النبي وصهره والخليفة الرابع. يُلقب بباب مدينة العلم، وكان أول صبي يعتنق الإسلام واشتهر بشجاعته وحكمته.",
+            "fr": "Ali ibn Abi Talib était le cousin du Prophète, son gendre et le quatrième calife. Connu comme 'la Porte de la Cité du Savoir,' il fut le premier jeune garçon à accepter l'Islam et était renommé pour sa bravoure et sa sagesse.",
         },
     },
     # === Islamic Concepts (~20) ===
@@ -1386,6 +1461,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Opposite of shirk", "ar": "عكس الشرك", "fr": "Le contraire du shirk"},
             "6": {"en": "Oneness of Allah", "ar": "وحدانية الله", "fr": "Unicité d'Allah"},
         },
+        "explanation": {
+            "en": "Tawhid is the absolute oneness of Allah — the most fundamental concept in Islam. It means affirming that Allah alone is the Creator, Sustainer, and only one worthy of worship, with no partners or equals.",
+            "ar": "التوحيد هو إفراد الله بالوحدانية — أهم مفهوم في الإسلام. يعني تأكيد أن الله وحده الخالق والرازق والمستحق للعبادة بلا شريك.",
+            "fr": "Le Tawhid est l'unicité absolue d'Allah — le concept le plus fondamental de l'Islam. Il signifie affirmer qu'Allah seul est le Créateur, le Pourvoyeur, et le seul digne d'adoration, sans associé ni égal.",
+        },
     },
     {
         "word_en": "Taqwa",
@@ -1400,6 +1480,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The best provision for the Hereafter", "ar": "خير الزاد", "fr": "La meilleure provision pour l'Au-delà"},
             "5": {"en": "Awareness and fear of Allah", "ar": "الوعي بالله وخشيته", "fr": "Conscience et crainte d'Allah"},
             "6": {"en": "God-consciousness and piety", "ar": "الوعي بالله والتقوى", "fr": "Conscience de Dieu et piété"},
+        },
+        "explanation": {
+            "en": "Taqwa means God-consciousness — being constantly aware of Allah's presence and striving to avoid sin. The Prophet said the seat of Taqwa is the heart, and it is the most valuable provision for the Hereafter.",
+            "ar": "التقوى تعني مراقبة الله — الوعي الدائم بحضور الله والسعي لتجنب المعاصي. قال النبي إن التقوى ها هنا وأشار إلى صدره، وهي خير الزاد للآخرة.",
+            "fr": "La Taqwa signifie la conscience de Dieu — être constamment conscient de la présence d'Allah et s'efforcer d'éviter le péché. Le Prophète a dit que le siège de la Taqwa est le cœur, et c'est la meilleure provision pour l'Au-delà.",
         },
     },
     {
@@ -1416,6 +1501,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Given to the poor and needy", "ar": "تُعطى للفقراء والمحتاجين", "fr": "Donnée aux pauvres et nécessiteux"},
             "6": {"en": "Obligatory charity", "ar": "الصدقة الواجبة", "fr": "Charité obligatoire"},
         },
+        "explanation": {
+            "en": "Zakat is the third pillar of Islam — an obligatory annual charity of 2.5% of one's savings given to those in need. It purifies wealth, reduces inequality, and strengthens community bonds.",
+            "ar": "الزكاة الركن الثالث من أركان الإسلام — صدقة سنوية واجبة بنسبة 2.5% من المدخرات تُعطى للمحتاجين. تطهر المال وتقلل التفاوت وتقوي الروابط المجتمعية.",
+            "fr": "La Zakat est le troisième pilier de l'Islam — une charité annuelle obligatoire de 2,5% de ses économies donnée aux nécessiteux. Elle purifie la richesse, réduit les inégalités et renforce les liens communautaires.",
+        },
     },
     {
         "word_en": "Hajj",
@@ -1431,6 +1521,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Millions gather wearing white garments", "ar": "الملايين يجتمعون بثياب بيضاء", "fr": "Des millions se rassemblent en vêtements blancs"},
             "6": {"en": "Pilgrimage to Makkah", "ar": "الحج إلى مكة", "fr": "Pèlerinage à La Mecque"},
         },
+        "explanation": {
+            "en": "Hajj is the annual pilgrimage to Makkah and the fifth pillar of Islam, required once in a lifetime for those who are able. Millions of Muslims gather wearing simple white garments, symbolizing equality before Allah.",
+            "ar": "الحج هو الحج السنوي إلى مكة والركن الخامس من أركان الإسلام، واجب مرة في العمر لمن استطاع. يجتمع الملايين بلباس أبيض بسيط رمزاً للمساواة أمام الله.",
+            "fr": "Le Hajj est le pèlerinage annuel à La Mecque et le cinquième pilier de l'Islam, obligatoire une fois dans la vie pour ceux qui en ont les moyens. Des millions de musulmans se rassemblent en vêtements blancs simples, symbolisant l'égalité devant Allah.",
+        },
     },
     {
         "word_en": "Ihsan",
@@ -1445,6 +1540,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Beyond Islam and Iman", "ar": "ما بعد الإسلام والإيمان", "fr": "Au-delà de l'Islam et de l'Iman"},
             "5": {"en": "If you don't see Him, He sees you", "ar": "فإن لم تكن تراه فإنه يراك", "fr": "Si vous ne Le voyez pas, Il vous voit"},
             "6": {"en": "Excellence in worship", "ar": "الإتقان في العبادة", "fr": "Excellence dans l'adoration"},
+        },
+        "explanation": {
+            "en": "Ihsan means excellence in worship — to worship Allah as though you see Him, and if you cannot see Him, know that He sees you. It is the highest level of faith, above Islam (practice) and Iman (belief).",
+            "ar": "الإحسان يعني الإتقان في العبادة — أن تعبد الله كأنك تراه فإن لم تكن تراه فإنه يراك. هو أعلى مراتب الإيمان فوق الإسلام والإيمان.",
+            "fr": "L'Ihsan signifie l'excellence dans l'adoration — adorer Allah comme si vous Le voyiez, et si vous ne Le voyez pas, savoir qu'Il vous voit. C'est le plus haut niveau de foi, au-dessus de l'Islam (pratique) et de l'Iman (croyance).",
         },
     },
     # === Quran (~10) ===
@@ -1462,6 +1562,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Begins with Bismillah", "ar": "تبدأ ببسم الله", "fr": "Commence par Bismillah"},
             "6": {"en": "The Opening chapter of the Quran", "ar": "سورة افتتاح القرآن", "fr": "Le chapitre d'ouverture du Coran"},
         },
+        "explanation": {
+            "en": "Al-Fatiha (The Opening) is the first surah of the Quran and is recited in every unit of prayer. Known as 'the Mother of the Quran,' it summarizes the entire message of the Quran in seven beautiful verses.",
+            "ar": "الفاتحة هي أول سورة في القرآن وتُقرأ في كل ركعة من الصلاة. تُعرف بأم القرآن وتلخص رسالة القرآن كاملة في سبع آيات بليغة.",
+            "fr": "Al-Fatiha (L'Ouverture) est la première sourate du Coran et est récitée dans chaque unité de prière. Connue comme 'la Mère du Coran,' elle résume l'ensemble du message coranique en sept beaux versets.",
+        },
     },
     {
         "word_en": "Ayat Al-Kursi",
@@ -1477,23 +1582,13 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Verse 255 of Al-Baqarah", "ar": "الآية 255 من البقرة", "fr": "Verset 255 de Al-Baqarah"},
             "6": {"en": "The Verse of the Throne", "ar": "آية العرش", "fr": "Le Verset du Trône"},
         },
-    },
-    # === Islamic History (~10) ===
-    {
-        "word_en": "Battle of Badr",
-        "word_ar": "غزوة بدر",
-        "word_fr": "Bataille de Badr",
-        "accepted_answers": {"en": ["Battle of Badr", "Badr"], "ar": ["غزوة بدر", "بدر", "معركة بدر"], "fr": ["Bataille de Badr", "Badr"]},
-        "category": "Islamic History",
-        "hints": {
-            "1": {"en": "A decisive early battle in Islamic history", "ar": "معركة حاسمة في بداية الإسلام", "fr": "Une bataille décisive au début de l'Islam"},
-            "2": {"en": "Muslims were greatly outnumbered", "ar": "كان المسلمون أقل عدداً بكثير", "fr": "Les musulmans étaient largement dépassés en nombre"},
-            "3": {"en": "Occurred in the 2nd year after Hijra", "ar": "وقعت في السنة الثانية بعد الهجرة", "fr": "S'est produite la 2e année après la Hijra"},
-            "4": {"en": "313 Muslims vs about 1000 enemies", "ar": "313 مسلماً ضد نحو 1000", "fr": "313 musulmans contre environ 1000 ennemis"},
-            "5": {"en": "Angels descended to help", "ar": "نزلت الملائكة للمساعدة", "fr": "Les anges sont descendus pour aider"},
-            "6": {"en": "The first major battle of Islam", "ar": "أول معركة كبرى في الإسلام", "fr": "La première grande bataille de l'Islam"},
+        "explanation": {
+            "en": "Ayat Al-Kursi (The Verse of the Throne) is verse 255 of Surah Al-Baqarah, considered the greatest verse in the Quran. It describes Allah's sovereignty over the heavens and earth and is recited for protection.",
+            "ar": "آية الكرسي هي الآية 255 من سورة البقرة وتُعتبر أعظم آية في القرآن. تصف سيادة الله على السماوات والأرض وتُقرأ للحماية.",
+            "fr": "Ayat Al-Kursi (Le Verset du Trône) est le verset 255 de la sourate Al-Baqarah, considéré comme le plus grand verset du Coran. Il décrit la souveraineté d'Allah sur les cieux et la terre et est récité pour la protection.",
         },
     },
+    # === Islamic History (~10) ===
     {
         "word_en": "Hijra",
         "word_ar": "هجرة",
@@ -1507,6 +1602,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Marks the start of the Islamic calendar", "ar": "تمثل بداية التقويم الهجري", "fr": "Marque le début du calendrier islamique"},
             "5": {"en": "The Prophet hid in a cave during this event", "ar": "اختبأ النبي في غار خلال هذا الحدث", "fr": "Le Prophète s'est caché dans une grotte"},
             "6": {"en": "The Migration of the Prophet", "ar": "هجرة النبي", "fr": "La Migration du Prophète"},
+        },
+        "explanation": {
+            "en": "The Hijra was the Prophet Muhammad's migration from Makkah to Madinah in 622 CE, marking the beginning of the Islamic calendar. It was a turning point that established the first Muslim community and state.",
+            "ar": "الهجرة كانت انتقال النبي محمد من مكة إلى المدينة سنة 622م، وتمثل بداية التقويم الهجري. كانت نقطة تحول أسست أول مجتمع ودولة إسلامية.",
+            "fr": "La Hijra fut la migration du Prophète Muhammad de La Mecque à Médine en 622 de notre ère, marquant le début du calendrier islamique. Ce fut un tournant qui établit la première communauté et le premier État musulman.",
         },
     },
     # === Daily Life (~10) ===
@@ -1524,6 +1624,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Required before salah", "ar": "مطلوب قبل الصلاة", "fr": "Requis avant la salah"},
             "6": {"en": "Ritual ablution", "ar": "الطهارة الشرعية", "fr": "Ablution rituelle"},
         },
+        "explanation": {
+            "en": "Wudu is the Islamic ritual ablution performed before prayer, involving washing the hands, face, arms, wiping the head, and washing the feet. It symbolizes both physical and spiritual purification.",
+            "ar": "الوضوء هو الطهارة الشرعية قبل الصلاة ويشمل غسل اليدين والوجه والذراعين ومسح الرأس وغسل القدمين. يرمز للطهارة الجسدية والروحية.",
+            "fr": "Le Woudou est l'ablution rituelle islamique effectuée avant la prière, impliquant le lavage des mains, du visage, des bras, l'essuyage de la tête et le lavage des pieds. Il symbolise la purification physique et spirituelle.",
+        },
     },
     {
         "word_en": "Adhan",
@@ -1538,6 +1643,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Begins with Allahu Akbar", "ar": "يبدأ بالله أكبر", "fr": "Commence par Allahou Akbar"},
             "5": {"en": "The muezzin performs this", "ar": "يؤديه المؤذن", "fr": "Le muezzin l'exécute"},
             "6": {"en": "The call to prayer", "ar": "النداء للصلاة", "fr": "L'appel à la prière"},
+        },
+        "explanation": {
+            "en": "The Adhan is the Islamic call to prayer, announced five times daily from mosques worldwide. It was established in Madinah when Bilal ibn Rabah became the first muezzin, calling the faithful to worship.",
+            "ar": "الأذان هو النداء الإسلامي للصلاة، يُعلن خمس مرات يومياً من المساجد حول العالم. أُسس في المدينة حين أصبح بلال بن رباح أول مؤذن.",
+            "fr": "L'Adhan est l'appel islamique à la prière, annoncé cinq fois par jour depuis les mosquées du monde entier. Il fut établi à Médine quand Bilal ibn Rabah devint le premier muezzin, appelant les fidèles à l'adoration.",
         },
     },
     {
@@ -1554,6 +1664,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Gives energy for fasting", "ar": "يعطي طاقة للصيام", "fr": "Donne de l'énergie pour le jeûne"},
             "6": {"en": "Pre-dawn meal during Ramadan", "ar": "وجبة ما قبل الفجر في رمضان", "fr": "Repas avant l'aube pendant le Ramadan"},
         },
+        "explanation": {
+            "en": "Suhoor is the pre-dawn meal eaten before the Fajr prayer during Ramadan. The Prophet encouraged eating suhoor, saying there is blessing in it. It provides energy for the long fasting day ahead.",
+            "ar": "السحور هو وجبة ما قبل الفجر تُؤكل قبل صلاة الفجر في رمضان. حث النبي على السحور وقال إن فيه بركة. يمد الصائم بالطاقة لليوم الطويل.",
+            "fr": "Le Souhour est le repas pris avant l'aube, avant la prière du Fajr pendant le Ramadan. Le Prophète a encouragé le souhour, disant qu'il y a de la bénédiction dedans. Il fournit l'énergie pour la longue journée de jeûne.",
+        },
     },
     {
         "word_en": "Iftar",
@@ -1569,6 +1684,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Families gather for this", "ar": "تجتمع العائلات لهذا", "fr": "Les familles se rassemblent pour cela"},
             "6": {"en": "Breaking the fast", "ar": "فطور الصيام", "fr": "Rupture du jeûne"},
         },
+        "explanation": {
+            "en": "Iftar is the meal eaten at sunset to break the daily Ramadan fast. The Prophet would break his fast with dates and water. It is a moment of joy, gratitude, and community gathering.",
+            "ar": "الإفطار هو الوجبة عند غروب الشمس لكسر صيام رمضان اليومي. كان النبي يفطر على التمر والماء. إنها لحظة فرح وامتنان واجتماع.",
+            "fr": "L'Iftar est le repas pris au coucher du soleil pour rompre le jeûne quotidien du Ramadan. Le Prophète rompait son jeûne avec des dattes et de l'eau. C'est un moment de joie, de gratitude et de rassemblement communautaire.",
+        },
     },
     {
         "word_en": "Taraweeh",
@@ -1583,6 +1703,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "After Isha prayer during Ramadan", "ar": "بعد صلاة العشاء في رمضان", "fr": "Après la prière d'Isha pendant le Ramadan"},
             "5": {"en": "The entire Quran is often completed", "ar": "غالباً يُختم القرآن كاملاً", "fr": "Le Coran entier est souvent complété"},
             "6": {"en": "Ramadan night prayers", "ar": "صلاة الليل في رمضان", "fr": "Prières nocturnes du Ramadan"},
+        },
+        "explanation": {
+            "en": "Taraweeh are special nightly prayers performed during Ramadan after the Isha prayer. They involve reciting long portions of the Quran, and many mosques complete the entire Quran over the 30 nights of Ramadan.",
+            "ar": "التراويح صلوات ليلية خاصة تُؤدى في رمضان بعد صلاة العشاء. تتضمن تلاوة أجزاء طويلة من القرآن وتختم كثير من المساجد القرآن كاملاً خلال 30 ليلة.",
+            "fr": "Les Tarawih sont des prières nocturnes spéciales effectuées pendant le Ramadan après la prière d'Isha. Elles impliquent la récitation de longues portions du Coran, et de nombreuses mosquées complètent le Coran entier sur les 30 nuits du Ramadan.",
         },
     },
     # === More Prophets ===
@@ -1600,6 +1725,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "His wife was Hawwa", "ar": "زوجته حواء", "fr": "Son épouse était Hawwa"},
             "6": {"en": "Father of all mankind", "ar": "أبو البشرية", "fr": "Père de toute l'humanité"},
         },
+        "explanation": {
+            "en": "Adam is the first human being and the first prophet in Islam, created by Allah from clay. Allah taught him the names of all things and commanded the angels to prostrate before him, establishing humanity's honored status.",
+            "ar": "آدم عليه السلام أول إنسان وأول نبي في الإسلام، خلقه الله من طين. علّمه الله الأسماء كلها وأمر الملائكة بالسجود له تكريماً للإنسان.",
+            "fr": "Adam est le premier être humain et le premier prophète en Islam, créé par Allah à partir d'argile. Allah lui a enseigné les noms de toutes les choses et a ordonné aux anges de se prosterner devant lui, établissant le statut honoré de l'humanité.",
+        },
     },
     {
         "word_en": "Ismail",
@@ -1614,6 +1744,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Helped build the Kaaba", "ar": "ساعد في بناء الكعبة", "fr": "A aidé à construire la Kaaba"},
             "5": {"en": "Ancestor of the Prophet Muhammad", "ar": "جد النبي محمد", "fr": "Ancêtre du Prophète Muhammad"},
             "6": {"en": "Son of Ibrahim and Hajar", "ar": "ابن إبراهيم وهاجر", "fr": "Fils d'Ibrahim et Hajar"},
+        },
+        "explanation": {
+            "en": "Ismail (Ishmael) is the son of Ibrahim and Hajar. As a young boy, he submitted to Allah's command when his father was ordered to sacrifice him — a test commemorated during Eid al-Adha. He helped build the Kaaba.",
+            "ar": "إسماعيل عليه السلام ابن إبراهيم وهاجر. استسلم صغيراً لأمر الله حين أُمر أبوه بذبحه — اختبار يُحتفى به في عيد الأضحى. ساعد في بناء الكعبة.",
+            "fr": "Ismaïl est le fils d'Ibrahim et de Hajar. Jeune garçon, il s'est soumis au commandement d'Allah quand son père reçut l'ordre de le sacrifier — une épreuve commémorée lors de l'Aïd al-Adha. Il a aidé à construire la Kaaba.",
         },
     },
     {
@@ -1630,6 +1765,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "His sight was restored by a shirt", "ar": "عاد بصره بقميص", "fr": "Sa vue a été restaurée par une chemise"},
             "6": {"en": "Father of Yusuf", "ar": "والد يوسف", "fr": "Père de Yusuf"},
         },
+        "explanation": {
+            "en": "Yaqub (Jacob) was the son of Ishaq and grandson of Ibrahim. He endured the long separation from his beloved son Yusuf with patience, weeping until he lost his sight, which was miraculously restored.",
+            "ar": "يعقوب عليه السلام ابن إسحاق وحفيد إبراهيم. تحمّل فراق ابنه الحبيب يوسف بصبر وبكى حتى فقد بصره الذي أُعيد له بمعجزة.",
+            "fr": "Yacoub (Jacob) était le fils d'Ishaq et le petit-fils d'Ibrahim. Il a enduré la longue séparation de son fils bien-aimé Youssouf avec patience, pleurant jusqu'à perdre la vue, qui fut miraculeusement restaurée.",
+        },
     },
     {
         "word_en": "Shuayb",
@@ -1644,6 +1784,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "His people cheated in weights and measures", "ar": "كان قومه يغشون في الموازين", "fr": "Son peuple trichait dans les poids et mesures"},
             "5": {"en": "Musa married his daughter", "ar": "تزوج موسى ابنته", "fr": "Moïse a épousé sa fille"},
             "6": {"en": "Prophet of Madyan", "ar": "نبي مدين", "fr": "Prophète de Madyan"},
+        },
+        "explanation": {
+            "en": "Shuayb was sent to the people of Madyan who cheated in their business dealings. Known as the 'orator of the prophets' for his eloquence, he called his people to fair trade and honest weights and measures.",
+            "ar": "شعيب عليه السلام أُرسل لأهل مدين الذين كانوا يغشون في تجارتهم. يُلقب بخطيب الأنبياء لفصاحته ودعا قومه للتجارة العادلة والكيل والميزان.",
+            "fr": "Chouaïb fut envoyé au peuple de Madyan qui trichait dans ses transactions commerciales. Connu comme 'l'orateur des prophètes' pour son éloquence, il a appelé son peuple au commerce équitable et aux poids et mesures honnêtes.",
         },
     },
     {
@@ -1660,6 +1805,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "The she-camel of Allah", "ar": "ناقة الله", "fr": "La chamelle d'Allah"},
             "6": {"en": "Prophet sent to Thamud", "ar": "نبي أُرسل إلى ثمود", "fr": "Prophète envoyé à Thamoud"},
         },
+        "explanation": {
+            "en": "Salih was sent to the people of Thamud who carved magnificent homes into mountains. Allah gave them the miracle of a she-camel emerging from rock, but they defied the warning and killed it, bringing divine punishment.",
+            "ar": "صالح عليه السلام أُرسل لقوم ثمود الذين نحتوا بيوتاً عظيمة في الجبال. أعطاهم الله معجزة ناقة خرجت من الصخر لكنهم عصوا وقتلوها فحل بهم العذاب.",
+            "fr": "Salih fut envoyé au peuple de Thamoud qui sculptait de magnifiques demeures dans les montagnes. Allah leur donna le miracle d'une chamelle sortie du rocher, mais ils défièrent l'avertissement et la tuèrent, attirant le châtiment divin.",
+        },
     },
     {
         "word_en": "Hud",
@@ -1674,6 +1824,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Destroyed by a violent wind", "ar": "أُهلكوا بريح عاتية", "fr": "Détruits par un vent violent"},
             "5": {"en": "A surah in the Quran bears his name", "ar": "سورة في القرآن تحمل اسمه", "fr": "Une sourate du Coran porte son nom"},
             "6": {"en": "Prophet sent to the people of Ad", "ar": "نبي أُرسل إلى قوم عاد", "fr": "Prophète envoyé au peuple de Ad"},
+        },
+        "explanation": {
+            "en": "Hud was sent to the people of 'Ad, an ancient and powerful civilization known for their tall stature and impressive buildings. They rejected his message, so Allah destroyed them with a furious wind lasting seven nights.",
+            "ar": "هود عليه السلام أُرسل لقوم عاد، حضارة قديمة قوية اشتهرت بضخامة أجسامهم ومبانيهم. رفضوا رسالته فأهلكهم الله بريح صرصر سبع ليالٍ.",
+            "fr": "Houd fut envoyé au peuple de 'Ad, une civilisation ancienne et puissante connue pour leur grande taille et leurs bâtiments impressionnants. Ils rejetèrent son message, alors Allah les détruisit par un vent furieux durant sept nuits.",
         },
     },
     {
@@ -1690,6 +1845,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Father of Yahya", "ar": "والد يحيى", "fr": "Père de Yahya"},
             "6": {"en": "Guardian of Maryam", "ar": "كفيل مريم", "fr": "Gardien de Maryam"},
         },
+        "explanation": {
+            "en": "Zakaria (Zechariah) was an elderly prophet who prayed to Allah for an heir despite his old age and his wife's barrenness. Allah answered his prayer and blessed him with Yahya (John), a righteous prophet.",
+            "ar": "زكريا عليه السلام كان نبياً مسناً دعا الله أن يرزقه ولداً رغم كبر سنه وعقم زوجته. استجاب الله دعاءه وبارك له بيحيى النبي الصالح.",
+            "fr": "Zacharie était un prophète âgé qui a prié Allah pour un héritier malgré son grand âge et la stérilité de sa femme. Allah a exaucé sa prière et l'a béni avec Yahya (Jean), un prophète vertueux.",
+        },
     },
     {
         "word_en": "Idris",
@@ -1704,6 +1864,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Said to be the first to write with a pen", "ar": "يُقال أنه أول من كتب بالقلم", "fr": "On dit qu'il fut le premier à écrire avec un stylo"},
             "5": {"en": "Among the earliest prophets after Adam", "ar": "من أوائل الأنبياء بعد آدم", "fr": "Parmi les premiers prophètes après Adam"},
             "6": {"en": "Raised to a high place by Allah", "ar": "رفعه الله مكاناً علياً", "fr": "Élevé à un haut lieu par Allah"},
+        },
+        "explanation": {
+            "en": "Idris (Enoch) was among the earliest prophets, known for his vast knowledge and wisdom. The Quran mentions that Allah raised him to a high station. He is traditionally credited with being the first to write with a pen.",
+            "ar": "إدريس عليه السلام من أوائل الأنبياء واشتهر بعلمه الواسع وحكمته. ذكر القرآن أن الله رفعه مكاناً علياً. يُنسب إليه تقليدياً أنه أول من كتب بالقلم.",
+            "fr": "Idris (Hénoch) fut parmi les premiers prophètes, connu pour son vaste savoir et sa sagesse. Le Coran mentionne qu'Allah l'a élevé à un haut rang. On lui attribue traditionnellement d'avoir été le premier à écrire avec un calame.",
         },
     },
     # === More Companions ===
@@ -1721,6 +1886,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "The third Caliph", "ar": "الخليفة الثالث", "fr": "Le troisième Calife"},
             "6": {"en": "Dhun-Nurain (Possessor of Two Lights)", "ar": "ذو النورين", "fr": "Dhun-Nurain (Possesseur de Deux Lumières)"},
         },
+        "explanation": {
+            "en": "Uthman ibn Affan was the third Caliph, known for his generosity and modesty. He compiled the standardized written Quran (mushaf) and is called 'Dhun-Nurayn' (possessor of two lights) for marrying two of the Prophet's daughters.",
+            "ar": "عثمان بن عفان الخليفة الثالث واشتهر بكرمه وحيائه. جمع المصحف الشريف ويُلقب بذي النورين لزواجه من ابنتي النبي.",
+            "fr": "Othman ibn Affan fut le troisième calife, connu pour sa générosité et sa modestie. Il a compilé le Coran standardisé (mushaf) et est appelé 'Dhun-Nurayn' (possesseur de deux lumières) pour avoir épousé deux filles du Prophète.",
+        },
     },
     {
         "word_en": "Aisha",
@@ -1735,6 +1905,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Scholars would come to her for rulings", "ar": "كان العلماء يأتون إليها للفتوى", "fr": "Les savants venaient la consulter pour des jugements"},
             "5": {"en": "The Prophet passed away in her room", "ar": "توفي النبي في حجرتها", "fr": "Le Prophète est décédé dans sa chambre"},
             "6": {"en": "Mother of the Believers, daughter of Abu Bakr", "ar": "أم المؤمنين بنت أبي بكر", "fr": "Mère des Croyants, fille d'Abou Bakr"},
+        },
+        "explanation": {
+            "en": "Aisha bint Abi Bakr was the wife of Prophet Muhammad and one of the greatest scholars of Islam. She narrated over 2,000 hadiths and was a leading authority on Islamic jurisprudence, medicine, and poetry.",
+            "ar": "عائشة بنت أبي بكر زوجة النبي محمد ومن أعظم علماء الإسلام. روت أكثر من 2000 حديث وكانت مرجعاً في الفقه والطب والشعر.",
+            "fr": "Aïcha bint Abi Bakr était l'épouse du Prophète Muhammad et l'une des plus grandes savantes de l'Islam. Elle a rapporté plus de 2 000 hadiths et était une autorité de premier plan en jurisprudence islamique, médecine et poésie.",
         },
     },
     {
@@ -1751,6 +1926,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "The Prophet gave him a famous title", "ar": "أعطاه النبي لقباً مشهوراً", "fr": "Le Prophète lui a donné un titre célèbre"},
             "6": {"en": "The Sword of Allah", "ar": "سيف الله المسلول", "fr": "L'Épée d'Allah"},
         },
+        "explanation": {
+            "en": "Khalid ibn al-Walid was a military genius known as 'the Sword of Allah.' He never lost a battle, whether fighting against or for Islam. After converting, he became one of the most successful commanders in history.",
+            "ar": "خالد بن الوليد عبقري عسكري يُلقب بسيف الله المسلول. لم يُهزم في أي معركة سواء ضد الإسلام أو معه. بعد إسلامه أصبح من أنجح القادة في التاريخ.",
+            "fr": "Khalid ibn al-Walid était un génie militaire connu comme 'l'Épée d'Allah.' Il n'a jamais perdu une bataille, que ce soit en combattant contre ou pour l'Islam. Après sa conversion, il devint l'un des commandants les plus victorieux de l'histoire.",
+        },
     },
     {
         "word_en": "Fatimah",
@@ -1766,6 +1946,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Called Az-Zahra (The Radiant)", "ar": "لُقبت بالزهراء", "fr": "Appelée Az-Zahra (La Resplendissante)"},
             "6": {"en": "Daughter of the Prophet Muhammad", "ar": "بنت النبي محمد", "fr": "Fille du Prophète Muhammad"},
         },
+        "explanation": {
+            "en": "Fatimah al-Zahra was the youngest daughter of Prophet Muhammad and Khadijah, and the wife of Ali ibn Abi Talib. She is considered the leader of the women of Paradise and the mother of the Prophet's grandsons Hasan and Husayn.",
+            "ar": "فاطمة الزهراء أصغر بنات النبي محمد وخديجة وزوجة علي بن أبي طالب. تُعتبر سيدة نساء الجنة وأم حفيدي النبي الحسن والحسين.",
+            "fr": "Fatima al-Zahra était la plus jeune fille du Prophète Muhammad et de Khadija, et l'épouse d'Ali ibn Abi Talib. Elle est considérée comme la dame des femmes du Paradis et la mère des petits-fils du Prophète, Hassan et Hussein.",
+        },
     },
     {
         "word_en": "Salman al-Farisi",
@@ -1780,6 +1965,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The Prophet said he is from Ahl al-Bayt", "ar": "قال النبي إنه من أهل البيت", "fr": "Le Prophète a dit qu'il fait partie des Ahl al-Bayt"},
             "5": {"en": "His idea was to dig a trench", "ar": "فكرته كانت حفر خندق", "fr": "Son idée était de creuser un fossé"},
             "6": {"en": "The Persian companion who proposed the trench", "ar": "الصحابي الفارسي الذي اقترح الخندق", "fr": "Le compagnon persan qui a proposé le fossé"},
+        },
+        "explanation": {
+            "en": "Salman al-Farisi was a Persian companion who traveled across lands seeking the truth before embracing Islam. He suggested digging a trench around Madinah during the Battle of the Khandaq, a strategy that saved the city.",
+            "ar": "سلمان الفارسي صحابي فارسي سافر عبر البلاد باحثاً عن الحق قبل اعتناق الإسلام. اقترح حفر خندق حول المدينة في غزوة الخندق مما أنقذ المدينة.",
+            "fr": "Salman al-Farisi était un compagnon persan qui a voyagé à travers les terres à la recherche de la vérité avant d'embrasser l'Islam. Il a suggéré de creuser une tranchée autour de Médine lors de la bataille du Khandaq, une stratégie qui a sauvé la ville.",
         },
     },
     # === More Islamic Concepts ===
@@ -1797,6 +1987,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "And their affairs are by this among them (Quran)", "ar": "وأمرهم شورى بينهم", "fr": "Et leurs affaires sont par ceci entre eux (Coran)"},
             "6": {"en": "Mutual consultation", "ar": "التشاور المتبادل", "fr": "Consultation mutuelle"},
         },
+        "explanation": {
+            "en": "Shura means consultation — the Islamic principle of making decisions through mutual discussion. The Quran praises those 'whose affairs are decided by consultation among themselves,' making it a core value of Islamic governance.",
+            "ar": "الشورى مبدأ إسلامي لاتخاذ القرارات بالتشاور. أثنى القرآن على الذين 'أمرهم شورى بينهم' مما يجعلها قيمة أساسية في الحكم الإسلامي.",
+            "fr": "La Choura signifie consultation — le principe islamique de prendre des décisions par discussion mutuelle. Le Coran loue ceux 'dont les affaires sont décidées par consultation entre eux,' en faisant une valeur fondamentale de la gouvernance islamique.",
+        },
     },
     {
         "word_en": "Sadaqah",
@@ -1811,6 +2006,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Different from the obligatory form of giving", "ar": "تختلف عن العطاء الواجب", "fr": "Différente de la forme obligatoire de don"},
             "5": {"en": "Can be given at any time", "ar": "يمكن إعطاؤها في أي وقت", "fr": "Peut être donnée à tout moment"},
             "6": {"en": "Voluntary charity", "ar": "الصدقة التطوعية", "fr": "Charité volontaire"},
+        },
+        "explanation": {
+            "en": "Sadaqah is voluntary charity given out of compassion and generosity, beyond the obligatory Zakat. The Prophet said even a smile is Sadaqah, teaching that charity extends far beyond financial giving.",
+            "ar": "الصدقة عطاء تطوعي بدافع الرحمة والكرم يتجاوز الزكاة الواجبة. قال النبي إن التبسم في وجه أخيك صدقة مبيناً أن العطاء أوسع من المال.",
+            "fr": "La Sadaqah est une charité volontaire donnée par compassion et générosité, au-delà de la Zakat obligatoire. Le Prophète a dit que même un sourire est une Sadaqah, enseignant que la charité va bien au-delà du don financier.",
         },
     },
     {
@@ -1827,6 +2027,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Erases sins and brings peace", "ar": "يمحو الذنوب ويجلب السكينة", "fr": "Efface les péchés et apporte la paix"},
             "6": {"en": "Seeking Allah's forgiveness", "ar": "طلب مغفرة الله", "fr": "Demander le pardon d'Allah"},
         },
+        "explanation": {
+            "en": "Istighfar is the act of seeking Allah's forgiveness, typically by saying 'Astaghfirullah.' The Prophet himself sought forgiveness over 70 times daily, teaching that repentance is a continuous spiritual practice, not just for major sins.",
+            "ar": "الاستغفار هو طلب مغفرة الله عادة بقول 'أستغفر الله.' كان النبي نفسه يستغفر أكثر من 70 مرة يومياً مبيناً أن التوبة عبادة مستمرة لا تقتصر على الكبائر.",
+            "fr": "L'Istighfar est l'acte de demander le pardon d'Allah, typiquement en disant 'Astaghfirullah.' Le Prophète lui-même demandait pardon plus de 70 fois par jour, enseignant que le repentir est une pratique spirituelle continue, pas seulement pour les grands péchés.",
+        },
     },
     {
         "word_en": "Tawakkul",
@@ -1842,6 +2047,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Whoever does this, Allah is sufficient for them", "ar": "ومن يتوكل على الله فهو حسبه", "fr": "Quiconque fait cela, Allah lui suffit"},
             "6": {"en": "Reliance and trust in Allah", "ar": "الاعتماد والثقة بالله", "fr": "S'en remettre à Allah et Lui faire confiance"},
         },
+        "explanation": {
+            "en": "Tawakkul means complete trust and reliance on Allah after taking all necessary actions. The Prophet taught: 'Tie your camel, then place your trust in Allah' — combining effort with faith in divine wisdom.",
+            "ar": "التوكل يعني الثقة الكاملة بالله بعد اتخاذ كل الأسباب. علّم النبي: 'اعقلها وتوكل' — الجمع بين العمل والإيمان بحكمة الله.",
+            "fr": "Le Tawakkul signifie la confiance totale en Allah après avoir pris toutes les mesures nécessaires. Le Prophète a enseigné : 'Attache ton chameau, puis place ta confiance en Allah' — combinant l'effort avec la foi en la sagesse divine.",
+        },
     },
     {
         "word_en": "Sabr",
@@ -1856,6 +2066,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Yaqub said: beautiful is this", "ar": "قال يعقوب: فصبر جميل", "fr": "Yaqub a dit : belle est cette qualité"},
             "5": {"en": "Its reward is without measure", "ar": "أجرها بغير حساب", "fr": "Sa récompense est sans mesure"},
             "6": {"en": "Patient perseverance", "ar": "الصبر والمثابرة", "fr": "Persévérance patiente"},
+        },
+        "explanation": {
+            "en": "Sabr (patience) is one of the highest virtues in Islam, mentioned over 90 times in the Quran. It encompasses patience in hardship, patience in obedience to Allah, and patience in refraining from sin.",
+            "ar": "الصبر من أعلى الفضائل في الإسلام ذُكر أكثر من 90 مرة في القرآن. يشمل الصبر على البلاء والصبر على الطاعة والصبر عن المعصية.",
+            "fr": "Le Sabr (patience) est l'une des plus hautes vertus en Islam, mentionné plus de 90 fois dans le Coran. Il englobe la patience dans l'adversité, la patience dans l'obéissance à Allah et la patience pour s'abstenir du péché.",
         },
     },
     # === More Quran ===
@@ -1873,6 +2088,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Has only four verses", "ar": "لها أربع آيات فقط", "fr": "N'a que quatre versets"},
             "6": {"en": "The Surah of Pure Sincerity", "ar": "سورة الإخلاص والتوحيد", "fr": "La Sourate de la Pure Sincérité"},
         },
+        "explanation": {
+            "en": "Surah Al-Ikhlas (The Sincerity) is the 112th chapter of the Quran, containing just four verses that define pure monotheism. The Prophet said it equals one-third of the Quran in meaning and significance.",
+            "ar": "سورة الإخلاص السورة 112 من القرآن تحتوي أربع آيات تُعرّف التوحيد الخالص. قال النبي إنها تعدل ثلث القرآن في المعنى والأهمية.",
+            "fr": "La sourate Al-Ikhlas (La Sincérité) est le 112e chapitre du Coran, contenant seulement quatre versets qui définissent le monothéisme pur. Le Prophète a dit qu'elle équivaut à un tiers du Coran en sens et en importance.",
+        },
     },
     {
         "word_en": "Al-Kahf",
@@ -1887,6 +2107,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "Young men who slept for centuries", "ar": "فتية ناموا قروناً", "fr": "Des jeunes hommes qui ont dormi des siècles"},
             "5": {"en": "Musa's journey with Al-Khidr", "ar": "رحلة موسى مع الخضر", "fr": "Le voyage de Moïse avec Al-Khidr"},
             "6": {"en": "The Surah of the Cave", "ar": "سورة الكهف", "fr": "La Sourate de la Caverne"},
+        },
+        "explanation": {
+            "en": "Surah Al-Kahf (The Cave) is the 18th chapter of the Quran, telling four powerful stories including the Sleepers of the Cave and Dhul-Qarnayn. The Prophet recommended reading it every Friday for spiritual light and protection.",
+            "ar": "سورة الكهف السورة 18 من القرآن تروي أربع قصص قوية منها أصحاب الكهف وذو القرنين. أوصى النبي بقراءتها كل جمعة للنور والحماية الروحية.",
+            "fr": "La sourate Al-Kahf (La Caverne) est le 18e chapitre du Coran, racontant quatre histoires puissantes dont les Dormants de la Caverne et Dhul-Qarnayn. Le Prophète a recommandé de la lire chaque vendredi pour la lumière spirituelle et la protection.",
         },
     },
     {
@@ -1903,6 +2128,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "It will intercede for its reader", "ar": "ستشفع لقارئها", "fr": "Elle intercédera pour son lecteur"},
             "6": {"en": "The Surah of Sovereignty", "ar": "سورة الملك", "fr": "La Sourate de la Royauté"},
         },
+        "explanation": {
+            "en": "Surah Al-Mulk (The Sovereignty) is the 67th chapter of the Quran. The Prophet said it intercedes for its reader in the grave, and recommended reciting it every night before sleep for protection.",
+            "ar": "سورة الملك السورة 67 من القرآن. قال النبي إنها تشفع لقارئها في القبر وأوصى بقراءتها كل ليلة قبل النوم للحماية.",
+            "fr": "La sourate Al-Mulk (La Souveraineté) est le 67e chapitre du Coran. Le Prophète a dit qu'elle intercède pour son lecteur dans la tombe et a recommandé de la réciter chaque nuit avant de dormir pour la protection.",
+        },
     },
     {
         "word_en": "Surah Yasin",
@@ -1918,51 +2148,71 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Often recited for the deceased", "ar": "تُقرأ غالباً على الميت", "fr": "Souvent récitée pour les défunts"},
             "6": {"en": "The heart of the Quran", "ar": "قلب القرآن", "fr": "Le cœur du Coran"},
         },
+        "explanation": {
+            "en": "Surah Yasin is the 36th chapter of the Quran, often called 'the Heart of the Quran.' It covers themes of resurrection, divine signs in nature, and the fate of those who reject the message.",
+            "ar": "سورة يس السورة 36 من القرآن وتُسمى قلب القرآن. تتناول مواضيع البعث وآيات الله في الطبيعة ومصير المكذبين.",
+            "fr": "La sourate Yasin est le 36e chapitre du Coran, souvent appelée 'le Cœur du Coran.' Elle couvre les thèmes de la résurrection, des signes divins dans la nature et du sort de ceux qui rejettent le message.",
+        },
     },
-    # === More Islamic History ===
+    # === More Islamic History (single-word answers) ===
     {
-        "word_en": "Treaty of Hudaybiyyah",
-        "word_ar": "صلح الحديبية",
-        "word_fr": "Traité de Hudaybiya",
-        "accepted_answers": {"en": ["Hudaybiyyah", "Treaty of Hudaybiyyah", "Hudaybiyya"], "ar": ["صلح الحديبية", "الحديبية"], "fr": ["Hudaybiya", "Traité de Hudaybiya"]},
+        "word_en": "Badr",
+        "word_ar": "بدر",
+        "word_fr": "Badr",
+        "accepted_answers": {"en": ["Badr"], "ar": ["بدر"], "fr": ["Badr"]},
         "category": "Islamic History",
         "hints": {
-            "1": {"en": "Initially seemed like a loss to the Muslims", "ar": "بدا في البداية كخسارة للمسلمين", "fr": "Semblait initialement être une perte pour les musulmans"},
-            "2": {"en": "A peace agreement between two parties", "ar": "اتفاق سلام بين طرفين", "fr": "Un accord de paix entre deux parties"},
-            "3": {"en": "The Quran called it a clear victory", "ar": "سماه القرآن فتحاً مبيناً", "fr": "Le Coran l'a appelé une victoire claire"},
-            "4": {"en": "Occurred in the 6th year of Hijra", "ar": "وقع في السنة السادسة للهجرة", "fr": "A eu lieu la 6e année de l'Hégire"},
-            "5": {"en": "A 10-year truce was agreed", "ar": "تم الاتفاق على هدنة لعشر سنوات", "fr": "Une trêve de 10 ans a été convenue"},
-            "6": {"en": "Peace treaty near Makkah", "ar": "معاهدة سلام قرب مكة", "fr": "Traité de paix près de La Mecque"},
+            "1": {"en": "A decisive early event in Islamic history", "ar": "حدث حاسم في بداية الإسلام", "fr": "Un événement décisif au début de l'Islam"},
+            "2": {"en": "Muslims were greatly outnumbered", "ar": "كان المسلمون أقل عدداً بكثير", "fr": "Les musulmans étaient largement dépassés en nombre"},
+            "3": {"en": "313 Muslims vs about 1000 enemies", "ar": "313 مسلماً ضد نحو 1000", "fr": "313 musulmans contre environ 1000 ennemis"},
+            "4": {"en": "Angels descended to help", "ar": "نزلت الملائكة للمساعدة", "fr": "Les anges sont descendus pour aider"},
+            "5": {"en": "Occurred in the 2nd year after Hijra", "ar": "وقعت في السنة الثانية بعد الهجرة", "fr": "S'est produite la 2e année après la Hijra"},
+            "6": {"en": "The first major battle of Islam", "ar": "أول معركة كبرى في الإسلام", "fr": "La première grande bataille de l'Islam"},
+        },
+        "explanation": {
+            "en": "Badr was the first major battle in Islamic history (624 CE), where 313 Muslims defeated an army of about 1,000 Quraysh warriors. Allah sent angels to aid the believers, making it a defining moment of early Islam.",
+            "ar": "بدر أول معركة كبرى في تاريخ الإسلام (624م) حيث هزم 313 مسلماً جيشاً من نحو 1000 مقاتل قرشي. أرسل الله الملائكة لنصرة المؤمنين مما جعلها لحظة فارقة.",
+            "fr": "Badr fut la première grande bataille de l'histoire islamique (624), où 313 musulmans ont vaincu une armée d'environ 1 000 guerriers Quraysh. Allah a envoyé des anges pour aider les croyants, en faisant un moment déterminant de l'Islam naissant.",
         },
     },
     {
-        "word_en": "Conquest of Makkah",
-        "word_ar": "فتح مكة",
-        "word_fr": "Conquête de La Mecque",
-        "accepted_answers": {"en": ["Conquest of Makkah", "Fath Makkah", "Liberation of Mecca"], "ar": ["فتح مكة"], "fr": ["Conquête de La Mecque", "Fath Makkah"]},
+        "word_en": "Uhud",
+        "word_ar": "أحد",
+        "word_fr": "Uhud",
+        "accepted_answers": {"en": ["Uhud", "Ohud"], "ar": ["أحد"], "fr": ["Uhud", "Ohoud"]},
         "category": "Islamic History",
         "hints": {
-            "1": {"en": "A major turning point with almost no bloodshed", "ar": "نقطة تحول كبرى بلا سفك دماء تقريباً", "fr": "Un tournant majeur presque sans effusion de sang"},
-            "2": {"en": "10,000 Muslims marched together", "ar": "سار 10,000 مسلم معاً", "fr": "10 000 musulmans ont marché ensemble"},
-            "3": {"en": "The Prophet forgave his enemies", "ar": "عفا النبي عن أعدائه", "fr": "Le Prophète a pardonné à ses ennemis"},
-            "4": {"en": "Idols were destroyed in the Kaaba", "ar": "حُطمت الأصنام في الكعبة", "fr": "Les idoles ont été détruites dans la Kaaba"},
-            "5": {"en": "Occurred in 8 AH (630 CE)", "ar": "وقع سنة 8 هجرية", "fr": "A eu lieu en l'an 8 de l'Hégire (630 EC)"},
-            "6": {"en": "The peaceful liberation of the holy city", "ar": "تحرير المدينة المقدسة سلمياً", "fr": "La libération pacifique de la ville sainte"},
+            "1": {"en": "A mountain near Madinah", "ar": "جبل قرب المدينة", "fr": "Une montagne près de Médine"},
+            "2": {"en": "The Prophet said: this mountain loves us and we love it", "ar": "قال النبي: هذا جبل يحبنا ونحبه", "fr": "Le Prophète a dit : cette montagne nous aime et nous l'aimons"},
+            "3": {"en": "Archers left their positions", "ar": "ترك الرماة مواقعهم", "fr": "Les archers ont quitté leurs positions"},
+            "4": {"en": "Hamza was martyred here", "ar": "استشهد حمزة هنا", "fr": "Hamza y a été martyrisé"},
+            "5": {"en": "The second major battle in Islam", "ar": "المعركة الكبرى الثانية في الإسلام", "fr": "La deuxième grande bataille en Islam"},
+            "6": {"en": "Battle at the mountain near Madinah", "ar": "معركة عند الجبل قرب المدينة", "fr": "Bataille à la montagne près de Médine"},
+        },
+        "explanation": {
+            "en": "Uhud was the second major battle in Islam (625 CE), fought near the mountain of Uhud outside Madinah. The Muslims initially prevailed but suffered losses when archers left their positions, teaching a lasting lesson about discipline.",
+            "ar": "أحد ثاني معركة كبرى في الإسلام (625م) قرب جبل أحد خارج المدينة. انتصر المسلمون أولاً لكنهم تكبدوا خسائر حين ترك الرماة مواقعهم درساً في الانضباط.",
+            "fr": "Uhud fut la deuxième grande bataille de l'Islam (625), livrée près du mont Uhud à l'extérieur de Médine. Les musulmans l'emportèrent d'abord mais subirent des pertes quand les archers quittèrent leurs positions, enseignant une leçon durable sur la discipline.",
         },
     },
     {
-        "word_en": "Isra and Miraj",
-        "word_ar": "الإسراء والمعراج",
-        "word_fr": "Isra et Miraj",
-        "accepted_answers": {"en": ["Isra and Miraj", "Night Journey", "Miraj", "Mirraj"], "ar": ["الإسراء والمعراج", "المعراج", "الاسراء"], "fr": ["Isra et Miraj", "Voyage nocturne", "Mirraj"]},
+        "word_en": "Khandaq",
+        "word_ar": "خندق",
+        "word_fr": "Khandaq",
+        "accepted_answers": {"en": ["Khandaq", "Trench", "Ahzab"], "ar": ["خندق", "الخندق", "الأحزاب"], "fr": ["Khandaq", "Tranchée"]},
         "category": "Islamic History",
         "hints": {
-            "1": {"en": "A miraculous journey that happened in one night", "ar": "رحلة معجزة حدثت في ليلة واحدة", "fr": "Un voyage miraculeux qui s'est produit en une nuit"},
-            "2": {"en": "Traveled from one holy city to another", "ar": "سافر من مدينة مقدسة إلى أخرى", "fr": "A voyagé d'une ville sainte à une autre"},
-            "3": {"en": "Ascended through the seven heavens", "ar": "صعد عبر السموات السبع", "fr": "A monté à travers les sept cieux"},
-            "4": {"en": "Met previous prophets along the way", "ar": "التقى بالأنبياء السابقين", "fr": "A rencontré les prophètes précédents en chemin"},
-            "5": {"en": "The five daily prayers were prescribed", "ar": "فُرضت الصلوات الخمس", "fr": "Les cinq prières quotidiennes ont été prescrites"},
-            "6": {"en": "The Night Journey and Ascension", "ar": "الإسراء والمعراج", "fr": "Le Voyage Nocturne et l'Ascension"},
+            "1": {"en": "A defensive strategy was used for the first time in Arabia", "ar": "استُخدمت استراتيجية دفاعية لأول مرة في الجزيرة", "fr": "Une stratégie défensive a été utilisée pour la première fois en Arabie"},
+            "2": {"en": "Salman al-Farisi suggested the plan", "ar": "اقترح سلمان الفارسي الخطة", "fr": "Salman al-Farisi a suggéré le plan"},
+            "3": {"en": "A coalition of tribes besieged Madinah", "ar": "حاصر تحالف من القبائل المدينة", "fr": "Une coalition de tribus a assiégé Médine"},
+            "4": {"en": "The wind dispersed the enemy", "ar": "الريح فرّقت العدو", "fr": "Le vent a dispersé l'ennemi"},
+            "5": {"en": "Also known as the Battle of the Confederates", "ar": "تُعرف أيضاً بغزوة الأحزاب", "fr": "Aussi connue comme la Bataille des Coalisés"},
+            "6": {"en": "The Battle of the Trench", "ar": "غزوة الخندق", "fr": "La Bataille du Fossé"},
+        },
+        "explanation": {
+            "en": "The Battle of the Khandaq (Trench) in 627 CE saw the Muslims defend Madinah by digging a trench — a strategy suggested by Salman al-Farisi. The siege failed and the coalition of enemies dispersed.",
+            "ar": "غزوة الخندق سنة 627م حيث دافع المسلمون عن المدينة بحفر خندق — استراتيجية اقترحها سلمان الفارسي. فشل الحصار وتفرق تحالف الأعداء.",
+            "fr": "La bataille du Khandaq (Tranchée) en 627 vit les musulmans défendre Médine en creusant une tranchée — une stratégie suggérée par Salman al-Farisi. Le siège échoua et la coalition ennemie se dispersa.",
         },
     },
     # === More Daily Life ===
@@ -1980,6 +2230,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Best times include last third of the night", "ar": "من أفضل أوقاته الثلث الأخير من الليل", "fr": "Les meilleurs moments incluent le dernier tiers de la nuit"},
             "6": {"en": "Personal supplication to Allah", "ar": "مناجاة شخصية لله", "fr": "Supplication personnelle à Allah"},
         },
+        "explanation": {
+            "en": "Dua is personal supplication to Allah — a direct conversation with the Creator without any intermediary. The Prophet called it 'the essence of worship' and taught that Allah is always near and responds to every call.",
+            "ar": "الدعاء مناجاة شخصية لله — حوار مباشر مع الخالق بلا واسطة. سماه النبي 'مخ العبادة' وعلّم أن الله قريب يجيب دعوة الداعي.",
+            "fr": "Le Dou'a est une supplication personnelle à Allah — une conversation directe avec le Créateur sans intermédiaire. Le Prophète l'a appelé 'l'essence de l'adoration' et a enseigné qu'Allah est toujours proche et répond à chaque appel.",
+        },
     },
     {
         "word_en": "Dhikr",
@@ -1994,6 +2249,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The Quran says: by this do hearts find rest", "ar": "قال القرآن: ألا بذكر الله تطمئن القلوب", "fr": "Le Coran dit : par cela les cœurs trouvent le repos"},
             "5": {"en": "Morning and evening ones are recommended daily", "ar": "أذكار الصباح والمساء مستحبة يومياً", "fr": "Ceux du matin et du soir sont recommandés quotidiennement"},
             "6": {"en": "Remembrance of Allah", "ar": "ذكر الله", "fr": "Rappel d'Allah"},
+        },
+        "explanation": {
+            "en": "Dhikr is the remembrance of Allah through phrases like SubhanAllah, Alhamdulillah, and Allahu Akbar. The Quran states that 'in the remembrance of Allah do hearts find tranquility,' making it a cornerstone of spiritual life.",
+            "ar": "الذكر هو ذكر الله بعبارات مثل سبحان الله والحمد لله والله أكبر. يقول القرآن 'ألا بذكر الله تطمئن القلوب' مما يجعله ركيزة الحياة الروحية.",
+            "fr": "Le Dhikr est le rappel d'Allah à travers des phrases comme SubhanAllah, Alhamdulillah et Allahu Akbar. Le Coran affirme que 'c'est dans le rappel d'Allah que les cœurs trouvent la tranquillité,' en faisant une pierre angulaire de la vie spirituelle.",
         },
     },
     {
@@ -2010,6 +2270,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Ghusl is recommended before attending", "ar": "يُستحب الاغتسال قبل الحضور", "fr": "Le ghusl est recommandé avant d'y assister"},
             "6": {"en": "The Friday congregational prayer (Salat al-Jumuah)", "ar": "صلاة الجمعة", "fr": "La prière du vendredi en congrégation"},
         },
+        "explanation": {
+            "en": "Jumuah (Friday prayer) is the weekly congregational prayer held every Friday, replacing the Dhuhr prayer. The Quran commands believers to hasten to the remembrance of Allah when called. It includes a khutbah (sermon).",
+            "ar": "الجمعة صلاة جماعية أسبوعية كل يوم جمعة تحل محل صلاة الظهر. أمر القرآن المؤمنين بالسعي لذكر الله إذا نودي للصلاة وتشمل خطبة.",
+            "fr": "Le Joumou'a (prière du vendredi) est la prière congregationnelle hebdomadaire tenue chaque vendredi, remplaçant la prière du Dhuhr. Le Coran ordonne aux croyants de se hâter vers le rappel d'Allah quand on les appelle. Elle inclut une khutbah (sermon).",
+        },
     },
     {
         "word_en": "Miswak",
@@ -2024,6 +2289,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The Prophet said if it were not hard, he would command it", "ar": "لولا أن أشق على أمتي لأمرتهم به", "fr": "Le Prophète a dit que s'il n'était pas difficile, il l'ordonnerait"},
             "5": {"en": "Recommended before every prayer", "ar": "مستحب قبل كل صلاة", "fr": "Recommandé avant chaque prière"},
             "6": {"en": "Natural tooth-cleaning twig", "ar": "عود تنظيف الأسنان الطبيعي", "fr": "Bâtonnet naturel de nettoyage des dents"},
+        },
+        "explanation": {
+            "en": "The Miswak is a teeth-cleaning twig from the Salvadora persica tree, used by the Prophet Muhammad. He said 'If it were not too difficult for my Ummah, I would have commanded them to use the Miswak before every prayer.'",
+            "ar": "المسواك عود تنظيف أسنان من شجرة الأراك استخدمه النبي محمد. قال: 'لولا أن أشق على أمتي لأمرتهم بالسواك عند كل صلاة.'",
+            "fr": "Le Miswak est une brindille de nettoyage des dents de l'arbre Salvadora persica, utilisée par le Prophète Muhammad. Il a dit : 'Si ce n'était pas trop difficile pour ma Oumma, je leur aurais ordonné d'utiliser le Miswak avant chaque prière.'",
         },
     },
     # === Places (New Category) ===
@@ -2041,6 +2311,11 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "Home of the Kaaba", "ar": "موطن الكعبة", "fr": "Foyer de la Kaaba"},
             "6": {"en": "City of the Sacred Mosque", "ar": "مدينة المسجد الحرام", "fr": "Ville de la Mosquée Sacrée"},
         },
+        "explanation": {
+            "en": "Makkah (Mecca) is the holiest city in Islam, birthplace of the Prophet Muhammad and home of the Kaaba. Muslims worldwide face Makkah in prayer, and millions perform Hajj there annually.",
+            "ar": "مكة المكرمة أقدس مدينة في الإسلام ومسقط رأس النبي محمد وموطن الكعبة. يتوجه المسلمون حول العالم نحوها في الصلاة ويحج إليها الملايين سنوياً.",
+            "fr": "La Mecque est la ville la plus sainte de l'Islam, lieu de naissance du Prophète Muhammad et foyer de la Kaaba. Les musulmans du monde entier se tournent vers La Mecque dans la prière, et des millions y accomplissent le Hajj chaque année.",
+        },
     },
     {
         "word_en": "Madinah",
@@ -2055,6 +2330,11 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The Prophet is buried here", "ar": "النبي مدفون فيها", "fr": "Le Prophète y est enterré"},
             "5": {"en": "Known as the Radiant City", "ar": "تُعرف بالمنورة", "fr": "Connue comme la Ville Radieuse"},
             "6": {"en": "The Illuminated City of the Prophet", "ar": "المدينة المنورة مدينة الرسول", "fr": "La Ville Illuminée du Prophète"},
+        },
+        "explanation": {
+            "en": "Madinah (Medina) is the second holiest city in Islam, where the Prophet Muhammad migrated to and established the first Islamic state. It houses the Prophet's Mosque (Al-Masjid an-Nabawi) where he is buried.",
+            "ar": "المدينة المنورة ثاني أقدس مدينة في الإسلام حيث هاجر إليها النبي وأسس أول دولة إسلامية. فيها المسجد النبوي حيث دُفن النبي.",
+            "fr": "Médine est la deuxième ville la plus sainte de l'Islam, où le Prophète Muhammad a migré et établi le premier État islamique. Elle abrite la Mosquée du Prophète (Al-Masjid an-Nabawi) où il est enterré.",
         },
     },
     {
@@ -2071,12 +2351,17 @@ QUIZ_WORDS: list[dict] = [
             "5": {"en": "In the city of Jerusalem", "ar": "في مدينة القدس", "fr": "Dans la ville de Jérusalem"},
             "6": {"en": "The Farthest Mosque", "ar": "المسجد الأقصى", "fr": "La Mosquée la Plus Éloignée"},
         },
+        "explanation": {
+            "en": "Al-Aqsa Mosque in Jerusalem is the third holiest site in Islam. It was the first qiblah (prayer direction) and the destination of the Prophet's Night Journey (Isra). Prayer there is worth 500 times more than elsewhere.",
+            "ar": "المسجد الأقصى في القدس ثالث أقدس موقع في الإسلام. كان أول قبلة للمسلمين ووجهة رحلة الإسراء. الصلاة فيه تعادل 500 صلاة.",
+            "fr": "La Mosquée Al-Aqsa à Jérusalem est le troisième lieu le plus saint de l'Islam. C'était la première qibla (direction de prière) et la destination du Voyage Nocturne du Prophète (Isra). La prière y vaut 500 fois plus qu'ailleurs.",
+        },
     },
     {
-        "word_en": "Cave of Hira",
-        "word_ar": "غار حراء",
-        "word_fr": "Grotte de Hira",
-        "accepted_answers": {"en": ["Cave of Hira", "Hira", "Ghar Hira"], "ar": ["غار حراء", "حراء"], "fr": ["Grotte de Hira", "Hira"]},
+        "word_en": "Hira",
+        "word_ar": "حراء",
+        "word_fr": "Hira",
+        "accepted_answers": {"en": ["Hira", "Cave of Hira", "Ghar Hira"], "ar": ["حراء", "غار حراء"], "fr": ["Hira", "Grotte de Hira"]},
         "category": "Places",
         "hints": {
             "1": {"en": "A place of solitude and reflection", "ar": "مكان للعزلة والتأمل", "fr": "Un lieu de solitude et de réflexion"},
@@ -2085,6 +2370,496 @@ QUIZ_WORDS: list[dict] = [
             "4": {"en": "The angel Jibreel appeared here", "ar": "ظهر الملك جبريل هنا", "fr": "L'ange Jibreel est apparu ici"},
             "5": {"en": "Iqra — Read — was the first word revealed here", "ar": "اقرأ — كانت أول كلمة أُنزلت هنا", "fr": "Iqra — Lis — fut le premier mot révélé ici"},
             "6": {"en": "Where the first Quran revelation came", "ar": "حيث نزل أول وحي قرآني", "fr": "Où la première révélation coranique est venue"},
+        },
+        "explanation": {
+            "en": "Hira is a cave on Jabal al-Nour (Mountain of Light) near Makkah where the Prophet Muhammad used to retreat for meditation. It was here that the angel Jibreel first appeared and revealed the opening verses of Surah Al-Alaq: 'Read!'",
+            "ar": "حراء غار على جبل النور قرب مكة كان النبي محمد يعتكف فيه للتأمل. هنا ظهر جبريل لأول مرة وأنزل أول آيات سورة العلق: 'اقرأ!'",
+            "fr": "Hira est une grotte sur le Jabal al-Nour (Montagne de Lumière) près de La Mecque où le Prophète Muhammad se retirait pour méditer. C'est là que l'ange Jibreel apparut pour la première fois et révéla les premiers versets de la sourate Al-Alaq : 'Lis !'",
+        },
+    },
+    # === New entries: Islamic Concepts ===
+    {
+        "word_en": "Shahada",
+        "word_ar": "شهادة",
+        "word_fr": "Chahada",
+        "accepted_answers": {"en": ["Shahada", "Shahadah"], "ar": ["شهادة", "الشهادة"], "fr": ["Chahada", "Shahada"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "The most fundamental statement in Islam", "ar": "أهم عبارة في الإسلام", "fr": "La déclaration la plus fondamentale de l'Islam"},
+            "2": {"en": "It is the first pillar of Islam", "ar": "الركن الأول من أركان الإسلام", "fr": "C'est le premier pilier de l'Islam"},
+            "3": {"en": "Whispered into a newborn's ear", "ar": "تُهمس في أذن المولود", "fr": "Chuchotée à l'oreille d'un nouveau-né"},
+            "4": {"en": "Contains two parts: about Allah and His Messenger", "ar": "تحتوي جزأين: عن الله ورسوله", "fr": "Contient deux parties : sur Allah et Son Messager"},
+            "5": {"en": "La ilaha illa Allah...", "ar": "لا إله إلا الله...", "fr": "La ilaha illa Allah..."},
+            "6": {"en": "The declaration of faith", "ar": "إعلان الإيمان", "fr": "La déclaration de foi"},
+        },
+        "explanation": {
+            "en": "The Shahada is the Islamic declaration of faith: 'There is no god but Allah, and Muhammad is the Messenger of Allah.' It is the first pillar of Islam and the most important statement a Muslim makes, recited to enter the faith.",
+            "ar": "الشهادة هي إعلان الإيمان الإسلامي: 'لا إله إلا الله محمد رسول الله.' هي الركن الأول من أركان الإسلام وأهم عبارة ينطقها المسلم وتُقال للدخول في الإسلام.",
+            "fr": "La Chahada est la déclaration de foi islamique : 'Il n'y a de dieu qu'Allah et Muhammad est le Messager d'Allah.' C'est le premier pilier de l'Islam et la déclaration la plus importante qu'un musulman fait, récitée pour entrer dans la foi.",
+        },
+    },
+    {
+        "word_en": "Sunnah",
+        "word_ar": "سنة",
+        "word_fr": "Sunna",
+        "accepted_answers": {"en": ["Sunnah", "Sunna"], "ar": ["سنة", "السنة", "سنّة"], "fr": ["Sunna", "Sunnah"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "A major source of Islamic guidance alongside the Quran", "ar": "مصدر رئيسي للتوجيه الإسلامي إلى جانب القرآن", "fr": "Une source majeure de guidance islamique aux côtés du Coran"},
+            "2": {"en": "Preserved through hadiths", "ar": "محفوظة من خلال الأحاديث", "fr": "Préservée à travers les hadiths"},
+            "3": {"en": "Includes sayings, actions, and approvals", "ar": "تشمل الأقوال والأفعال والتقريرات", "fr": "Comprend les paroles, les actes et les approbations"},
+            "4": {"en": "Scholars like Bukhari and Muslim compiled it", "ar": "جمعها علماء مثل البخاري ومسلم", "fr": "Des savants comme Bukhari et Muslim l'ont compilée"},
+            "5": {"en": "Following it is highly recommended", "ar": "اتباعها مستحب جداً", "fr": "La suivre est hautement recommandé"},
+            "6": {"en": "The prophetic tradition and way of life", "ar": "الطريقة النبوية والمنهج", "fr": "La tradition prophétique et mode de vie"},
+        },
+        "explanation": {
+            "en": "The Sunnah refers to the teachings, practices, and approvals of Prophet Muhammad, preserved in hadiths. It is the second source of Islamic law after the Quran, covering everything from worship to daily etiquette.",
+            "ar": "السنة تشير إلى تعاليم النبي محمد وممارساته وتقريراته المحفوظة في الأحاديث. هي المصدر الثاني للتشريع الإسلامي بعد القرآن وتغطي كل شيء من العبادة إلى آداب الحياة اليومية.",
+            "fr": "La Sunna désigne les enseignements, pratiques et approbations du Prophète Muhammad, préservés dans les hadiths. C'est la deuxième source de droit islamique après le Coran, couvrant tout, de l'adoration à l'étiquette quotidienne.",
+        },
+    },
+    {
+        "word_en": "Ummah",
+        "word_ar": "أمة",
+        "word_fr": "Oumma",
+        "accepted_answers": {"en": ["Ummah", "Umma"], "ar": ["أمة", "الأمة"], "fr": ["Oumma", "Ummah"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "A concept that transcends borders and ethnicities", "ar": "مفهوم يتجاوز الحدود والأعراق", "fr": "Un concept qui transcende les frontières et les ethnies"},
+            "2": {"en": "Nearly 2 billion people belong to it", "ar": "ينتمي إليها نحو ملياري شخص", "fr": "Près de 2 milliards de personnes y appartiennent"},
+            "3": {"en": "The Prophet compared it to one body", "ar": "شبّهها النبي بالجسد الواحد", "fr": "Le Prophète l'a comparée à un seul corps"},
+            "4": {"en": "United by faith, not nationality", "ar": "متحدة بالإيمان لا بالجنسية", "fr": "Unie par la foi, pas par la nationalité"},
+            "5": {"en": "The global brotherhood and sisterhood", "ar": "الأخوة والأختية العالمية", "fr": "La fraternité et la sororité mondiales"},
+            "6": {"en": "The Muslim community worldwide", "ar": "المجتمع الإسلامي العالمي", "fr": "La communauté musulmane mondiale"},
+        },
+        "explanation": {
+            "en": "The Ummah is the global Muslim community, bound together by shared faith regardless of nationality, ethnicity, or language. The Prophet described it as one body — when one part suffers, the whole body responds with sleeplessness and fever.",
+            "ar": "الأمة هي المجتمع الإسلامي العالمي المترابط بالإيمان بغض النظر عن الجنسية أو العرق أو اللغة. وصفها النبي بالجسد الواحد — إذا اشتكى منه عضو تداعى له سائر الجسد.",
+            "fr": "L'Oumma est la communauté musulmane mondiale, liée par une foi partagée indépendamment de la nationalité, de l'ethnicité ou de la langue. Le Prophète l'a décrite comme un seul corps — quand une partie souffre, tout le corps répond par l'insomnie et la fièvre.",
+        },
+    },
+    {
+        "word_en": "Qadr",
+        "word_ar": "قدر",
+        "word_fr": "Qadr",
+        "accepted_answers": {"en": ["Qadr", "Qadar", "Qader"], "ar": ["قدر", "القدر"], "fr": ["Qadr", "Qadar"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "One of the six pillars of faith (Iman)", "ar": "من أركان الإيمان الستة", "fr": "Un des six piliers de la foi (Iman)"},
+            "2": {"en": "Related to Allah's knowledge of all things", "ar": "متعلق بعلم الله لكل شيء", "fr": "Lié à la connaissance d'Allah de toutes choses"},
+            "3": {"en": "Nothing happens outside of it", "ar": "لا شيء يحدث خارجه", "fr": "Rien ne se passe en dehors de cela"},
+            "4": {"en": "Includes both good and difficult events", "ar": "يشمل الخير والشر", "fr": "Inclut les bons et les difficiles événements"},
+            "5": {"en": "Laylat al-... is the Night of Power", "ar": "ليلة ال... هي ليلة القدر", "fr": "Laylat al-... est la Nuit du Destin"},
+            "6": {"en": "Divine decree and predestination", "ar": "القضاء والقدر", "fr": "Le décret divin et la prédestination"},
+        },
+        "explanation": {
+            "en": "Qadr (Divine Decree) is the belief that Allah has knowledge of and has ordained everything that will happen. It is one of the six pillars of Iman. Belief in Qadr brings peace in hardship, knowing everything occurs by Allah's wisdom.",
+            "ar": "القدر هو الإيمان بأن الله يعلم كل ما سيحدث وقد قدّره. وهو من أركان الإيمان الستة. الإيمان بالقدر يمنح السكينة في الشدائد علماً بأن كل شيء يجري بحكمة الله.",
+            "fr": "Le Qadr (Décret Divin) est la croyance qu'Allah a la connaissance de tout ce qui arrivera et l'a ordonné. C'est l'un des six piliers de l'Iman. La croyance au Qadr apporte la paix dans l'adversité, sachant que tout se produit par la sagesse d'Allah.",
+        },
+    },
+    {
+        "word_en": "Baraka",
+        "word_ar": "بركة",
+        "word_fr": "Baraka",
+        "accepted_answers": {"en": ["Baraka", "Barakah"], "ar": ["بركة", "البركة"], "fr": ["Baraka", "Barakah"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "Something intangible that increases goodness", "ar": "شيء غير ملموس يزيد الخير", "fr": "Quelque chose d'intangible qui augmente le bien"},
+            "2": {"en": "Found in certain times, places, and people", "ar": "توجد في أوقات وأماكن وأشخاص معينين", "fr": "Se trouve dans certains moments, lieux et personnes"},
+            "3": {"en": "The Prophet's food was said to have it", "ar": "قيل إن طعام النبي كان فيه منها", "fr": "On dit que la nourriture du Prophète en avait"},
+            "4": {"en": "Zamzam water is full of it", "ar": "ماء زمزم ممتلئ بها", "fr": "L'eau de Zamzam en est pleine"},
+            "5": {"en": "We say 'may Allah put ... in it'", "ar": "نقول 'بارك الله فيه'", "fr": "On dit 'qu'Allah y mette de la ...'"},
+            "6": {"en": "Divine blessing and spiritual abundance", "ar": "بركة إلهية ووفرة روحية", "fr": "Bénédiction divine et abondance spirituelle"},
+        },
+        "explanation": {
+            "en": "Baraka is a divine blessing that brings abundance, growth, and goodness beyond what is expected. Muslims seek it in prayer, in the Quran, in Ramadan, and in acts of kindness. It can make a little go a long way.",
+            "ar": "البركة نعمة إلهية تجلب الوفرة والنماء والخير فوق المتوقع. يلتمسها المسلمون في الصلاة والقرآن ورمضان وأعمال الخير. تجعل القليل يكفي ويزيد.",
+            "fr": "La Baraka est une bénédiction divine qui apporte abondance, croissance et bien au-delà de ce qui est attendu. Les musulmans la cherchent dans la prière, le Coran, le Ramadan et les actes de bonté. Elle peut faire qu'un peu suffise largement.",
+        },
+    },
+    {
+        "word_en": "Tawbah",
+        "word_ar": "توبة",
+        "word_fr": "Tawba",
+        "accepted_answers": {"en": ["Tawbah", "Tawba", "Taubah"], "ar": ["توبة", "التوبة"], "fr": ["Tawba", "Tawbah"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "Allah loves those who do this sincerely", "ar": "الله يحب من يفعل هذا بإخلاص", "fr": "Allah aime ceux qui font cela sincèrement"},
+            "2": {"en": "A surah in the Quran bears this name", "ar": "سورة في القرآن تحمل هذا الاسم", "fr": "Une sourate du Coran porte ce nom"},
+            "3": {"en": "It involves regret, stopping, and resolving not to return", "ar": "تتضمن الندم والتوقف والعزم على عدم العودة", "fr": "Elle implique le regret, l'arrêt et la résolution de ne pas revenir"},
+            "4": {"en": "The door of this is always open", "ar": "بابها مفتوح دائماً", "fr": "La porte de cela est toujours ouverte"},
+            "5": {"en": "Turning back to Allah after sin", "ar": "العودة إلى الله بعد الذنب", "fr": "Retourner vers Allah après le péché"},
+            "6": {"en": "Repentance", "ar": "التوبة", "fr": "Le repentir"},
+        },
+        "explanation": {
+            "en": "Tawbah is sincere repentance — turning back to Allah after committing a sin. It requires genuine regret, ceasing the sin, and resolving not to return to it. Allah says He loves those who repent, and His mercy is always available.",
+            "ar": "التوبة هي العودة الصادقة إلى الله بعد ارتكاب الذنب. تتطلب ندماً حقيقياً والتوقف عن الذنب والعزم على عدم العودة إليه. يقول الله إنه يحب التوابين ورحمته متاحة دائماً.",
+            "fr": "La Tawba est le repentir sincère — le retour vers Allah après avoir commis un péché. Elle nécessite un regret sincère, l'arrêt du péché et la résolution de ne pas y revenir. Allah dit qu'Il aime ceux qui se repentent, et Sa miséricorde est toujours disponible.",
+        },
+    },
+    {
+        "word_en": "Shukr",
+        "word_ar": "شكر",
+        "word_fr": "Choukr",
+        "accepted_answers": {"en": ["Shukr", "Shukur"], "ar": ["شكر", "الشكر"], "fr": ["Choukr", "Shukr"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "The opposite of ingratitude", "ar": "عكس الجحود", "fr": "L'opposé de l'ingratitude"},
+            "2": {"en": "Allah promises more for those who practice it", "ar": "وعد الله بالزيادة لمن يمارسه", "fr": "Allah promet plus à ceux qui le pratiquent"},
+            "3": {"en": "'If you are ... I will increase you'", "ar": "'لئن شكرتم لأزيدنكم'", "fr": "'Si vous êtes ... Je vous augmenterai'"},
+            "4": {"en": "Expressed by the heart, tongue, and limbs", "ar": "يُعبّر عنه بالقلب واللسان والجوارح", "fr": "Exprimé par le cœur, la langue et les membres"},
+            "5": {"en": "Alhamdulillah is an expression of this", "ar": "الحمد لله تعبير عن هذا", "fr": "Alhamdulillah est une expression de cela"},
+            "6": {"en": "Gratitude to Allah", "ar": "الامتنان لله", "fr": "La gratitude envers Allah"},
+        },
+        "explanation": {
+            "en": "Shukr (gratitude) is a core Islamic virtue. The Quran states: 'If you are grateful, I will increase you.' True Shukr involves the heart (recognizing blessings), the tongue (praising Allah), and the limbs (using blessings in obedience).",
+            "ar": "الشكر فضيلة إسلامية أساسية. يقول القرآن: 'لئن شكرتم لأزيدنكم.' الشكر الحقيقي يشمل القلب (إدراك النعم) واللسان (حمد الله) والجوارح (استعمال النعم في الطاعة).",
+            "fr": "Le Choukr (gratitude) est une vertu islamique fondamentale. Le Coran déclare : 'Si vous êtes reconnaissants, Je vous augmenterai.' Le vrai Choukr implique le cœur (reconnaître les bienfaits), la langue (louer Allah) et les membres (utiliser les bienfaits dans l'obéissance).",
+        },
+    },
+    {
+        "word_en": "Niyyah",
+        "word_ar": "نية",
+        "word_fr": "Niyyah",
+        "accepted_answers": {"en": ["Niyyah", "Niyya", "Niya"], "ar": ["نية", "النية"], "fr": ["Niyyah", "Niya"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "The Prophet said actions are judged by this", "ar": "قال النبي إنما الأعمال بها", "fr": "Le Prophète a dit que les actes sont jugés par cela"},
+            "2": {"en": "It is in the heart, not spoken aloud", "ar": "محلها القلب لا اللسان", "fr": "Elle est dans le cœur, pas prononcée à voix haute"},
+            "3": {"en": "It distinguishes worship from habit", "ar": "تميز العبادة عن العادة", "fr": "Elle distingue l'adoration de l'habitude"},
+            "4": {"en": "Required before every act of worship", "ar": "مطلوبة قبل كل عبادة", "fr": "Requise avant chaque acte d'adoration"},
+            "5": {"en": "Without it, a good deed may have no reward", "ar": "بدونها قد لا يكون للعمل الصالح أجر", "fr": "Sans elle, une bonne action peut ne pas avoir de récompense"},
+            "6": {"en": "Intention", "ar": "النية", "fr": "L'intention"},
+        },
+        "explanation": {
+            "en": "Niyyah (intention) is the cornerstone of all deeds in Islam. The famous hadith states: 'Actions are judged by intentions.' A sincere intention transforms everyday actions like eating and sleeping into acts of worship.",
+            "ar": "النية حجر الزاوية لكل الأعمال في الإسلام. يقول الحديث الشهير: 'إنما الأعمال بالنيات.' النية الصادقة تحول الأعمال اليومية كالأكل والنوم إلى عبادات.",
+            "fr": "La Niyyah (intention) est la pierre angulaire de tous les actes en Islam. Le célèbre hadith déclare : 'Les actes ne valent que par les intentions.' Une intention sincère transforme les actions quotidiennes comme manger et dormir en actes d'adoration.",
+        },
+    },
+    {
+        "word_en": "Fitrah",
+        "word_ar": "فطرة",
+        "word_fr": "Fitra",
+        "accepted_answers": {"en": ["Fitrah", "Fitra"], "ar": ["فطرة", "الفطرة"], "fr": ["Fitra", "Fitrah"]},
+        "category": "Islamic Concepts",
+        "hints": {
+            "1": {"en": "Every child is born upon this", "ar": "كل مولود يُولد عليها", "fr": "Chaque enfant naît avec cela"},
+            "2": {"en": "An innate quality within every human", "ar": "صفة فطرية في كل إنسان", "fr": "Une qualité innée chez chaque être humain"},
+            "3": {"en": "It recognizes the Creator instinctively", "ar": "تتعرف على الخالق بالفطرة", "fr": "Elle reconnaît le Créateur instinctivement"},
+            "4": {"en": "The environment can alter it over time", "ar": "البيئة يمكن أن تغيرها مع الوقت", "fr": "L'environnement peut l'altérer avec le temps"},
+            "5": {"en": "The pure, original state of being", "ar": "الحالة الأصلية النقية", "fr": "L'état pur et originel de l'être"},
+            "6": {"en": "Natural disposition toward God", "ar": "الميل الطبيعي نحو الله", "fr": "La disposition naturelle vers Dieu"},
+        },
+        "explanation": {
+            "en": "Fitrah is the natural, innate disposition that every human is born with — an instinctive recognition of Allah. The Prophet said every child is born upon the Fitrah. It represents humanity's original, pure state of believing in one God.",
+            "ar": "الفطرة هي الطبيعة الفطرية التي يُولد عليها كل إنسان — إدراك غريزي لوجود الله. قال النبي إن كل مولود يُولد على الفطرة. تمثل الحالة الأصلية النقية للإيمان بالله الواحد.",
+            "fr": "La Fitra est la disposition naturelle innée avec laquelle chaque être humain naît — une reconnaissance instinctive d'Allah. Le Prophète a dit que chaque enfant naît sur la Fitra. Elle représente l'état originel et pur de l'humanité croyant en un seul Dieu.",
+        },
+    },
+    # === New entries: Daily Life ===
+    {
+        "word_en": "Quran",
+        "word_ar": "قرآن",
+        "word_fr": "Coran",
+        "accepted_answers": {"en": ["Quran", "Qur'an", "Koran"], "ar": ["قرآن", "القرآن"], "fr": ["Coran", "Quran"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "The most read book in the world", "ar": "أكثر كتاب يُقرأ في العالم", "fr": "Le livre le plus lu au monde"},
+            "2": {"en": "Revealed over a period of 23 years", "ar": "أُنزل على مدى 23 سنة", "fr": "Révélé sur une période de 23 ans"},
+            "3": {"en": "Contains 114 surahs", "ar": "يحتوي على 114 سورة", "fr": "Contient 114 sourates"},
+            "4": {"en": "Millions memorize it entirely by heart", "ar": "الملايين يحفظونه كاملاً عن ظهر قلب", "fr": "Des millions le mémorisent entièrement par cœur"},
+            "5": {"en": "Revealed through the angel Jibreel", "ar": "أُنزل عبر الملك جبريل", "fr": "Révélé par l'ange Jibreel"},
+            "6": {"en": "The holy book of Islam", "ar": "الكتاب المقدس في الإسلام", "fr": "Le livre saint de l'Islam"},
+        },
+        "explanation": {
+            "en": "The Quran is the literal word of Allah revealed to Prophet Muhammad through the angel Jibreel over 23 years. It contains 114 surahs and is the primary source of Islamic guidance. It has been perfectly preserved in its original Arabic since revelation.",
+            "ar": "القرآن كلام الله الحرفي أُنزل على النبي محمد عبر جبريل على مدى 23 سنة. يحتوي 114 سورة وهو المصدر الأساسي للتوجيه الإسلامي. حُفظ بكماله بالعربية منذ نزوله.",
+            "fr": "Le Coran est la parole littérale d'Allah révélée au Prophète Muhammad par l'ange Jibreel sur 23 ans. Il contient 114 sourates et est la source principale de guidance islamique. Il a été parfaitement préservé dans son arabe original depuis la révélation.",
+        },
+    },
+    {
+        "word_en": "Ramadan",
+        "word_ar": "رمضان",
+        "word_fr": "Ramadan",
+        "accepted_answers": {"en": ["Ramadan", "Ramadhan"], "ar": ["رمضان"], "fr": ["Ramadan"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A month that Muslims wait for all year", "ar": "شهر ينتظره المسلمون طوال العام", "fr": "Un mois que les musulmans attendent toute l'année"},
+            "2": {"en": "The Quran was first revealed during it", "ar": "نزل القرآن لأول مرة خلاله", "fr": "Le Coran a été révélé pour la première fois pendant ce mois"},
+            "3": {"en": "Fasting from dawn to sunset", "ar": "صيام من الفجر إلى الغروب", "fr": "Jeûne de l'aube au coucher du soleil"},
+            "4": {"en": "The gates of paradise are opened", "ar": "تُفتح أبواب الجنة", "fr": "Les portes du paradis sont ouvertes"},
+            "5": {"en": "Contains Laylat al-Qadr", "ar": "فيه ليلة القدر", "fr": "Contient Laylat al-Qadr"},
+            "6": {"en": "The holy month of fasting", "ar": "شهر الصيام المبارك", "fr": "Le mois sacré du jeûne"},
+        },
+        "explanation": {
+            "en": "Ramadan is the ninth month of the Islamic calendar during which Muslims fast from dawn to sunset. It commemorates the first revelation of the Quran and contains Laylat al-Qadr (Night of Power), which is better than a thousand months.",
+            "ar": "رمضان الشهر التاسع من التقويم الهجري يصوم فيه المسلمون من الفجر إلى الغروب. يحتفي بنزول القرآن الأول وفيه ليلة القدر التي هي خير من ألف شهر.",
+            "fr": "Le Ramadan est le neuvième mois du calendrier islamique pendant lequel les musulmans jeûnent de l'aube au coucher du soleil. Il commémore la première révélation du Coran et contient Laylat al-Qadr (Nuit du Destin), qui vaut mieux que mille mois.",
+        },
+    },
+    {
+        "word_en": "Eid",
+        "word_ar": "عيد",
+        "word_fr": "Aïd",
+        "accepted_answers": {"en": ["Eid", "Eid al-Fitr", "Eid al-Adha"], "ar": ["عيد", "العيد"], "fr": ["Aïd", "Eid"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A joyous occasion celebrated by all Muslims", "ar": "مناسبة سعيدة يحتفل بها جميع المسلمين", "fr": "Une occasion joyeuse célébrée par tous les musulmans"},
+            "2": {"en": "There are two of them each year", "ar": "هناك اثنان منه كل عام", "fr": "Il y en a deux chaque année"},
+            "3": {"en": "One follows Ramadan, the other during Hajj", "ar": "واحد بعد رمضان والآخر في الحج", "fr": "L'un suit le Ramadan, l'autre pendant le Hajj"},
+            "4": {"en": "Special prayer is performed in the morning", "ar": "تُصلى صلاة خاصة في الصباح", "fr": "Une prière spéciale est effectuée le matin"},
+            "5": {"en": "New clothes, gifts, and family gatherings", "ar": "ملابس جديدة وهدايا واجتماعات عائلية", "fr": "Nouveaux vêtements, cadeaux et réunions familiales"},
+            "6": {"en": "Islamic celebration and holiday", "ar": "احتفال إسلامي وعطلة", "fr": "Célébration et fête islamique"},
+        },
+        "explanation": {
+            "en": "Eid refers to the two major Islamic holidays: Eid al-Fitr (after Ramadan) and Eid al-Adha (during Hajj). Both involve special prayers, charity, family gatherings, and celebrations. The Prophet said these are the two days Allah has given Muslims for celebration.",
+            "ar": "العيد يشير إلى عيدين إسلاميين: عيد الفطر (بعد رمضان) وعيد الأضحى (في الحج). كلاهما يتضمن صلاة خاصة وصدقة واجتماعات عائلية واحتفالات. قال النبي إنهما اليومان اللذان جعلهما الله للمسلمين.",
+            "fr": "L'Aïd désigne les deux grandes fêtes islamiques : l'Aïd al-Fitr (après le Ramadan) et l'Aïd al-Adha (pendant le Hajj). Les deux comprennent des prières spéciales, la charité, des réunions familiales et des célébrations. Le Prophète a dit que ce sont les deux jours qu'Allah a donnés aux musulmans pour célébrer.",
+        },
+    },
+    {
+        "word_en": "Ihram",
+        "word_ar": "إحرام",
+        "word_fr": "Ihram",
+        "accepted_answers": {"en": ["Ihram"], "ar": ["إحرام", "الإحرام"], "fr": ["Ihram"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A sacred state entered for a special journey", "ar": "حالة مقدسة يُدخل فيها لرحلة خاصة", "fr": "Un état sacré dans lequel on entre pour un voyage spécial"},
+            "2": {"en": "Involves wearing specific unstitched garments", "ar": "يتضمن ارتداء ملابس غير مخيطة", "fr": "Implique le port de vêtements non cousus spécifiques"},
+            "3": {"en": "White cloth symbolizing equality", "ar": "قماش أبيض يرمز للمساواة", "fr": "Tissu blanc symbolisant l'égalité"},
+            "4": {"en": "Certain actions become forbidden in this state", "ar": "تحرم بعض الأفعال في هذه الحالة", "fr": "Certaines actions deviennent interdites dans cet état"},
+            "5": {"en": "Required for Hajj and Umrah", "ar": "مطلوب للحج والعمرة", "fr": "Requis pour le Hajj et la Omra"},
+            "6": {"en": "The pilgrimage garment and sacred state", "ar": "لباس الحج والحالة المقدسة", "fr": "Le vêtement de pèlerinage et l'état sacré"},
+        },
+        "explanation": {
+            "en": "Ihram is both the sacred state a Muslim enters for Hajj or Umrah and the simple white garments worn. Men wear two unstitched white cloths, symbolizing equality — king and servant stand side by side, indistinguishable before Allah.",
+            "ar": "الإحرام هو الحالة المقدسة التي يدخلها المسلم للحج أو العمرة وكذلك اللباس الأبيض البسيط. يرتدي الرجال قطعتين بيضاوين غير مخيطتين رمزاً للمساواة — الملك والخادم يقفان جنباً إلى جنب.",
+            "fr": "L'Ihram est à la fois l'état sacré dans lequel un musulman entre pour le Hajj ou la Omra et les simples vêtements blancs portés. Les hommes portent deux pièces de tissu blanc non cousues, symbolisant l'égalité — roi et serviteur se tiennent côte à côte, indiscernables devant Allah.",
+        },
+    },
+    {
+        "word_en": "Tawaf",
+        "word_ar": "طواف",
+        "word_fr": "Tawaf",
+        "accepted_answers": {"en": ["Tawaf"], "ar": ["طواف", "الطواف"], "fr": ["Tawaf"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A ritual involving circular movement", "ar": "شعيرة تتضمن حركة دائرية", "fr": "Un rituel impliquant un mouvement circulaire"},
+            "2": {"en": "Performed around the most sacred structure in Islam", "ar": "يُؤدى حول أقدس بناء في الإسلام", "fr": "Effectué autour de la structure la plus sacrée de l'Islam"},
+            "3": {"en": "Done seven times counterclockwise", "ar": "يُفعل سبع مرات عكس عقارب الساعة", "fr": "Fait sept fois dans le sens inverse des aiguilles d'une montre"},
+            "4": {"en": "Pilgrims recite prayers while doing it", "ar": "يردد الحجاج الأدعية أثناء أدائه", "fr": "Les pèlerins récitent des prières en le faisant"},
+            "5": {"en": "Part of both Hajj and Umrah", "ar": "جزء من الحج والعمرة", "fr": "Fait partie du Hajj et de la Omra"},
+            "6": {"en": "Circling the Kaaba", "ar": "الطواف حول الكعبة", "fr": "Tourner autour de la Kaaba"},
+        },
+        "explanation": {
+            "en": "Tawaf is the ritual of circling the Kaaba seven times counterclockwise during Hajj or Umrah. It symbolizes the unity of believers in worship and their devotion to Allah. The tradition dates back to Prophet Ibrahim who built the Kaaba.",
+            "ar": "الطواف شعيرة الدوران حول الكعبة سبع مرات عكس عقارب الساعة في الحج أو العمرة. يرمز لوحدة المؤمنين في العبادة وتفانيهم لله. يعود التقليد للنبي إبراهيم الذي بنى الكعبة.",
+            "fr": "Le Tawaf est le rituel de tourner autour de la Kaaba sept fois dans le sens inverse des aiguilles d'une montre pendant le Hajj ou la Omra. Il symbolise l'unité des croyants dans l'adoration et leur dévotion à Allah. La tradition remonte au Prophète Ibrahim qui a construit la Kaaba.",
+        },
+    },
+    {
+        "word_en": "Qiblah",
+        "word_ar": "قبلة",
+        "word_fr": "Qibla",
+        "accepted_answers": {"en": ["Qiblah", "Qibla", "Kiblah"], "ar": ["قبلة", "القبلة"], "fr": ["Qibla", "Qiblah"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "Every mosque in the world is oriented toward it", "ar": "كل مسجد في العالم موجه نحوها", "fr": "Chaque mosquée du monde est orientée vers elle"},
+            "2": {"en": "It was changed during the Prophet's lifetime", "ar": "تغيرت في حياة النبي", "fr": "Elle a été changée du vivant du Prophète"},
+            "3": {"en": "Originally toward Jerusalem, then changed", "ar": "كانت نحو القدس ثم تغيرت", "fr": "À l'origine vers Jérusalem, puis changée"},
+            "4": {"en": "A compass or app can help you find it", "ar": "بوصلة أو تطبيق يمكن أن يساعدك في إيجادها", "fr": "Une boussole ou une application peut vous aider à la trouver"},
+            "5": {"en": "Points toward the Kaaba in Makkah", "ar": "تشير نحو الكعبة في مكة", "fr": "Pointe vers la Kaaba à La Mecque"},
+            "6": {"en": "The direction of prayer", "ar": "اتجاه الصلاة", "fr": "La direction de la prière"},
+        },
+        "explanation": {
+            "en": "The Qiblah is the direction Muslims face during prayer, pointing toward the Kaaba in Makkah. Initially, Muslims prayed toward Jerusalem, but the Qiblah was changed to Makkah about 16 months after the Hijra, as mentioned in Surah Al-Baqarah.",
+            "ar": "القبلة هي الاتجاه الذي يتوجه إليه المسلمون في الصلاة نحو الكعبة في مكة. في البداية صلى المسلمون نحو القدس ثم تحولت القبلة إلى مكة بعد نحو 16 شهراً من الهجرة كما في سورة البقرة.",
+            "fr": "La Qibla est la direction vers laquelle les musulmans se tournent pendant la prière, pointant vers la Kaaba à La Mecque. Initialement, les musulmans priaient vers Jérusalem, mais la Qibla fut changée vers La Mecque environ 16 mois après la Hijra, comme mentionné dans la sourate Al-Baqarah.",
+        },
+    },
+    {
+        "word_en": "Minbar",
+        "word_ar": "منبر",
+        "word_fr": "Minbar",
+        "accepted_answers": {"en": ["Minbar", "Mimbar"], "ar": ["منبر", "المنبر"], "fr": ["Minbar"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "Found in every mosque", "ar": "موجود في كل مسجد", "fr": "Trouvé dans chaque mosquée"},
+            "2": {"en": "The imam stands on it for a weekly address", "ar": "يقف عليه الإمام لخطبة أسبوعية", "fr": "L'imam s'y tient pour un discours hebdomadaire"},
+            "3": {"en": "Usually has stairs or steps", "ar": "عادة ما يحتوي على درجات", "fr": "A généralement des marches ou des escaliers"},
+            "4": {"en": "The Prophet's original one was simple, with three steps", "ar": "كان منبر النبي بسيطاً من ثلاث درجات", "fr": "Celui du Prophète était simple, avec trois marches"},
+            "5": {"en": "Used during the Friday sermon", "ar": "يُستخدم أثناء خطبة الجمعة", "fr": "Utilisé pendant le sermon du vendredi"},
+            "6": {"en": "The mosque pulpit", "ar": "منبر المسجد", "fr": "La chaire de la mosquée"},
+        },
+        "explanation": {
+            "en": "The Minbar is the pulpit in a mosque from which the imam delivers the Friday khutbah (sermon). The Prophet's original minbar had just three simple wooden steps. Today, minbars are often beautifully crafted and are a distinctive feature of mosque architecture.",
+            "ar": "المنبر هو المكان الذي يخطب منه الإمام خطبة الجمعة في المسجد. كان منبر النبي من ثلاث درجات خشبية بسيطة. اليوم تُصنع المنابر بإتقان وهي سمة مميزة لعمارة المساجد.",
+            "fr": "Le Minbar est la chaire dans une mosquée depuis laquelle l'imam délivre la khutbah (sermon) du vendredi. Le minbar original du Prophète n'avait que trois marches en bois simples. Aujourd'hui, les minbars sont souvent magnifiquement façonnés et sont un élément distinctif de l'architecture des mosquées.",
+        },
+    },
+    {
+        "word_en": "Ghusl",
+        "word_ar": "غسل",
+        "word_fr": "Ghousl",
+        "accepted_answers": {"en": ["Ghusl", "Ghusul"], "ar": ["غسل", "الغسل"], "fr": ["Ghousl", "Ghusl"]},
+        "category": "Daily Life",
+        "hints": {
+            "1": {"en": "A purification ritual more thorough than Wudu", "ar": "طهارة أشمل من الوضوء", "fr": "Un rituel de purification plus complet que le Woudou"},
+            "2": {"en": "Required after certain physical states", "ar": "مطلوب بعد حالات جسدية معينة", "fr": "Requis après certains états physiques"},
+            "3": {"en": "Involves washing the entire body", "ar": "يتضمن غسل الجسم كاملاً", "fr": "Implique le lavage du corps entier"},
+            "4": {"en": "Recommended before Friday prayer and Eid", "ar": "مستحب قبل صلاة الجمعة والعيد", "fr": "Recommandé avant la prière du vendredi et l'Aïd"},
+            "5": {"en": "Has a specific order: intention, washing hands, then body", "ar": "له ترتيب: النية ثم غسل اليدين ثم الجسم", "fr": "A un ordre spécifique : intention, lavage des mains, puis corps"},
+            "6": {"en": "The full ritual bath in Islam", "ar": "الاغتسال الكامل في الإسلام", "fr": "Le bain rituel complet en Islam"},
+        },
+        "explanation": {
+            "en": "Ghusl is the full-body ritual washing required in Islam after certain states of impurity. It involves washing the entire body with water following a specific sequence. It is also recommended before Friday prayer, Eid, and entering Ihram for Hajj.",
+            "ar": "الغسل هو غسل الجسم الكامل المطلوب في الإسلام بعد حالات معينة من الحدث الأكبر. يتضمن غسل الجسم كله بالماء وفق ترتيب محدد. يُستحب أيضاً قبل صلاة الجمعة والعيد والإحرام للحج.",
+            "fr": "Le Ghousl est le lavage rituel du corps entier requis en Islam après certains états d'impureté. Il implique le lavage de tout le corps avec de l'eau suivant une séquence spécifique. Il est aussi recommandé avant la prière du vendredi, l'Aïd et l'entrée en Ihram pour le Hajj.",
+        },
+    },
+    # === New entries: Places ===
+    {
+        "word_en": "Zamzam",
+        "word_ar": "زمزم",
+        "word_fr": "Zamzam",
+        "accepted_answers": {"en": ["Zamzam", "Zam Zam"], "ar": ["زمزم"], "fr": ["Zamzam"]},
+        "category": "Places",
+        "hints": {
+            "1": {"en": "Has been flowing for thousands of years", "ar": "يتدفق منذ آلاف السنين", "fr": "Coule depuis des milliers d'années"},
+            "2": {"en": "Miraculous in origin, connected to a mother and child", "ar": "معجزة في أصلها مرتبطة بأم وطفلها", "fr": "Miraculeuse dans son origine, liée à une mère et un enfant"},
+            "3": {"en": "Hajar ran between two hills seeking it", "ar": "سعت هاجر بين تلتين بحثاً عنه", "fr": "Hajar a couru entre deux collines à sa recherche"},
+            "4": {"en": "Pilgrims drink from it during Hajj", "ar": "يشرب منه الحجاج أثناء الحج", "fr": "Les pèlerins en boivent pendant le Hajj"},
+            "5": {"en": "Located inside the Grand Mosque in Makkah", "ar": "يقع داخل المسجد الحرام في مكة", "fr": "Situé à l'intérieur de la Grande Mosquée de La Mecque"},
+            "6": {"en": "The holy well near the Kaaba", "ar": "البئر المقدسة قرب الكعبة", "fr": "Le puits sacré près de la Kaaba"},
+        },
+        "explanation": {
+            "en": "Zamzam is the holy well located within the Masjid al-Haram in Makkah, just meters from the Kaaba. It miraculously sprang forth for Hajar and baby Ismail when they were alone in the desert. Its water has never dried up in over 4,000 years.",
+            "ar": "زمزم بئر مقدسة داخل المسجد الحرام في مكة على بعد أمتار من الكعبة. نبعت بمعجزة لهاجر والطفل إسماعيل حين كانا وحدهما في الصحراء. لم تجف مياهها منذ أكثر من 4000 سنة.",
+            "fr": "Zamzam est le puits sacré situé dans le Masjid al-Haram à La Mecque, à quelques mètres de la Kaaba. Il jaillit miraculeusement pour Hajar et le bébé Ismaïl quand ils étaient seuls dans le désert. Son eau n'a jamais tari en plus de 4 000 ans.",
+        },
+    },
+    {
+        "word_en": "Arafat",
+        "word_ar": "عرفات",
+        "word_fr": "Arafat",
+        "accepted_answers": {"en": ["Arafat", "Arafah"], "ar": ["عرفات", "عرفة"], "fr": ["Arafat", "Arafah"]},
+        "category": "Places",
+        "hints": {
+            "1": {"en": "Standing here is the most important pillar of Hajj", "ar": "الوقوف هنا أهم ركن في الحج", "fr": "Se tenir ici est le pilier le plus important du Hajj"},
+            "2": {"en": "The Prophet delivered his Farewell Sermon here", "ar": "ألقى النبي خطبة الوداع هنا", "fr": "Le Prophète a prononcé son Sermon d'Adieu ici"},
+            "3": {"en": "Pilgrims gather here on the 9th of Dhul Hijjah", "ar": "يجتمع الحجاج هنا في 9 ذي الحجة", "fr": "Les pèlerins s'y rassemblent le 9 Dhul Hijjah"},
+            "4": {"en": "Where Adam and Hawa (Eve) reunited", "ar": "حيث التقى آدم وحواء", "fr": "Où Adam et Hawa (Ève) se sont retrouvés"},
+            "5": {"en": "A vast plain outside Makkah", "ar": "سهل واسع خارج مكة", "fr": "Une vaste plaine à l'extérieur de La Mecque"},
+            "6": {"en": "The Mountain of Mercy", "ar": "جبل الرحمة", "fr": "La Montagne de la Miséricorde"},
+        },
+        "explanation": {
+            "en": "Arafat is a vast plain southeast of Makkah where pilgrims stand in prayer on the 9th of Dhul Hijjah — the most essential rite of Hajj. The Prophet said 'Hajj is Arafat.' It is where Adam and Hawa reunited and where the Farewell Sermon was delivered.",
+            "ar": "عرفات سهل واسع جنوب شرق مكة يقف فيه الحجاج بالدعاء في 9 ذي الحجة — أهم ركن في الحج. قال النبي 'الحج عرفة.' هنا التقى آدم وحواء وهنا ألقيت خطبة الوداع.",
+            "fr": "Arafat est une vaste plaine au sud-est de La Mecque où les pèlerins se tiennent en prière le 9 Dhul Hijjah — le rite le plus essentiel du Hajj. Le Prophète a dit 'Le Hajj, c'est Arafat.' C'est là qu'Adam et Hawa se sont retrouvés et où le Sermon d'Adieu fut prononcé.",
+        },
+    },
+    {
+        "word_en": "Mina",
+        "word_ar": "منى",
+        "word_fr": "Mina",
+        "accepted_answers": {"en": ["Mina", "Muna"], "ar": ["منى"], "fr": ["Mina"]},
+        "category": "Places",
+        "hints": {
+            "1": {"en": "A valley near Makkah that transforms during Hajj", "ar": "وادٍ قرب مكة يتحول أثناء الحج", "fr": "Une vallée près de La Mecque qui se transforme pendant le Hajj"},
+            "2": {"en": "Hundreds of thousands of white tents fill it", "ar": "تملؤه مئات آلاف الخيام البيضاء", "fr": "Des centaines de milliers de tentes blanches la remplissent"},
+            "3": {"en": "Pilgrims spend nights here during Hajj", "ar": "يبيت الحجاج هنا أثناء الحج", "fr": "Les pèlerins y passent des nuits pendant le Hajj"},
+            "4": {"en": "The stoning ritual takes place here", "ar": "يُؤدى رمي الجمرات هنا", "fr": "Le rituel de lapidation a lieu ici"},
+            "5": {"en": "Connected to Ibrahim's trial with his son", "ar": "مرتبطة بابتلاء إبراهيم مع ابنه", "fr": "Liée à l'épreuve d'Ibrahim avec son fils"},
+            "6": {"en": "The tent city of Hajj", "ar": "مدينة خيام الحج", "fr": "La cité des tentes du Hajj"},
+        },
+        "explanation": {
+            "en": "Mina is a valley near Makkah that becomes the world's largest tent city during Hajj. Pilgrims stay here and perform the symbolic stoning of the Jamarat pillars, commemorating Ibrahim's rejection of Shaytan's temptation to disobey Allah's command.",
+            "ar": "منى وادٍ قرب مكة يصبح أكبر مدينة خيام في العالم أثناء الحج. يمكث الحجاج هنا ويرمون الجمرات رمزاً لرفض إبراهيم لوسوسة الشيطان بعصيان أمر الله.",
+            "fr": "Mina est une vallée près de La Mecque qui devient la plus grande cité de tentes du monde pendant le Hajj. Les pèlerins y séjournent et effectuent la lapidation symbolique des piliers de Jamarat, commémorant le rejet par Ibrahim de la tentation de Shaytan de désobéir à l'ordre d'Allah.",
+        },
+    },
+    {
+        "word_en": "Safa",
+        "word_ar": "صفا",
+        "word_fr": "Safa",
+        "accepted_answers": {"en": ["Safa", "Al-Safa"], "ar": ["صفا", "الصفا"], "fr": ["Safa", "Al-Safa"]},
+        "category": "Places",
+        "hints": {
+            "1": {"en": "Part of a ritual walk during Hajj and Umrah", "ar": "جزء من مشي شعائري في الحج والعمرة", "fr": "Partie d'une marche rituelle pendant le Hajj et la Omra"},
+            "2": {"en": "A mother desperately searched for water from here", "ar": "أم يائسة بحثت عن الماء من هنا", "fr": "Une mère a désespérément cherché de l'eau d'ici"},
+            "3": {"en": "Pilgrims walk between this and another hill seven times", "ar": "يمشي الحجاج بين هذا وتل آخر سبع مرات", "fr": "Les pèlerins marchent entre celle-ci et une autre colline sept fois"},
+            "4": {"en": "The companion hill is called Marwah", "ar": "التل المقابل يُسمى المروة", "fr": "La colline compagnon s'appelle Marwah"},
+            "5": {"en": "Commemorates Hajar's search for water", "ar": "تُحيي ذكرى بحث هاجر عن الماء", "fr": "Commémore la recherche d'eau par Hajar"},
+            "6": {"en": "A hill in the Grand Mosque of Makkah", "ar": "تل في المسجد الحرام بمكة", "fr": "Une colline dans la Grande Mosquée de La Mecque"},
+        },
+        "explanation": {
+            "en": "Safa is one of two hills (with Marwah) inside the Grand Mosque of Makkah between which pilgrims walk seven times during Sa'i. This ritual commemorates Hajar's desperate search for water for her son Ismail, which led to the miraculous spring of Zamzam.",
+            "ar": "الصفا أحد تلتين (مع المروة) داخل المسجد الحرام بمكة يمشي بينهما الحجاج سبع مرات في السعي. تُحيي هذه الشعيرة ذكرى بحث هاجر اليائس عن الماء لابنها إسماعيل مما أدى لنبع زمزم المعجزة.",
+            "fr": "Safa est l'une des deux collines (avec Marwah) à l'intérieur de la Grande Mosquée de La Mecque entre lesquelles les pèlerins marchent sept fois pendant le Sa'i. Ce rituel commémore la recherche désespérée d'eau par Hajar pour son fils Ismaïl, qui mena à la source miraculeuse de Zamzam.",
+        },
+    },
+    # === New entries: Islamic History ===
+    {
+        "word_en": "Hudaybiyyah",
+        "word_ar": "حديبية",
+        "word_fr": "Hudaybiyyah",
+        "accepted_answers": {"en": ["Hudaybiyyah", "Hudaibiyyah", "Hudaybiyah"], "ar": ["حديبية", "الحديبية"], "fr": ["Hudaybiyyah", "Houdaybiyyah"]},
+        "category": "Islamic History",
+        "hints": {
+            "1": {"en": "A place where a historic agreement was made", "ar": "مكان أُبرمت فيه اتفاقية تاريخية", "fr": "Un lieu où un accord historique a été conclu"},
+            "2": {"en": "The Quran called it a 'clear victory'", "ar": "سماه القرآن 'فتحاً مبيناً'", "fr": "Le Coran l'a appelé une 'victoire éclatante'"},
+            "3": {"en": "It happened in 6 AH", "ar": "حدث في السنة 6 هجرية", "fr": "Cela s'est produit en l'an 6 de l'Hégire"},
+            "4": {"en": "A 10-year peace was agreed between two sides", "ar": "اتُفق على سلام عشر سنوات بين طرفين", "fr": "Une paix de 10 ans a été convenue entre deux parties"},
+            "5": {"en": "Between the Muslims and the Quraysh", "ar": "بين المسلمين وقريش", "fr": "Entre les musulmans et les Quraysh"},
+            "6": {"en": "The famous treaty near Makkah", "ar": "المعاهدة الشهيرة قرب مكة", "fr": "Le célèbre traité près de La Mecque"},
+        },
+        "explanation": {
+            "en": "Hudaybiyyah is the location near Makkah where the Treaty of Hudaybiyyah was signed in 628 CE between the Muslims and Quraysh. Though it seemed like a setback, the Quran called it a 'clear victory' — the peace allowed Islam to spread rapidly across Arabia.",
+            "ar": "الحديبية موقع قرب مكة حيث وُقّعت صلح الحديبية سنة 628م بين المسلمين وقريش. رغم أنه بدا انتكاسة سماه القرآن 'فتحاً مبيناً' — السلام سمح بانتشار الإسلام سريعاً في الجزيرة.",
+            "fr": "Hudaybiyyah est le lieu près de La Mecque où le traité de Hudaybiyyah fut signé en 628 entre les musulmans et les Quraysh. Bien qu'il semblait être un recul, le Coran l'a appelé une 'victoire éclatante' — la paix a permis à l'Islam de se répandre rapidement en Arabie.",
+        },
+    },
+    {
+        "word_en": "Khaybar",
+        "word_ar": "خيبر",
+        "word_fr": "Khaybar",
+        "accepted_answers": {"en": ["Khaybar", "Khaibar"], "ar": ["خيبر"], "fr": ["Khaybar", "Khaïbar"]},
+        "category": "Islamic History",
+        "hints": {
+            "1": {"en": "A fortified oasis north of Madinah", "ar": "واحة محصنة شمال المدينة", "fr": "Une oasis fortifiée au nord de Médine"},
+            "2": {"en": "A famous battle cry is associated with its name", "ar": "صيحة حربية شهيرة مرتبطة باسمها", "fr": "Un célèbre cri de guerre est associé à son nom"},
+            "3": {"en": "Ali carried the fortress gate single-handedly", "ar": "حمل علي باب الحصن وحده", "fr": "Ali a porté la porte de la forteresse à lui seul"},
+            "4": {"en": "Multiple fortresses had to be conquered", "ar": "حصون متعددة كان لا بد من فتحها", "fr": "Plusieurs forteresses devaient être conquises"},
+            "5": {"en": "Occurred in 7 AH", "ar": "وقعت في السنة 7 هجرية", "fr": "S'est produite en l'an 7 de l'Hégire"},
+            "6": {"en": "The famous fortress battle", "ar": "معركة الحصون الشهيرة", "fr": "La célèbre bataille des forteresses"},
+        },
+        "explanation": {
+            "en": "Khaybar was a fortified oasis north of Madinah conquered by Muslims in 628 CE. It is famous for Ali ibn Abi Talib's legendary feat of tearing off a fortress gate and using it as a shield. The victory secured the northern frontier of the Muslim state.",
+            "ar": "خيبر واحة محصنة شمال المدينة فتحها المسلمون سنة 628م. اشتهرت بمأثرة علي بن أبي طالب الأسطورية حين اقتلع باب حصن واستخدمه درعاً. أمّن الانتصار الحدود الشمالية للدولة الإسلامية.",
+            "fr": "Khaybar était une oasis fortifiée au nord de Médine conquise par les musulmans en 628. Elle est célèbre pour l'exploit légendaire d'Ali ibn Abi Talib qui arracha une porte de forteresse et l'utilisa comme bouclier. La victoire sécurisa la frontière nord de l'État musulman.",
+        },
+    },
+    # === New entries: Quran ===
+    {
+        "word_en": "Al-Baqarah",
+        "word_ar": "البقرة",
+        "word_fr": "Al-Baqarah",
+        "accepted_answers": {"en": ["Al-Baqarah", "Al Baqarah", "Baqarah"], "ar": ["البقرة", "سورة البقرة"], "fr": ["Al-Baqarah", "La Vache"]},
+        "category": "Quran",
+        "hints": {
+            "1": {"en": "The longest surah in the Quran", "ar": "أطول سورة في القرآن", "fr": "La plus longue sourate du Coran"},
+            "2": {"en": "Contains 286 verses", "ar": "تحتوي 286 آية", "fr": "Contient 286 versets"},
+            "3": {"en": "Ayat Al-Kursi is in this surah", "ar": "آية الكرسي في هذه السورة", "fr": "Ayat Al-Kursi est dans cette sourate"},
+            "4": {"en": "Named after an animal from a story of Bani Israel", "ar": "سُميت بحيوان من قصة بني إسرائيل", "fr": "Nommée d'après un animal d'une histoire de Bani Israël"},
+            "5": {"en": "The Prophet said Shaytan flees from a house where it is recited", "ar": "قال النبي إن الشيطان يفر من بيت تُقرأ فيه", "fr": "Le Prophète a dit que Shaytan fuit une maison où elle est récitée"},
+            "6": {"en": "The Cow — second surah of the Quran", "ar": "البقرة — السورة الثانية من القرآن", "fr": "La Vache — deuxième sourate du Coran"},
+        },
+        "explanation": {
+            "en": "Surah Al-Baqarah (The Cow) is the longest chapter in the Quran with 286 verses. It covers laws, stories of past nations, and contains Ayat Al-Kursi. The Prophet said that reciting it at home drives away Shaytan for three days.",
+            "ar": "سورة البقرة أطول سورة في القرآن بـ286 آية. تتناول الأحكام وقصص الأمم السابقة وتحتوي آية الكرسي. قال النبي إن قراءتها في البيت تطرد الشيطان ثلاثة أيام.",
+            "fr": "La sourate Al-Baqarah (La Vache) est le plus long chapitre du Coran avec 286 versets. Elle couvre des lois, des histoires de nations passées et contient Ayat Al-Kursi. Le Prophète a dit que la réciter à la maison chasse Shaytan pendant trois jours.",
         },
     },
 ]
@@ -2102,6 +2877,10 @@ async def seed_quiz_words(session: AsyncSession) -> None:
             await session.exec(select(QuizWord).where(QuizWord.word_en == word_data["word_en"]))
         ).first()
         if existing:
+            # Update explanation if it was added
+            if word_data.get("explanation") and not existing.explanation:
+                existing.explanation = word_data["explanation"]
+                session.add(existing)
             continue
         quiz_word = QuizWord(
             id=uuid4(),
@@ -2111,6 +2890,7 @@ async def seed_quiz_words(session: AsyncSession) -> None:
             accepted_answers=word_data.get("accepted_answers"),
             category=word_data["category"],
             hints=word_data["hints"],
+            explanation=word_data.get("explanation"),
         )
         session.add(quiz_word)
         count += 1

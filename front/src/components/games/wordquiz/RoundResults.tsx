@@ -12,6 +12,7 @@ interface RoundResult {
 
 interface RoundResultsProps {
   correctAnswer: string
+  explanation?: string | null
   roundResults: RoundResult[]
   isHost: boolean
   onNextRound: () => void
@@ -20,6 +21,7 @@ interface RoundResultsProps {
 
 export const RoundResults = memo(function RoundResults({
   correctAnswer,
+  explanation,
   roundResults,
   isHost,
   onNextRound,
@@ -38,6 +40,9 @@ export const RoundResults = memo(function RoundResults({
       >
         <p className="text-sm text-muted-foreground mb-1">{t("game.wordQuiz.correctAnswer", { answer: "" })}</p>
         <p className="text-2xl font-extrabold tracking-tight gradient-text">{correctAnswer}</p>
+        {explanation && (
+          <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{explanation}</p>
+        )}
       </motion.div>
 
       {/* Results table */}
