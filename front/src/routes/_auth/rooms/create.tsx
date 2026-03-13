@@ -99,7 +99,7 @@ function CreateRoomPage() {
         {/* Game Type */}
         <div>
           <label className="block text-sm font-medium mb-3">{t("room.gameType")}</label>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {(["undercover", "codenames", "word_quiz"] as const).map((type) => {
               const selected = gameType === type
               const config = {
@@ -112,22 +112,22 @@ function CreateRoomPage() {
                   key={type}
                   type="button"
                   onClick={() => setGameType(type)}
-                  className={`relative card-hover rounded-2xl border-2 p-6 text-center transition-all duration-200 hover:-translate-y-0.5 ${
+                  className={`relative card-hover rounded-2xl border-2 p-3 sm:p-6 text-center transition-all duration-200 hover:-translate-y-0.5 overflow-hidden flex flex-col items-center ${
                     selected
                       ? "border-primary bg-primary/10 shadow-lg shadow-primary/20 ring-2 ring-primary/30 scale-[1.02]"
                       : "border-border/30 glass hover:border-primary/40 hover:shadow-lg opacity-70 hover:opacity-100"
                   }`}
                 >
                   {selected && (
-                    <div className="absolute top-2.5 right-2.5 size-5 rounded-full bg-primary flex items-center justify-center">
+                    <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 size-5 rounded-full bg-primary flex items-center justify-center">
                       <svg className="size-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                   )}
-                  <div className="text-3xl mb-3">{config.icon}</div>
-                  <div className={`font-extrabold tracking-tight ${selected ? "text-primary" : ""}`}>{t(`games.${config.nameKey}.name`)}</div>
-                  <div className="mt-1.5 text-xs text-muted-foreground font-mono tabular-nums">{config.players} {t("room.players")}</div>
+                  <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">{config.icon}</div>
+                  <div className={`text-xs sm:text-base font-extrabold tracking-tight break-words flex-1 flex items-center ${selected ? "text-primary" : ""}`}>{t(`games.${config.nameKey}.name`)}</div>
+                  <div className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs text-muted-foreground font-mono tabular-nums">{config.players} {t("room.players")}</div>
                 </button>
               )
             })}
