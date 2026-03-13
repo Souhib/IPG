@@ -1146,9 +1146,9 @@ async def seed_codenames_words(session: AsyncSession) -> None:
 QUIZ_WORDS: list[dict] = [
     # === Prophets (~25) ===
     {
-        "word_en": "Ibrahim",
+        "word_en": "Ibrahim / Abraham",
         "word_ar": "إبراهيم",
-        "word_fr": "Ibrahim",
+        "word_fr": "Ibrahim / Abraham",
         "accepted_answers": {"en": ["Ibrahim", "Abraham"], "ar": ["إبراهيم", "ابراهيم"], "fr": ["Ibrahim", "Abraham"]},
         "category": "Prophets",
         "hints": {
@@ -1166,9 +1166,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Musa",
+        "word_en": "Musa / Moses",
         "word_ar": "موسى",
-        "word_fr": "Moïse",
+        "word_fr": "Moussa / Moïse",
         "accepted_answers": {"en": ["Musa", "Moses"], "ar": ["موسى"], "fr": ["Moïse", "Moussa"]},
         "category": "Prophets",
         "hints": {
@@ -1186,9 +1186,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Isa",
+        "word_en": "Isa / Jesus",
         "word_ar": "عيسى",
-        "word_fr": "Jésus",
+        "word_fr": "Issa / Jésus",
         "accepted_answers": {"en": ["Isa", "Jesus"], "ar": ["عيسى"], "fr": ["Jésus", "Issa"]},
         "category": "Prophets",
         "hints": {
@@ -1206,9 +1206,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Nuh",
+        "word_en": "Nuh / Noah",
         "word_ar": "نوح",
-        "word_fr": "Noé",
+        "word_fr": "Nouh / Noé",
         "accepted_answers": {"en": ["Nuh", "Noah"], "ar": ["نوح"], "fr": ["Noé", "Nouh"]},
         "category": "Prophets",
         "hints": {
@@ -1226,9 +1226,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Yusuf",
+        "word_en": "Yusuf / Joseph",
         "word_ar": "يوسف",
-        "word_fr": "Joseph",
+        "word_fr": "Youssef / Joseph",
         "accepted_answers": {"en": ["Yusuf", "Joseph"], "ar": ["يوسف"], "fr": ["Joseph", "Youssef"]},
         "category": "Prophets",
         "hints": {
@@ -1246,9 +1246,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Dawud",
+        "word_en": "Dawud / David",
         "word_ar": "داود",
-        "word_fr": "David",
+        "word_fr": "Daoud / David",
         "accepted_answers": {"en": ["Dawud", "David"], "ar": ["داود", "داوود"], "fr": ["David", "Daoud"]},
         "category": "Prophets",
         "hints": {
@@ -1266,9 +1266,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Sulayman",
+        "word_en": "Sulayman / Solomon",
         "word_ar": "سليمان",
-        "word_fr": "Salomon",
+        "word_fr": "Soulayman / Salomon",
         "accepted_answers": {"en": ["Sulayman", "Solomon"], "ar": ["سليمان"], "fr": ["Salomon", "Soulayman"]},
         "category": "Prophets",
         "hints": {
@@ -1286,9 +1286,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Ayyub",
+        "word_en": "Ayyub / Job",
         "word_ar": "أيوب",
-        "word_fr": "Job",
+        "word_fr": "Ayyoub / Job",
         "accepted_answers": {"en": ["Ayyub", "Job"], "ar": ["أيوب", "ايوب"], "fr": ["Job", "Ayyoub"]},
         "category": "Prophets",
         "hints": {
@@ -1306,9 +1306,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Yunus",
+        "word_en": "Yunus / Jonah",
         "word_ar": "يونس",
-        "word_fr": "Jonas",
+        "word_fr": "Younous / Jonas",
         "accepted_answers": {"en": ["Yunus", "Jonah"], "ar": ["يونس"], "fr": ["Jonas", "Younous"]},
         "category": "Prophets",
         "hints": {
@@ -1732,9 +1732,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Ismail",
+        "word_en": "Ismail / Ishmael",
         "word_ar": "إسماعيل",
-        "word_fr": "Ismaël",
+        "word_fr": "Ismaïl / Ismaël",
         "accepted_answers": {"en": ["Ismail", "Ishmael", "Ismaril"], "ar": ["إسماعيل", "اسماعيل"], "fr": ["Ismaël", "Ismail", "Ismaril"]},
         "category": "Prophets",
         "hints": {
@@ -1752,9 +1752,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Yaqub",
+        "word_en": "Yaqub / Jacob",
         "word_ar": "يعقوب",
-        "word_fr": "Jacob",
+        "word_fr": "Yacoub / Jacob",
         "accepted_answers": {"en": ["Yaqub", "Yarqub", "Jacob"], "ar": ["يعقوب"], "fr": ["Jacob", "Yacoub", "Yarcoub"]},
         "category": "Prophets",
         "hints": {
@@ -1772,9 +1772,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Shuayb",
+        "word_en": "Shuayb / Jethro",
         "word_ar": "شعيب",
-        "word_fr": "Chouaïb",
+        "word_fr": "Chouaïb / Jethro",
         "accepted_answers": {"en": ["Shuayb", "Shoaib", "Shurayb", "Jethro"], "ar": ["شعيب"], "fr": ["Chouaïb", "Chouraib", "Shuayb"]},
         "category": "Prophets",
         "hints": {
@@ -1832,9 +1832,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Zakaria",
+        "word_en": "Zakaria / Zechariah",
         "word_ar": "زكريا",
-        "word_fr": "Zacharie",
+        "word_fr": "Zakaria / Zacharie",
         "accepted_answers": {"en": ["Zakaria", "Zakariyya", "Zechariah"], "ar": ["زكريا", "زكرياء"], "fr": ["Zacharie", "Zakaria"]},
         "category": "Prophets",
         "hints": {
@@ -1852,9 +1852,9 @@ QUIZ_WORDS: list[dict] = [
         },
     },
     {
-        "word_en": "Idris",
+        "word_en": "Idris / Enoch",
         "word_ar": "إدريس",
-        "word_fr": "Idris",
+        "word_fr": "Idris / Hénoch",
         "accepted_answers": {"en": ["Idris", "Enoch"], "ar": ["إدريس", "ادريس"], "fr": ["Idris", "Énoch"]},
         "category": "Prophets",
         "hints": {
