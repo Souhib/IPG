@@ -53,6 +53,7 @@ function RoomLobbyPage() {
   const navigate = useNavigate()
   const [copied, setCopied] = useState("")
   const [gameType, setGameType] = useState<GameType>("undercover")
+  const gameTypeSyncedRef = useRef(false)
   const queryClient = useQueryClient()
   const navigatingToGameRef = useRef(false)
   const previousPlayerIdsRef = useRef<Map<string, string>>(new Map())
@@ -104,6 +105,17 @@ function RoomLobbyPage() {
   const spectators = allUsers.filter((u) => u.is_spectator)
   const isHost = roomData?.owner_id === user?.id
   const isSpectator = allUsers.some((u) => u.id === user?.id && u.is_spectator)
+
+  // Sync game type from server on first load
+  useEffect(() => {
+    if (!gameTypeSyncedRef.current && roomData?.game_type) {
+      const serverType = roomData.game_type as GameType
+      if (["undercover", "codenames", "word_quiz"].includes(serverType)) {
+        setGameType(serverType)
+      }
+      gameTypeSyncedRef.current = true
+    }
+  }, [roomData?.game_type])
 
   // Toast notifications when players join or leave
   useEffect(() => {
