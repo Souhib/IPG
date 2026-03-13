@@ -18,3 +18,5 @@ class QuizWord(BaseTable, table=True):
     category: str
     hints: dict = Field(sa_column=Column(JSON))
     # {"1": {"en": "...", "ar": "...", "fr": "..."}, ..., "6": {...}}
+    explanation: dict | None = Field(default=None, sa_column=Column(JSON))
+    # {"en": "...", "ar": "...", "fr": "..."}

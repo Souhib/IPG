@@ -167,6 +167,7 @@ class WordQuizGameController:
                     "accepted_answers": first_word.accepted_answers,
                 },
                 "hints": first_word.hints,
+                "explanation": first_word.explanation,
                 "hints_revealed": 1,
                 "round_started_at": datetime.now(UTC).isoformat(),
                 "hint_interval_seconds": hint_interval,
@@ -278,8 +279,8 @@ class WordQuizGameController:
         my_answered = my_answer is not None
         my_points = my_answer["points"] if my_answer else 0
 
-        # Round results and correct answer — only visible during results/game_over
-        round_results, correct_answer = self._build_round_results(state, lang)
+        # Round results, correct answer, and explanation — only visible during results/game_over
+        round_results, correct_answer, explanation = self._build_round_results(state, lang)
 
         leaderboard = sorted(player_states, key=lambda p: p.total_score, reverse=True)
 
@@ -301,6 +302,7 @@ class WordQuizGameController:
             my_points=my_points,
             round_results=round_results,
             correct_answer=correct_answer,
+            explanation=explanation,
             winner=state.get("winner"),
             leaderboard=leaderboard,
             game_over=state.get("game_over", False),
@@ -463,6 +465,7 @@ class WordQuizGameController:
                     "accepted_answers": new_word.accepted_answers,
                 }
                 state["hints"] = new_word.hints
+                state["explanation"] = new_word.explanation
                 state["hints_revealed"] = 1
                 state["round_started_at"] = datetime.now(UTC).isoformat()
                 state["round_phase"] = "playing"
@@ -567,11 +570,12 @@ class WordQuizGameController:
             raise PlayerRemovedFromGameError(user_id=str(user_id), game_id=str(game.id))
         return True
 
-    def _build_round_results(self, state: dict, lang: str) -> tuple[list[WordQuizRoundResult], str | None]:
-        """Build round results and correct answer for results/game_over phases."""
+    def _build_round_results(self, state: dict, lang: str) -> tuple[list[WordQuizRoundResult], str | None, str | None]:
+        """Build round results, correct answer, and explanation for results/game_over phases."""
         if state["round_phase"] not in ("results", "game_over"):
-            return [], None
+            return [], None, None
         correct_answer = self._get_correct_answer(state, lang)
+        explanation = self._resolve_explanation(state, lang)
         round_results = [
             WordQuizRoundResult(
                 user_id=rr["user_id"],
@@ -582,7 +586,15 @@ class WordQuizGameController:
             )
             for rr in state.get("round_results", [])
         ]
-        return round_results, correct_answer
+        return round_results, correct_answer, explanation
+
+    @staticmethod
+    def _resolve_explanation(state: dict, lang: str) -> str | None:
+        """Resolve the explanation dict to a string in the requested language."""
+        explanation = state.get("explanation")
+        if not explanation or not isinstance(explanation, dict):
+            return None
+        return explanation.get(lang) or explanation.get("en") or next(iter(explanation.values()), None)
 
     async def _get_game(self, game_id: UUID) -> Game:
         """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
