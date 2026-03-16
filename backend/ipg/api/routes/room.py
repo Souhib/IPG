@@ -1,4 +1,3 @@
-import random
 from typing import Annotated
 from uuid import UUID
 
@@ -6,7 +5,7 @@ from fastapi import APIRouter, Depends
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from ipg.api.controllers.room import RoomController
-from ipg.api.models.room import RoomCreate, RoomCreateRequest, RoomJoin, RoomLeave, RoomStatus
+from ipg.api.models.room import RoomCreateRequest, RoomJoin, RoomLeave
 from ipg.api.models.table import User
 from ipg.api.models.view import RoomView
 from ipg.api.schemas.room import (
@@ -17,6 +16,7 @@ from ipg.api.schemas.room import (
     RematchResponse,
     RoomInviteRequest,
     RoomInviteResponse,
+    RoomSettings,
     RoomSettingsRequest,
     RoomState,
     UpdateRoomSettingsResponse,
@@ -38,18 +38,7 @@ async def create_room(
     current_user: Annotated[User, Depends(get_current_user)],
     room_controller: RoomController = Depends(get_room_controller),
 ) -> RoomView:
-    password = f"{random.randint(0, 9999):04d}"
-    room_create = RoomCreate(
-        status=RoomStatus.ONLINE,
-        password=password,
-        owner_id=current_user.id,
-    )
-    room = await room_controller.create_room(room_create)
-    # Persist the selected game type in room settings
-    room.settings = {"game_type": body.game_type.value}
-    room_controller.session.add(room)
-    await room_controller.session.commit()
-    await room_controller.session.refresh(room)
+    room = await room_controller.create_room(owner_id=current_user.id, game_type=body.game_type)
     return RoomView.model_validate(room)
 
 
@@ -145,8 +134,7 @@ async def update_room_settings(
     current_user: Annotated[User, Depends(get_current_user)],
     room_controller: RoomController = Depends(get_room_controller),
 ) -> UpdateRoomSettingsResponse:
-    settings = {k: v for k, v in body.model_dump().items() if v is not None}
-    result = await room_controller.update_room_settings(room_id, current_user.id, settings)
+    result = await room_controller.update_room_settings(room_id, current_user.id, RoomSettings(**body.model_dump()))
     await notify_room_changed(str(room_id))
     return result
 

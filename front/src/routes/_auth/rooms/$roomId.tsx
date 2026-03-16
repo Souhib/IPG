@@ -61,16 +61,24 @@ function RoomLobbyPage() {
   const previousPlayerIdsRef = useRef<Map<string, string>>(new Map())
   const [showInviteModal, setShowInviteModal] = useState(false)
 
+  // Chat messages from Socket.IO
+  const [lastChatMessage, setLastChatMessage] = useState<{ id: string; room_id: string; user_id: string; username: string; message: string; created_at: string } | null>(null)
+
   // Socket.IO for real-time updates
   const handleKicked = useCallback(() => {
     toast.error(t("youWereKicked"))
     navigate({ to: "/rooms" })
   }, [navigate, t])
 
+  const handleChatMessage = useCallback((msg: { id: string; room_id: string; user_id: string; username: string; message: string; created_at: string }) => {
+    setLastChatMessage(msg)
+  }, [])
+
   const { connected: socketConnected } = useSocket({
     roomId,
     enabled: !!user,
     onKicked: handleKicked,
+    onChatMessage: handleChatMessage,
   })
 
   // Poll room state as fallback when Socket.IO is disconnected
@@ -466,7 +474,7 @@ function RoomLobbyPage() {
       )}
 
       {/* Chat Panel — integrated inline */}
-      {user && <ChatPanel roomId={roomId} currentUserId={user.id} />}
+      {user && <ChatPanel roomId={roomId} currentUserId={user.id} incomingMessage={lastChatMessage} />}
 
       {/* Room Settings (host only, not for word_quiz which uses defaults) */}
       {isHost && !isSpectator && roomData && (

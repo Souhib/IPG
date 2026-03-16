@@ -68,6 +68,17 @@ async def notify_room_changed(room_id: str) -> None:
         logger.opt(exception=True).error("notify_room_changed FAILED for room={}", room_id)
 
 
+async def notify_chat_message(room_id: str, message_data: dict) -> None:
+    """Broadcast a new chat message to all clients in the room.
+
+    Awaited in route handlers to guarantee delivery before the HTTP response.
+    """
+    try:
+        await sio.emit("chat_message", message_data, to=f"room:{room_id}")
+    except Exception:
+        logger.opt(exception=True).error("notify_chat_message FAILED for room={}", room_id)
+
+
 async def notify_game_changed(game_id: str, room_id: str | None = None) -> None:
     """Broadcast game_updated signal to all clients in the game room.
 

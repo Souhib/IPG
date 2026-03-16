@@ -272,7 +272,7 @@
       "players": "{{count}} player(s)"
     },
     "mcqQuiz": {
-      "chooseAnswer": "Choose your answer",
+      "chooseAnswer": "MCQ",
       "correctAnswer": "Correct!",
       "wrongAnswer": "Wrong!",
       "explanation": "Explanation",

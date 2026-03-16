@@ -104,6 +104,7 @@ function WordQuizGamePage() {
   const previousWinnerRef = useRef<string | null>(null)
   const previousRoundRef = useRef<number>(0)
   const [cancelMessage, setCancelMessage] = useState<string | null>(null)
+  const [localHintsRevealed, setLocalHintsRevealed] = useState(1)
 
   // Poll game state
   const { data: serverState, isLoading, error: queryError } = useGetWordquizStateApiV1WordquizGamesGameIdStateGet(
@@ -134,6 +135,30 @@ function WordQuizGamePage() {
     }
     return serverState
   }, [serverState])
+
+  // Client-side hint timer: calculate hints_revealed locally from round_started_at
+  useEffect(() => {
+    if (!state || state.round_phase !== "playing" || !state.round_started_at) {
+      if (state) setLocalHintsRevealed(state.hints_revealed)
+      return
+    }
+    const hintInterval = state.hint_interval_seconds || 10
+    const maxHints = Math.max(state.hints.length, 6)
+    const startedAt = new Date(state.round_started_at).getTime()
+
+    const computeHints = () => {
+      const elapsed = (Date.now() - startedAt) / 1000
+      return Math.min(maxHints, Math.floor(elapsed / hintInterval) + 1)
+    }
+
+    setLocalHintsRevealed(computeHints())
+
+    const interval = setInterval(() => {
+      setLocalHintsRevealed(computeHints())
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [state?.round_phase, state?.round_started_at, state?.hint_interval_seconds, state?.hints.length, state?.hints_revealed])
 
   // Track round/phase changes
   useEffect(() => {
@@ -237,7 +262,8 @@ function WordQuizGamePage() {
     )
   }
 
-  const maxHints = state ? Math.max(state.hints.length, state.hints_revealed) : 6
+  const effectiveHintsRevealed = state?.round_phase === "playing" ? localHintsRevealed : (state?.hints_revealed ?? 1)
+  const maxHints = state ? Math.max(state.hints.length, effectiveHintsRevealed) : 6
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 min-h-screen">
@@ -309,7 +335,7 @@ function WordQuizGamePage() {
           {/* Playing Phase */}
           {state.round_phase === "playing" && (
             <>
-              <HintDisplay hints={state.hints} hintsRevealed={state.hints_revealed} maxHints={maxHints} />
+              <HintDisplay hints={state.hints} hintsRevealed={effectiveHintsRevealed} maxHints={maxHints} />
               {!state.is_spectator && (
                 <AnswerInput
                   onSubmit={handleSubmitAnswer}

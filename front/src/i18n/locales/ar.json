@@ -272,7 +272,7 @@
       "players": "{{count}} لاعب(ين)"
     },
     "mcqQuiz": {
-      "chooseAnswer": "اختر إجابتك",
+      "chooseAnswer": "اختيارات",
       "correctAnswer": "صحيح!",
       "wrongAnswer": "خطأ!",
       "explanation": "التفسير",

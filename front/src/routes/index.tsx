@@ -115,7 +115,7 @@ function HomePage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group"
+          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group flex flex-col"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="rounded-2xl bg-primary/10 p-3 group-hover:bg-primary/15 transition-colors duration-300">
@@ -123,7 +123,7 @@ function HomePage() {
             </div>
             <h2 className="text-xl font-extrabold tracking-tight">{t("games.undercover.name")}</h2>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed flex-1">
             {t("games.undercover.description")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -149,7 +149,7 @@ function HomePage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-accent/20 transition-all duration-300 group"
+          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-accent/20 transition-all duration-300 group flex flex-col"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="rounded-2xl bg-accent/10 p-3 group-hover:bg-accent/15 transition-colors duration-300">
@@ -157,7 +157,7 @@ function HomePage() {
             </div>
             <h2 className="text-xl font-extrabold tracking-tight">{t("games.codenames.name")}</h2>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed flex-1">
             {t("games.codenames.description")}
           </p>
           <div className="mt-5 flex gap-2">
@@ -180,7 +180,7 @@ function HomePage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-violet-500/20 transition-all duration-300 group"
+          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-violet-500/20 transition-all duration-300 group flex flex-col"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="rounded-2xl bg-violet-500/10 p-3 group-hover:bg-violet-500/15 transition-colors duration-300">
@@ -188,7 +188,7 @@ function HomePage() {
             </div>
             <h2 className="text-xl font-extrabold tracking-tight">{t("games.wordQuiz.name")}</h2>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed flex-1">
             {t("games.wordQuiz.description")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -214,7 +214,7 @@ function HomePage() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-rose-500/20 transition-all duration-300 group"
+          className="glass rounded-2xl border border-border/30 p-7 card-hover hover:-translate-y-1 hover:shadow-xl hover:border-rose-500/20 transition-all duration-300 group flex flex-col"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="rounded-2xl bg-rose-500/10 p-3 group-hover:bg-rose-500/15 transition-colors duration-300">
@@ -222,7 +222,7 @@ function HomePage() {
             </div>
             <h2 className="text-xl font-extrabold tracking-tight">{t("games.mcqQuiz.name")}</h2>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed flex-1">
             {t("games.mcqQuiz.description")}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">

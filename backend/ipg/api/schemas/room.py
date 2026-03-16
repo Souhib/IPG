@@ -12,6 +12,21 @@ class RoomPlayerState(BaseModel):
     is_spectator: bool
 
 
+class RoomSettings(BaseModel):
+    game_type: str | None = None
+    description_timer: int | None = None
+    voting_timer: int | None = None
+    codenames_clue_timer: int | None = None
+    codenames_guess_timer: int | None = None
+    enable_mr_white: bool | None = None
+    custom_word_packs: list[str] | None = None
+    word_quiz_turn_duration: int | None = None
+    word_quiz_rounds: int | None = None
+    word_quiz_hint_interval: int | None = None
+    mcq_quiz_turn_duration: int | None = None
+    mcq_quiz_rounds: int | None = None
+
+
 class RoomState(BaseModel):
     id: str
     public_id: str
@@ -21,7 +36,7 @@ class RoomState(BaseModel):
     game_type: str | None = None
     players: list[RoomPlayerState]
     type: str
-    settings: dict | None = None
+    settings: RoomSettings | None = None
 
 
 class ActiveRoomResponse(BaseModel):
@@ -36,7 +51,7 @@ class KickPlayerResponse(BaseModel):
 
 class UpdateRoomSettingsResponse(BaseModel):
     room_id: str
-    settings: dict
+    settings: RoomSettings
 
 
 class RematchResponse(BaseModel):

@@ -69,12 +69,12 @@ class McqQuizGameController:
                     status_code=400,
                 )
 
-            # Get connected non-spectator players
+            # Get non-spectator players in the room (don't filter by connected —
+            # heartbeat may be stale after a game ends and the player stays on the page)
             links = (
                 await self.session.exec(
                     select(RoomUserLink).where(
                         RoomUserLink.room_id == db_room.id,
-                        RoomUserLink.connected == True,  # noqa: E712
                         RoomUserLink.is_spectator == False,  # noqa: E712
                     )
                 )

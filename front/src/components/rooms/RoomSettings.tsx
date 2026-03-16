@@ -114,7 +114,7 @@ export const RoomSettings = memo(function RoomSettings({
                         "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         descriptionTimer === val
                           ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
-                          : "bg-muted/50 hover:bg-muted",
+                          : "bg-muted text-muted-foreground hover:bg-muted/80",
                       )}
                     >
                       {timerLabel(val)}
@@ -138,7 +138,7 @@ export const RoomSettings = memo(function RoomSettings({
                         "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         votingTimer === val
                           ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
-                          : "bg-muted/50 hover:bg-muted",
+                          : "bg-muted text-muted-foreground hover:bg-muted/80",
                       )}
                     >
                       {timerLabel(val)}
@@ -195,7 +195,7 @@ export const RoomSettings = memo(function RoomSettings({
                         "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         codenamesClueTimer === val
                           ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
-                          : "bg-muted/50 hover:bg-muted",
+                          : "bg-muted text-muted-foreground hover:bg-muted/80",
                       )}
                     >
                       {timerLabel(val)}
@@ -219,7 +219,7 @@ export const RoomSettings = memo(function RoomSettings({
                         "rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
                         codenamesGuessTimer === val
                           ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm"
-                          : "bg-muted/50 hover:bg-muted",
+                          : "bg-muted text-muted-foreground hover:bg-muted/80",
                       )}
                     >
                       {timerLabel(val)}
@@ -239,7 +239,7 @@ export const RoomSettings = memo(function RoomSettings({
                   {[30, 45, 60, 90, 120, 180].map((val) => (
                     <button key={val} type="button" onClick={() => setWordQuizTurnDuration(val)}
                       className={cn("rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        wordQuizTurnDuration === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 hover:bg-muted")}>
+                        wordQuizTurnDuration === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80")}>
                       {val}s
                     </button>
                   ))}
@@ -254,7 +254,7 @@ export const RoomSettings = memo(function RoomSettings({
                   {[3, 5, 7, 10, 15, 20].map((val) => (
                     <button key={val} type="button" onClick={() => setWordQuizRounds(val)}
                       className={cn("rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        wordQuizRounds === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 hover:bg-muted")}>
+                        wordQuizRounds === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80")}>
                       {val}
                     </button>
                   ))}
@@ -269,7 +269,7 @@ export const RoomSettings = memo(function RoomSettings({
                   {[5, 10, 15, 20, 30].map((val) => (
                     <button key={val} type="button" onClick={() => setWordQuizHintInterval(val)}
                       className={cn("rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        wordQuizHintInterval === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 hover:bg-muted")}>
+                        wordQuizHintInterval === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80")}>
                       {val}s
                     </button>
                   ))}
@@ -287,7 +287,7 @@ export const RoomSettings = memo(function RoomSettings({
                   {[10, 15, 20, 30, 45, 60].map((val) => (
                     <button key={val} type="button" onClick={() => setMcqQuizTurnDuration(val)}
                       className={cn("rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        mcqQuizTurnDuration === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 hover:bg-muted")}>
+                        mcqQuizTurnDuration === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80")}>
                       {val}s
                     </button>
                   ))}
@@ -302,7 +302,7 @@ export const RoomSettings = memo(function RoomSettings({
                   {[5, 10, 15, 20, 30].map((val) => (
                     <button key={val} type="button" onClick={() => setMcqQuizRounds(val)}
                       className={cn("rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        mcqQuizRounds === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 hover:bg-muted")}>
+                        mcqQuizRounds === val ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80")}>
                       {val}
                     </button>
                   ))}

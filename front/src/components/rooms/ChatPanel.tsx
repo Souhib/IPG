@@ -6,7 +6,7 @@ import { getApiErrorMessage } from "@/api/client"
 import { getMessagesApiV1RoomsRoomIdMessagesGet, sendMessageApiV1RoomsRoomIdMessagesPost } from "@/api/generated"
 import { cn } from "@/lib/utils"
 
-interface ChatMessage {
+export interface ChatMessage {
   id: string
   room_id: string
   user_id: string
@@ -18,18 +18,21 @@ interface ChatMessage {
 interface ChatPanelProps {
   roomId: string
   currentUserId: string
+  incomingMessage: ChatMessage | null
 }
 
-export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
+export function ChatPanel({ roomId, currentUserId, incomingMessage }: ChatPanelProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(true)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [newMessage, setNewMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
-  const lastMessageIdRef = useRef<string | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const isOpenRef = useRef(isOpen)
+  const loadedRef = useRef(false)
+
+  isOpenRef.current = isOpen
 
   const scrollToBottom = useCallback(() => {
     const container = messagesContainerRef.current
@@ -38,42 +41,37 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
     }
   }, [])
 
-  const fetchMessages = useCallback(async () => {
-    try {
-      const params: Record<string, string | number> = { limit: 50 }
-      if (lastMessageIdRef.current) {
-        params.after_id = lastMessageIdRef.current
-      }
-      const newMessages = await getMessagesApiV1RoomsRoomIdMessagesGet(
-        { room_id: roomId },
-        params as Record<string, string | number>,
-      ) as ChatMessage[]
-      if (newMessages.length > 0) {
-        lastMessageIdRef.current = newMessages[newMessages.length - 1].id
-        if (lastMessageIdRef.current && messages.length > 0) {
-          setMessages((prev) => [...prev, ...newMessages])
-          if (!isOpen) {
-            setUnreadCount((prev) => prev + newMessages.length)
-          }
-        } else {
-          setMessages(newMessages)
-        }
-        if (isOpen) {
-          setTimeout(scrollToBottom, 50)
-        }
-      }
-    } catch {
-      // Silently fail on polling errors
-    }
-  }, [roomId, isOpen, messages.length, scrollToBottom])
-
+  // Load initial messages once
   useEffect(() => {
-    fetchMessages()
-    pollIntervalRef.current = setInterval(fetchMessages, 2000)
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+    if (loadedRef.current) return
+    loadedRef.current = true
+    const loadMessages = async () => {
+      try {
+        const initialMessages = await getMessagesApiV1RoomsRoomIdMessagesGet(
+          { room_id: roomId },
+          { limit: 50 },
+        ) as ChatMessage[]
+        setMessages(initialMessages)
+        setTimeout(scrollToBottom, 50)
+      } catch {
+        // Silently fail on initial load
+      }
     }
-  }, [fetchMessages])
+    loadMessages()
+  }, [roomId, scrollToBottom])
+
+  // Handle incoming Socket.IO messages
+  useEffect(() => {
+    if (!incomingMessage) return
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === incomingMessage.id)) return prev
+      return [...prev, incomingMessage]
+    })
+    if (!isOpenRef.current) {
+      setUnreadCount((prev) => prev + 1)
+    }
+    setTimeout(scrollToBottom, 50)
+  }, [incomingMessage, scrollToBottom])
 
   useEffect(() => {
     if (isOpen) {
@@ -89,7 +87,6 @@ export function ChatPanel({ roomId, currentUserId }: ChatPanelProps) {
     try {
       await sendMessageApiV1RoomsRoomIdMessagesPost({ room_id: roomId }, { message: trimmed })
       setNewMessage("")
-      await fetchMessages()
     } catch (err) {
       toast.error(getApiErrorMessage(err))
     } finally {

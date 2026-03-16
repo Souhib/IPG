@@ -1,3 +1,4 @@
+import random
 from collections.abc import Sequence
 from datetime import datetime
 from uuid import UUID
@@ -19,8 +20,9 @@ from ipg.api.models.error import (
     WrongRoomPasswordError,
 )
 from ipg.api.models.event import EventCreate
+from ipg.api.models.game import GameType
 from ipg.api.models.relationship import RoomActivityLink, RoomUserLink
-from ipg.api.models.room import RoomCreate, RoomJoin, RoomLeave, RoomType
+from ipg.api.models.room import RoomCreate, RoomJoin, RoomLeave, RoomStatus, RoomType
 from ipg.api.models.table import Activity, Game, Room, User
 from ipg.api.schemas.error import BaseError
 from ipg.api.schemas.room import (
@@ -29,6 +31,7 @@ from ipg.api.schemas.room import (
     RematchResponse,
     RoomInviteResponse,
     RoomPlayerState,
+    RoomSettings,
     RoomState,
     UpdateRoomSettingsResponse,
 )
@@ -38,21 +41,21 @@ class RoomController:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_room(self, room_create: RoomCreate) -> Room:
+    async def create_room(self, owner_id: UUID, game_type: GameType) -> Room:
         is_user_in_room = (
             await self.session.exec(
-                select(RoomUserLink)
-                .where(RoomUserLink.user_id == room_create.owner_id)
-                .where(RoomUserLink.connected == True)  # noqa: E712
+                select(RoomUserLink).where(RoomUserLink.user_id == owner_id).where(RoomUserLink.connected == True)  # noqa: E712
             )
         ).first()
         if is_user_in_room:
-            raise UserAlreadyInRoomError(user_id=room_create.owner_id, room_id=is_user_in_room.room_id)
+            raise UserAlreadyInRoomError(user_id=owner_id, room_id=is_user_in_room.room_id)
         active_rooms = await self._get_all_active_rooms()
         room_public_id = create_random_public_id()
         while any(room.public_id == room_public_id for room in active_rooms):
             room_public_id = create_random_public_id()
-        new_room = Room(**room_create.model_dump(), public_id=room_public_id)
+        password = f"{random.randint(0, 9999):04d}"
+        room_create = RoomCreate(status=RoomStatus.ONLINE, password=password, owner_id=owner_id)
+        new_room = Room(**room_create.model_dump(), public_id=room_public_id, settings={"game_type": game_type.value})
         self.session.add(new_room)
         await self.session.commit()
         await self.session.refresh(new_room)
@@ -380,7 +383,9 @@ class RoomController:
         await _handle_permanent_disconnect(self.session, link)
         return KickPlayerResponse(message="Player kicked")
 
-    async def update_room_settings(self, room_id: UUID, user_id: UUID, settings: dict) -> UpdateRoomSettingsResponse:
+    async def update_room_settings(
+        self, room_id: UUID, user_id: UUID, settings: RoomSettings
+    ) -> UpdateRoomSettingsResponse:
         """Update room settings. Only the host can update."""
         room = await self.get_room_by_id(room_id)
         if room.owner_id != user_id:
@@ -389,11 +394,15 @@ class RoomController:
                 frontend_message="Only the host can update room settings.",
                 status_code=403,
             )
-        room.settings = settings
+        # Merge non-None fields into existing settings
+        existing = room.settings or {}
+        for key, value in settings.model_dump(exclude_none=True).items():
+            existing[key] = value
+        room.settings = existing
         flag_modified(room, "settings")
         self.session.add(room)
         await self.session.commit()
-        return UpdateRoomSettingsResponse(room_id=str(room_id), settings=settings)
+        return UpdateRoomSettingsResponse(room_id=str(room_id), settings=RoomSettings(**room.settings))
 
     async def rematch(self, room_id: UUID, user_id: UUID) -> RematchResponse:
         """Clear active game and return to lobby. Preserves room settings and connected players."""

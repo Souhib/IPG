@@ -8,12 +8,22 @@ import { getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey } from '@/api/
 import { getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey } from '@/api/generated'
 import { getStoredToken } from '@/lib/auth'
 
+interface ChatMessage {
+  id: string
+  room_id: string
+  user_id: string
+  username: string
+  message: string
+  created_at: string
+}
+
 interface UseSocketOptions {
   roomId: string | null | undefined
   gameId?: string | null
   gameType?: 'undercover' | 'codenames' | 'word_quiz' | 'mcq_quiz'
   enabled?: boolean
   onKicked?: (roomId: string) => void
+  onChatMessage?: (message: ChatMessage) => void
 }
 
 function getGameQueryKeyPrefix(gameType: string, gameId: string) {
@@ -39,7 +49,7 @@ function getGameQueryKeyPrefix(gameType: string, gameId: string) {
  *
  * Mutations still go through REST. Socket.IO is notification-only.
  */
-export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked }: UseSocketOptions): { connected: boolean } {
+export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked, onChatMessage }: UseSocketOptions): { connected: boolean } {
   const queryClient = useQueryClient()
   const socketRef = useRef<Socket | null>(null)
   const gameIdRef = useRef<string | null | undefined>(null)
@@ -48,6 +58,9 @@ export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked }
 
   const onKickedRef = useRef(onKicked)
   onKickedRef.current = onKicked
+
+  const onChatMessageRef = useRef(onChatMessage)
+  onChatMessageRef.current = onChatMessage
 
   // Keep gameType ref in sync
   gameTypeRef.current = gameType
@@ -125,6 +138,10 @@ export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked }
 
     socket.on('you_were_kicked', (data: { room_id: string }) => {
       onKickedRef.current?.(data.room_id)
+    })
+
+    socket.on('chat_message', (data: ChatMessage) => {
+      onChatMessageRef.current?.(data)
     })
 
     socket.on('connect_error', (err: Error) => {

@@ -399,6 +399,34 @@ async def test_check_answer_hyphen_insensitive():
     assert WordQuizGameController._check_answer("masjid al-aqsa", word) is True
 
 
+@pytest.mark.asyncio
+async def test_check_answer_al_prefix_flexible():
+    """_check_answer matches with or without the 'Al' prefix."""
+    word = {
+        "word_en": "Al-Bukhari",
+        "word_ar": "البخاري",
+        "word_fr": "Al-Bukhari",
+        "accepted_answers": {"en": ["Al-Bukhari", "Bukhari"]},
+    }
+
+    # With prefix
+    assert WordQuizGameController._check_answer("Al-Bukhari", word) is True
+    assert WordQuizGameController._check_answer("Al Bukhari", word) is True
+    # Without prefix — should still match via _strip_article
+    assert WordQuizGameController._check_answer("Bukhari", word) is True
+    assert WordQuizGameController._check_answer("bukhari", word) is True
+
+    # Test another word where user types "Al" but the answer doesn't have it
+    word2 = {
+        "word_en": "Makkah",
+        "word_ar": "مكة",
+        "word_fr": "La Mecque",
+        "accepted_answers": {"en": ["Makkah", "Mecca"]},
+    }
+    assert WordQuizGameController._check_answer("Makkah", word2) is True
+    assert WordQuizGameController._check_answer("Mecca", word2) is True
+
+
 # === Spectator ===
 
 

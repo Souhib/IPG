@@ -8,6 +8,7 @@ from ipg.api.controllers.chat import ChatController
 from ipg.api.models.chat import ChatMessage
 from ipg.api.models.table import User
 from ipg.api.schemas.chat import ChatMessageView, SendMessageRequest
+from ipg.api.ws.notify import notify_chat_message
 from ipg.dependencies import get_chat_controller, get_current_user
 
 router = APIRouter(
@@ -37,7 +38,9 @@ async def send_message(
 ) -> ChatMessageView:
     """Send a chat message to a room."""
     msg = await chat_controller.send_message(room_id, current_user.id, current_user.username, body.message)
-    return _to_view(msg)
+    view = _to_view(msg)
+    await notify_chat_message(str(room_id), view.model_dump(mode="json"))
+    return view
 
 
 @router.get("/rooms/{room_id}/messages", response_model=Sequence[ChatMessageView])

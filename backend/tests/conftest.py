@@ -20,6 +20,7 @@ from ipg.api.controllers.codenames import CodenamesController
 from ipg.api.controllers.codenames_game import CodenamesGameController
 from ipg.api.controllers.friend import FriendController
 from ipg.api.controllers.game import GameController
+from ipg.api.controllers.mcqquiz_game import McqQuizGameController
 from ipg.api.controllers.profile import ProfileController
 from ipg.api.controllers.room import RoomController
 from ipg.api.controllers.shared import get_password_hash
@@ -31,8 +32,8 @@ from ipg.api.controllers.wordquiz import WordQuizController
 from ipg.api.controllers.wordquiz_game import WordQuizGameController
 from ipg.api.models.codenames import CodenamesWord, CodenamesWordPack, CodenamesWordPackCreate
 from ipg.api.models.game import GameCreate, GameType
+from ipg.api.models.mcqquiz import McqQuestion
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.room import RoomCreate, RoomStatus
 from ipg.api.models.table import Room, User
 from ipg.api.models.undercover import TermPair, Word, WordCreate
 from ipg.api.models.wordquiz import QuizWord
@@ -318,11 +319,9 @@ async def get_create_room(room_controller: RoomController):
 
     async def _create_room(
         owner: User,
-        password: str = "1234",
-        status: RoomStatus = RoomStatus.ONLINE,
+        game_type: GameType = GameType.UNDERCOVER,
     ) -> Room:
-        room_create = RoomCreate(status=status, password=password, owner_id=owner.id)
-        return await room_controller.create_room(room_create)
+        return await room_controller.create_room(owner_id=owner.id, game_type=game_type)
 
     return _create_room
 
@@ -381,7 +380,7 @@ async def get_sample_owner(create_user) -> User:
 @pytest_asyncio.fixture(name="sample_room")
 async def get_sample_room(sample_owner: User, create_room) -> Room:
     """Create a sample room with a sample owner for tests that need a pre-existing room."""
-    return await create_room(owner=sample_owner, password="1234")
+    return await create_room(owner=sample_owner)
 
 
 @pytest_asyncio.fixture(name="sample_game")
@@ -664,6 +663,137 @@ async def get_setup_wordquiz_game(session: AsyncSession, create_user, create_roo
             "users": users,
             "room": room,
             "quiz_words": quiz_words,
+        }
+
+    return _setup
+
+
+# ========== MCQ Quiz Fixtures ==========
+
+
+@pytest_asyncio.fixture(name="mcqquiz_game_controller")
+async def get_mcqquiz_game_controller(session: AsyncSession) -> McqQuizGameController:
+    """Create a McqQuizGameController instance for testing."""
+    return McqQuizGameController(session)
+
+
+@pytest_asyncio.fixture(name="create_mcq_question")
+async def get_create_mcq_question(session: AsyncSession):
+    """Factory fixture for creating MCQ questions."""
+
+    async def _create_mcq_question(
+        question_en: str = "What is the first pillar of Islam?",
+        question_ar: str | None = "ما هو الركن الأول من أركان الإسلام؟",
+        question_fr: str | None = "Quel est le premier pilier de l'Islam ?",
+        choices: dict | None = None,
+        correct_answer_index: int = 0,
+        category: str = "Pillars of Islam",
+        explanation: dict | None = None,
+    ) -> McqQuestion:
+        if choices is None:
+            choices = {
+                "0": {"en": "Shahada", "ar": "الشهادة", "fr": "Shahada"},
+                "1": {"en": "Salah", "ar": "الصلاة", "fr": "Salah"},
+                "2": {"en": "Zakat", "ar": "الزكاة", "fr": "Zakat"},
+                "3": {"en": "Hajj", "ar": "الحج", "fr": "Hajj"},
+            }
+        if explanation is None:
+            explanation = {
+                "en": "The Shahada is the declaration of faith.",
+                "ar": "الشهادة هي إعلان الإيمان.",
+                "fr": "La Shahada est la déclaration de foi.",
+            }
+        mcq_question = McqQuestion(
+            question_en=question_en,
+            question_ar=question_ar,
+            question_fr=question_fr,
+            choices=choices,
+            correct_answer_index=correct_answer_index,
+            category=category,
+            explanation=explanation,
+        )
+        session.add(mcq_question)
+        await session.commit()
+        await session.refresh(mcq_question)
+        return mcq_question
+
+    return _create_mcq_question
+
+
+@pytest_asyncio.fixture(name="setup_mcqquiz_game")
+async def get_setup_mcqquiz_game(session: AsyncSession, create_user, create_room, create_mcq_question):
+    """Factory fixture that creates N users + room + RoomUserLinks + McqQuestions."""
+
+    async def _setup(num_players: int = 2, num_questions: int = 3) -> dict:
+        users = []
+        for i in range(num_players):
+            user = await create_user(
+                username=f"mcqplayer{i}",
+                email=f"mcqplayer{i}@test.com",
+                password="password123",
+            )
+            users.append(user)
+
+        room = await create_room(owner=users[0])
+
+        for user in users:
+            existing = (
+                await session.exec(
+                    select(RoomUserLink).where(RoomUserLink.room_id == room.id).where(RoomUserLink.user_id == user.id)
+                )
+            ).first()
+            if not existing:
+                link = RoomUserLink(
+                    room_id=room.id,
+                    user_id=user.id,
+                    connected=True,
+                    last_seen_at=datetime.now(),
+                )
+                session.add(link)
+                await session.commit()
+
+        questions = []
+        question_templates = [
+            ("Who built the Kaaba?", "من بنى الكعبة؟", "Qui a construit la Kaaba ?", "Prophets"),
+            (
+                "How many pillars does Islam have?",
+                "كم عدد أركان الإسلام؟",
+                "Combien de piliers l'Islam a-t-il ?",
+                "Pillars of Islam",
+            ),
+            (
+                "What is the longest surah in the Quran?",
+                "ما أطول سورة في القرآن؟",
+                "Quelle est la plus longue sourate du Coran ?",
+                "Quran",
+            ),
+            (
+                "In which city was the Prophet born?",
+                "في أي مدينة ولد النبي؟",
+                "Dans quelle ville le Prophète est-il né ?",
+                "Seerah",
+            ),
+            (
+                "What is the first month of the Islamic calendar?",
+                "ما هو أول شهر في التقويم الإسلامي؟",
+                "Quel est le premier mois du calendrier islamique ?",
+                "Islamic practices",
+            ),
+        ]
+        for i in range(num_questions):
+            template = question_templates[i % len(question_templates)]
+            q = await create_mcq_question(
+                question_en=f"{template[0]} (v{i})",
+                question_ar=template[1],
+                question_fr=template[2],
+                category=template[3],
+            )
+            questions.append(q)
+
+        return {
+            "users": users,
+            "room": room,
+            "questions": questions,
         }
 
     return _setup

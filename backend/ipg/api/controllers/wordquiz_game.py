@@ -66,7 +66,7 @@ class WordQuizGameController:
 
     @staticmethod
     def _normalize_answer(answer: str) -> str:
-        """Normalize an answer for comparison: strip diacritics, lowercase, collapse whitespace, remove hyphens."""
+        """Normalize an answer for comparison: strip diacritics, lowercase, collapse whitespace, remove hyphens/prefixes."""
         text = answer.strip()
         text = _ARABIC_DIACRITICS.sub("", text)
         # NFD decomposition splits accented Latin chars: ï → i + combining diaeresis, é → e + combining acute
@@ -82,6 +82,23 @@ class WordQuizGameController:
         return text
 
     @staticmethod
+    def _strip_article(text: str) -> str:
+        """Strip common Arabic article prefix 'al ' for fuzzy matching."""
+        if text.startswith("al "):
+            return text[3:]
+        return text
+
+    @staticmethod
+    def _answers_match(a: str, b: str) -> bool:
+        """Compare two normalized answers, also trying without the 'al ' prefix."""
+        if a == b:
+            return True
+        # Try stripping "al " from both sides for flexible matching
+        a_stripped = WordQuizGameController._strip_article(a)
+        b_stripped = WordQuizGameController._strip_article(b)
+        return a_stripped == b_stripped
+
+    @staticmethod
     def _check_answer(answer: str, word: dict) -> bool:
         """Check if the normalized answer matches any accepted form of the word."""
         normalized = WordQuizGameController._normalize_answer(answer)
@@ -91,7 +108,9 @@ class WordQuizGameController:
         # Check direct word fields
         for field in ("word_en", "word_ar", "word_fr"):
             value = word.get(field)
-            if value and WordQuizGameController._normalize_answer(value) == normalized:
+            if value and WordQuizGameController._answers_match(
+                WordQuizGameController._normalize_answer(value), normalized
+            ):
                 return True
 
         # Check accepted_answers lists
@@ -99,7 +118,9 @@ class WordQuizGameController:
         for lang_answers in accepted.values():
             if isinstance(lang_answers, list):
                 for variant in lang_answers:
-                    if WordQuizGameController._normalize_answer(variant) == normalized:
+                    if WordQuizGameController._answers_match(
+                        WordQuizGameController._normalize_answer(variant), normalized
+                    ):
                         return True
 
         return False
@@ -116,12 +137,12 @@ class WordQuizGameController:
                     status_code=400,
                 )
 
-            # Get connected non-spectator players
+            # Get non-spectator players in the room (don't filter by connected —
+            # heartbeat may be stale after a game ends and the player stays on the page)
             links = (
                 await self.session.exec(
                     select(RoomUserLink).where(
                         RoomUserLink.room_id == db_room.id,
-                        RoomUserLink.connected == True,  # noqa: E712
                         RoomUserLink.is_spectator == False,  # noqa: E712
                     )
                 )
@@ -227,12 +248,18 @@ class WordQuizGameController:
         return min(max_hints, int(elapsed / hint_interval) + 1)
 
     @staticmethod
-    def _resolve_hints(state: dict, lang: str, hints_revealed: int) -> list[str]:
-        """Resolve hint dicts to strings in the requested language."""
+    def _resolve_hints(state: dict, lang: str) -> list[str]:
+        """Resolve ALL hint dicts to strings in the requested language.
+
+        Returns all hints so the client can control display timing locally
+        using round_started_at and hint_interval_seconds.
+        """
         hints_dict = state.get("hints", {})
         resolved = []
-        for i in range(1, hints_revealed + 1):
+        for i in range(1, DEFAULT_WORD_QUIZ_MAX_HINTS + 1):
             hint_data = hints_dict.get(str(i), {})
+            if not hint_data:
+                break
             if isinstance(hint_data, dict):
                 text = hint_data.get(lang) or hint_data.get("en") or next(iter(hint_data.values()), "")
             else:
@@ -274,7 +301,7 @@ class WordQuizGameController:
 
         is_host = await self._check_is_host(game.room_id, user_id)
         hints_revealed = self._calculate_hints_revealed(state)
-        resolved_hints = self._resolve_hints(state, lang, hints_revealed)
+        resolved_hints = self._resolve_hints(state, lang)
         player_states = self._build_player_states(state)
 
         # Current player state
