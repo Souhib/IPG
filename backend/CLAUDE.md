@@ -33,21 +33,22 @@ PYTHONPATH=. uv run python scripts/generate_fake_data.py --delete
 ```
 api/
 ├── controllers/       # Business logic (async methods)
+│   ├── base_game.py   # BaseGameController — shared methods for all game controllers
 │   ├── auth.py        # JWT login, register, refresh
 │   ├── user.py        # User CRUD
-│   ├── room.py        # Room management + heartbeat
+│   ├── room.py        # Room management + heartbeat + share links
 │   ├── game.py        # Game lifecycle
 │   ├── undercover.py  # Undercover word/term pairs
 │   ├── codenames.py   # Codenames words/packs
 │   ├── wordquiz.py    # QuizWord model (word_en/ar/fr, accepted_answers, hints JSON)
 │   ├── mcqquiz.py     # McqQuestion model (trilingual questions, JSON choices/explanations)
-│   ├── undercover_game.py # Undercover game logic (REST + PostgreSQL JSON)
-│   ├── codenames_game.py  # Codenames game logic (REST + PostgreSQL JSON)
+│   ├── undercover_game.py # Undercover game logic (extends BaseGameController)
+│   ├── codenames_game.py  # Codenames game logic (extends BaseGameController)
 │   ├── codenames_helpers.py # Board builder, player assigner
 │   ├── wordquiz.py        # QuizWord CRUD (get_random_words, create, delete)
-│   ├── wordquiz_game.py   # Word Quiz game logic (create, submit_answer, timer, rounds)
+│   ├── wordquiz_game.py   # Word Quiz game logic (extends BaseGameController)
 │   ├── mcqquiz.py         # McqQuestion CRUD (get_random_questions)
-│   ├── mcqquiz_game.py    # MCQ Quiz game logic (create, submit_answer, timer, rounds)
+│   ├── mcqquiz_game.py    # MCQ Quiz game logic (extends BaseGameController)
 │   ├── game_lock.py   # PostgreSQL advisory locks per game_id (asyncio.Lock fallback for SQLite)
 │   ├── disconnect.py  # Disconnect/kick handlers (used by kick_player)
 │   ├── stats.py       # User statistics
@@ -70,7 +71,7 @@ api/
 ├── routes/            # FastAPI routers (thin, delegate to controllers, trigger notify)
 │   ├── auth.py        # /api/v1/auth/*
 │   ├── user.py        # /api/v1/users/*
-│   ├── room.py        # /api/v1/rooms/* (notify_room_changed after mutations)
+│   ├── room.py        # /api/v1/rooms/* (notify_room_changed after mutations, share-link)
 │   ├── game.py        # /api/v1/games/*
 │   ├── undercover.py  # /api/v1/undercover/* (notify_game_changed after mutations)
 │   ├── codenames.py   # /api/v1/codenames/* (notify_game_changed after mutations)

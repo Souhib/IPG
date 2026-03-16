@@ -132,6 +132,8 @@ docker compose -f docker-compose.dokploy.yml up -d
 | Frontend | React 19, TanStack Router/Query, Tailwind v4, shadcn/ui |
 | Real-time | Socket.IO (python-socketio + socket.io-client) — notification layer over REST |
 | Infra | PgBouncer (connection pooling), Redis (Socket.IO pub/sub only) |
+| Monitoring | Uptime Kuma (`kuma.majlisna.app`), Dozzle (`dozzle.majlisna.app`) |
+| Security | Trivy (CI vulnerability scanning) |
 | API Codegen | Kubb (OpenAPI -> React Query hooks) |
 | i18n | i18next (English + Arabic + French) |
 | Testing | pytest (backend), Vitest (frontend) |
@@ -301,6 +303,9 @@ class MyController:
 - **Caching**: `ipg.api.utils.cache.TTLCache` caches undercover words/term pairs, codenames word packs, and user stats. Tests use autouse `clear_cache` fixture.
 - **PWA**: Manifest + service worker for installable web app with offline navigation shell.
 - **Pre-commit**: `prek` hooks run ruff lint/format + mypy on commit.
+- **BaseGameController**: All 4 game controllers inherit from `ipg.api.controllers.base_game.BaseGameController`, which provides shared methods: `_get_game`, `_check_is_host`, `_update_heartbeat_throttled`, `_check_spectator`, `_resolve_multilingual`. Game-specific logic stays in each subclass.
+- **Room Share Links**: `GET /api/v1/rooms/{id}/share-link` returns `public_id` + `password`. Frontend constructs URL `majlisna.app/rooms/join?code=X&pin=Y`. The `/rooms/join` route auto-joins via `useEffect` with the join mutation.
+- **Shared Quiz Components**: `PlayerScoreboard` and `QuizGameOver` in `components/games/shared/` are used by both Word Quiz and MCQ Quiz. Game-specific i18n keys passed via props.
 
 ## Lessons Learned
 
@@ -386,6 +391,11 @@ Cloudflare handles DNS (proxied/orange cloud) and SSL termination (Flexible mode
 **Production server**: Oracle VPS at `<SERVER_IP>`, accessible via SSH as `ubuntu`. Deploy directory: `/etc/dokploy/compose/<REDACTED_DOKPLOY_ID>/code` (synced via rsync, not a git repo). Repo clone at `<REDACTED_SERVER_PATH>`.
 
 **Redis is ephemeral and non-critical.** Redis is only used for Socket.IO cross-worker pub/sub. If Redis is down, the app works but Socket.IO won't broadcast across workers. The CI pipeline treats Redis health as a non-blocking warning. If Redis crash-loops due to corrupt `dump.rdb`, delete the RDB file from the Docker volume and recreate the container.
+
+**Monitoring tools** are deployed alongside the app:
+- **Dozzle** (`dozzle.majlisna.app`, port 31400): Real-time Docker log viewer. Zero storage, streams from Docker API. Use for quick debugging.
+- **Uptime Kuma** (`kuma.majlisna.app`, port 31500): Uptime monitoring with alerting. Monitors endpoints, sends notifications on failures.
+- **Trivy**: CI-only vulnerability scanner. Runs filesystem scan on PRs and container image scan post-build on deploy. Non-blocking (exit-code 0).
 
 ## Games
 

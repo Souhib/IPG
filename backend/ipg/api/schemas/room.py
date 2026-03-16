@@ -89,3 +89,8 @@ class RoomInviteResponse(BaseModel):
     room_id: str
     invited_user_id: str
     message: str
+
+
+class ShareLinkResponse(BaseModel):
+    public_id: str
+    password: str

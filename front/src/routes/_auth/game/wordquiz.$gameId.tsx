@@ -20,9 +20,9 @@ import { GameErrorFallback } from "@/components/games/shared/GameErrorFallback"
 import { PhaseTimer } from "@/components/games/shared/PhaseTimer"
 import { HintDisplay } from "@/components/games/wordquiz/HintDisplay"
 import { AnswerInput } from "@/components/games/wordquiz/AnswerInput"
-import { PlayerScoreboard } from "@/components/games/wordquiz/PlayerScoreboard"
+import { PlayerScoreboard } from "@/components/games/shared/PlayerScoreboard"
+import { QuizGameOver } from "@/components/games/shared/QuizGameOver"
 import { RoundResults } from "@/components/games/wordquiz/RoundResults"
-import { WordQuizGameOver } from "@/components/games/wordquiz/WordQuizGameOver"
 import { useSocket } from "@/hooks/use-socket"
 import { trackEvent } from "@/lib/analytics"
 import { useAuth } from "@/providers/AuthProvider"
@@ -361,12 +361,14 @@ function WordQuizGamePage() {
 
           {/* Game Over */}
           {state.round_phase === "game_over" && !showGameOverTransition && (
-            <WordQuizGameOver
+            <QuizGameOver
               winner={state.winner}
               leaderboard={state.leaderboard}
-              roomId={roomIdRef.current}
               onBackToRoom={handleBackToRoom}
               onLeaveRoom={handleLeaveRoom}
+              winnerI18nKey="game.wordQuiz.winner"
+              finalScoresI18nKey="game.wordQuiz.finalScores"
+              backToRoomI18nKey="game.wordQuiz.backToRoom"
             />
           )}
 

@@ -15,16 +15,12 @@ from ipg.api.constants import (
     DEFAULT_WORD_QUIZ_TURN_DURATION,
     TIMER_EXPIRATION_TOLERANCE_SECONDS,
 )
-from ipg.api.controllers.achievement import AchievementController
-from ipg.api.controllers.game import GameController
+from ipg.api.controllers.base_game import BaseGameController
 from ipg.api.controllers.game_lock import get_game_lock
-from ipg.api.controllers.room import RoomController
-from ipg.api.controllers.stats import StatsController
 from ipg.api.controllers.wordquiz import WordQuizController
 from ipg.api.models.error import (
     AlreadyAnsweredError,
     EmptyAnswerError,
-    GameNotFoundError,
     NoQuizWordsAvailableError,
     NotHostError,
     PlayerRemovedFromGameError,
@@ -34,7 +30,7 @@ from ipg.api.models.error import (
 )
 from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.table import Game, Room, User
+from ipg.api.models.table import Room, User
 from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerExpiredResponse
 from ipg.api.schemas.error import BaseError
 from ipg.api.schemas.wordquiz import (
@@ -49,7 +45,7 @@ from ipg.api.schemas.wordquiz import (
 _ARABIC_DIACRITICS = re.compile("[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06dc\u06df-\u06e8\u06ea-\u06ed]")
 
 
-class WordQuizGameController:
+class WordQuizGameController(BaseGameController):
     """REST controller for Word Quiz game logic.
 
     All game state stored in Game.live_state JSON column in PostgreSQL.
@@ -57,12 +53,8 @@ class WordQuizGameController:
     """
 
     def __init__(self, session: AsyncSession):
-        self.session = session
-        self._room_controller = RoomController(session)
-        self._game_controller = GameController(session)
+        super().__init__(session)
         self._wordquiz_controller = WordQuizController(session)
-        self._stats_controller = StatsController(session)
-        self._achievement_controller = AchievementController(session)
 
     @staticmethod
     def _normalize_answer(answer: str) -> str:
@@ -585,28 +577,12 @@ class WordQuizGameController:
             return word["word_fr"]
         return word.get("word_en", "")
 
-    async def _check_spectator(self, game: Game, user_id: UUID, player: dict | None) -> bool:
-        """Check if user is a spectator. Raises if not player and not spectator."""
-        if player:
-            return False
-        link = (
-            await self.session.exec(
-                select(RoomUserLink)
-                .where(RoomUserLink.room_id == game.room_id)
-                .where(RoomUserLink.user_id == user_id)
-                .where(RoomUserLink.is_spectator == True)  # noqa: E712
-            )
-        ).first()
-        if not link:
-            raise PlayerRemovedFromGameError(user_id=str(user_id), game_id=str(game.id))
-        return True
-
     def _build_round_results(self, state: dict, lang: str) -> tuple[list[WordQuizRoundResult], str | None, str | None]:
         """Build round results, correct answer, and explanation for results/game_over phases."""
         if state["round_phase"] not in ("results", "game_over"):
             return [], None, None
         correct_answer = self._get_correct_answer(state, lang)
-        explanation = self._resolve_explanation(state, lang)
+        explanation = self._resolve_multilingual(state.get("explanation"), lang)
         round_results = [
             WordQuizRoundResult(
                 user_id=rr["user_id"],
@@ -618,51 +594,6 @@ class WordQuizGameController:
             for rr in state.get("round_results", [])
         ]
         return round_results, correct_answer, explanation
-
-    @staticmethod
-    def _resolve_explanation(state: dict, lang: str) -> str | None:
-        """Resolve the explanation dict to a string in the requested language."""
-        explanation = state.get("explanation")
-        if not explanation or not isinstance(explanation, dict):
-            return None
-        return explanation.get(lang) or explanation.get("en") or next(iter(explanation.values()), None)
-
-    async def _get_game(self, game_id: UUID) -> Game:
-        """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
-        game = (await self.session.exec(select(Game).where(Game.id == game_id))).first()
-        if not game or not game.live_state:
-            raise GameNotFoundError(game_id=game_id)
-        return game
-
-    async def _check_is_host(self, room_id: UUID, user_id: UUID) -> bool:
-        """Check if the user is the host of the room."""
-        room = (await self.session.exec(select(Room).where(Room.id == room_id))).first()
-        if room:
-            return room.owner_id == user_id
-        return False
-
-    async def _update_heartbeat_throttled(self, room_id: UUID, user_id: UUID) -> None:
-        """Update heartbeat only if last_seen_at is stale (>10s)."""
-        link = (
-            await self.session.exec(
-                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.user_id == user_id)
-            )
-        ).first()
-        if not link:
-            return
-        needs_update = (
-            link.disconnected_at is not None
-            or not link.connected
-            or not link.last_seen_at
-            or (datetime.now() - link.last_seen_at).total_seconds() > 10
-        )
-        if needs_update:
-            link.last_seen_at = datetime.now()
-            link.connected = True
-            if link.disconnected_at is not None:
-                link.disconnected_at = None
-            self.session.add(link)
-            await self.session.commit()
 
     async def _process_game_end_stats(self, state: dict) -> None:
         """Update stats for all players after game ends."""

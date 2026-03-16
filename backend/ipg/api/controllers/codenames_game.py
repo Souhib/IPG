@@ -14,7 +14,7 @@ from ipg.api.constants import (
     DEFAULT_CODENAMES_GUESS_TIMER_SECONDS,
     TIMER_EXPIRATION_TOLERANCE_SECONDS,
 )
-from ipg.api.controllers.achievement import AchievementController
+from ipg.api.controllers.base_game import BaseGameController
 from ipg.api.controllers.codenames import CodenamesController
 from ipg.api.controllers.codenames_helpers import (
     CodenamesCardType,
@@ -26,14 +26,10 @@ from ipg.api.controllers.codenames_helpers import (
     get_board_for_player,
     get_player_from_game,
 )
-from ipg.api.controllers.game import GameController
 from ipg.api.controllers.game_lock import get_game_lock
-from ipg.api.controllers.room import RoomController
-from ipg.api.controllers.stats import StatsController
 from ipg.api.models.error import (
     CardAlreadyRevealedError,
     ClueWordIsOnBoardError,
-    GameNotFoundError,
     GameNotInProgressError,
     InvalidCardIndexError,
     NoClueGivenError,
@@ -56,7 +52,7 @@ from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerE
 from ipg.api.schemas.error import BaseError
 
 
-class CodenamesGameController:
+class CodenamesGameController(BaseGameController):
     """REST controller for Codenames game logic.
 
     All game state stored in Game.live_state JSON column in PostgreSQL.
@@ -64,12 +60,8 @@ class CodenamesGameController:
     """
 
     def __init__(self, session: AsyncSession):
-        self.session = session
-        self._room_controller = RoomController(session)
-        self._game_controller = GameController(session)
+        super().__init__(session)
         self._codenames_controller = CodenamesController(session)
-        self._stats_controller = StatsController(session)
-        self._achievement_controller = AchievementController(session)
 
     async def create_and_start(
         self,
@@ -415,7 +407,7 @@ class CodenamesGameController:
                     "word": card["word"],
                     "revealed": True,
                     "card_type": card["card_type"],
-                    "hint": self._resolve_hint(word_hints.get(card["word"]), lang),
+                    "hint": self._resolve_multilingual(word_hints.get(card["word"]), lang),
                 }
                 for i, card in enumerate(state["board"])
             ]
@@ -427,7 +419,7 @@ class CodenamesGameController:
                     "word": card["word"],
                     "revealed": card.get("revealed", False),
                     "card_type": card["card_type"] if card.get("revealed", False) else None,
-                    "hint": self._resolve_hint(word_hints.get(card["word"]), lang)
+                    "hint": self._resolve_multilingual(word_hints.get(card["word"]), lang)
                     if card.get("revealed", False)
                     else None,
                 }
@@ -439,7 +431,7 @@ class CodenamesGameController:
             for card_view in board_view:
                 word = card_view["word"]
                 if card_view.get("revealed") or is_spymaster:
-                    card_view["hint"] = self._resolve_hint(word_hints.get(word), lang)
+                    card_view["hint"] = self._resolve_multilingual(word_hints.get(word), lang)
                 else:
                     card_view["hint"] = None
 
@@ -526,36 +518,6 @@ class CodenamesGameController:
 
         return TimerExpiredResponse(game_id=str(game_id), action="auto_end_turn")
 
-    async def _update_heartbeat_throttled(self, room_id: UUID, user_id: UUID) -> None:
-        """Update heartbeat only if last_seen_at is stale (>10s) to reduce write contention."""
-        link = (
-            await self.session.exec(
-                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.user_id == user_id)
-            )
-        ).first()
-        if not link:
-            return
-        needs_update = (
-            link.disconnected_at is not None
-            or not link.connected
-            or not link.last_seen_at
-            or (datetime.now() - link.last_seen_at).total_seconds() > 10
-        )
-        if needs_update:
-            link.last_seen_at = datetime.now()
-            link.connected = True
-            if link.disconnected_at is not None:
-                link.disconnected_at = None
-            self.session.add(link)
-            await self.session.commit()
-
-    async def _get_game(self, game_id: UUID) -> Game:
-        """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
-        game = (await self.session.exec(select(Game).where(Game.id == game_id))).first()
-        if not game or not game.live_state:
-            raise GameNotFoundError(game_id=game_id)
-        return game
-
     def _validate_guess(self, state: dict, user_id: str, card_index: int) -> None:
         """Validate that the guess is legal."""
         if state["status"] != CodenamesGameStatus.IN_PROGRESS.value:
@@ -626,13 +588,6 @@ class CodenamesGameController:
             return "opponent_card"
 
         return "neutral"
-
-    @staticmethod
-    def _resolve_hint(hint_dict: dict | None, lang: str) -> str | None:
-        """Resolve a multilingual hint dict to a single string for the given language."""
-        if not hint_dict:
-            return None
-        return hint_dict.get(lang) or hint_dict.get("en") or next(iter(hint_dict.values()), None)
 
     async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> HintRecordResponse:
         """Record that a player viewed a hint for a word (deduplicated)."""
@@ -716,10 +671,3 @@ class CodenamesGameController:
             "card_votes": {},
         }
         state["timer_started_at"] = datetime.now(UTC).isoformat()
-
-    async def _check_is_host(self, room_id: UUID, user_id: UUID) -> bool:
-        """Check if the user is the host of the room."""
-        room = (await self.session.exec(select(Room).where(Room.id == room_id))).first()
-        if room:
-            return room.owner_id == user_id
-        return False

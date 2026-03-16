@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { Check, Copy, Crown, Eye, KeyRound, LogOut, UserPlus, Users, X } from "lucide-react"
+import { Check, Copy, Crown, Eye, KeyRound, Link2, LogOut, UserPlus, Users, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -386,6 +386,26 @@ function RoomLobbyPage() {
               ) : (
                 <Copy className="h-4 w-4 text-muted-foreground" />
               )}
+            </button>
+          </div>
+          <div className="pt-4 border-t border-border/30">
+            <button
+              type="button"
+              onClick={() => {
+                const shareUrl = `${window.location.origin}/rooms/join?code=${roomData.public_id}&pin=${roomData.password}`
+                copyToClipboard(shareUrl, "share", t("room.shareLink"))
+              }}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                copied === "share" ? "bg-primary/10 text-primary shadow-md shadow-primary/10" : "bg-muted/50 hover:bg-muted/80",
+              )}
+            >
+              {copied === "share" ? (
+                <Check className="h-4 w-4 text-primary" />
+              ) : (
+                <Link2 className="h-4 w-4" />
+              )}
+              {copied === "share" ? t("room.linkCopied") : t("room.shareLink")}
             </button>
           </div>
         </div>

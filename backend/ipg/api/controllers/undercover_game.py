@@ -12,24 +12,19 @@ from ipg.api.constants import (
     DEFAULT_VOTING_TIMER_SECONDS,
     TIMER_EXPIRATION_TOLERANCE_SECONDS,
 )
-from ipg.api.controllers.achievement import AchievementController
-from ipg.api.controllers.game import GameController
+from ipg.api.controllers.base_game import BaseGameController
 from ipg.api.controllers.game_lock import get_game_lock
-from ipg.api.controllers.room import RoomController
-from ipg.api.controllers.stats import StatsController
 from ipg.api.controllers.undercover import UndercoverController
 from ipg.api.models.error import (
     CantVoteBecauseYouDeadError,
     CantVoteForDeadPersonError,
     CantVoteForYourselfError,
-    GameNotFoundError,
-    PlayerRemovedFromGameError,
     RoomNotFoundError,
 )
 from ipg.api.models.event import EventCreate
 from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.table import Game, Room, User
+from ipg.api.models.table import Room, User
 from ipg.api.models.undercover import UndercoverRole
 from ipg.api.schemas.common import GameStartResponse, HintRecordResponse, TimerExpiredResponse
 from ipg.api.schemas.error import BaseError
@@ -44,7 +39,7 @@ from ipg.api.schemas.undercover import (
 )
 
 
-class UndercoverGameController:
+class UndercoverGameController(BaseGameController):
     """REST controller for Undercover game logic.
 
     All game state stored in Game.live_state JSON column in PostgreSQL.
@@ -52,12 +47,8 @@ class UndercoverGameController:
     """
 
     def __init__(self, session: AsyncSession):
-        self.session = session
-        self._room_controller = RoomController(session)
-        self._game_controller = GameController(session)
+        super().__init__(session)
         self._undercover_controller = UndercoverController(session)
-        self._stats_controller = StatsController(session)
-        self._achievement_controller = AchievementController(session)
 
     @staticmethod
     def _compute_roles(num_players: int, mr_white_enabled: bool) -> list[str]:
@@ -564,21 +555,7 @@ class UndercoverGameController:
         state = game.live_state
 
         player = next((p for p in state["players"] if p["user_id"] == str(user_id)), None)
-
-        # Check if user is a spectator
-        is_spectator = False
-        if not player:
-            link = (
-                await self.session.exec(
-                    select(RoomUserLink)
-                    .where(RoomUserLink.room_id == game.room_id)
-                    .where(RoomUserLink.user_id == user_id)
-                    .where(RoomUserLink.is_spectator == True)  # noqa: E712
-                )
-            ).first()
-            if not link:
-                raise PlayerRemovedFromGameError(user_id=str(user_id), game_id=str(game_id))
-            is_spectator = True
+        is_spectator = await self._check_spectator(game, user_id, player)
 
         # Update heartbeat (throttled: skip if last_seen_at is recent to reduce write contention)
         if update_heartbeat:
@@ -597,9 +574,9 @@ class UndercoverGameController:
             if winner:
                 word_explanations = WordExplanations(
                     civilian_word=state["civilian_word"],
-                    civilian_word_hint=self._resolve_hint(state.get("civilian_word_hint"), lang),
+                    civilian_word_hint=self._resolve_multilingual(state.get("civilian_word_hint"), lang),
                     undercover_word=state["undercover_word"],
-                    undercover_word_hint=self._resolve_hint(state.get("undercover_word_hint"), lang),
+                    undercover_word_hint=self._resolve_multilingual(state.get("undercover_word_hint"), lang),
                 )
             turn_state = self._build_turn_state(state, "")
         else:
@@ -611,9 +588,9 @@ class UndercoverGameController:
             if winner:
                 word_explanations = WordExplanations(
                     civilian_word=state["civilian_word"],
-                    civilian_word_hint=self._resolve_hint(state.get("civilian_word_hint"), lang),
+                    civilian_word_hint=self._resolve_multilingual(state.get("civilian_word_hint"), lang),
                     undercover_word=state["undercover_word"],
-                    undercover_word_hint=self._resolve_hint(state.get("undercover_word_hint"), lang),
+                    undercover_word_hint=self._resolve_multilingual(state.get("undercover_word_hint"), lang),
                 )
 
         return UndercoverGameState(
@@ -647,36 +624,6 @@ class UndercoverGameController:
             **turn_state,
         )
 
-    async def _update_heartbeat_throttled(self, room_id: UUID, user_id: UUID) -> None:
-        """Update heartbeat only if last_seen_at is stale (>10s) to reduce write contention."""
-        link = (
-            await self.session.exec(
-                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.user_id == user_id)
-            )
-        ).first()
-        if not link:
-            return
-        needs_update = (
-            link.disconnected_at is not None
-            or not link.connected
-            or not link.last_seen_at
-            or (datetime.now() - link.last_seen_at).total_seconds() > 10
-        )
-        if needs_update:
-            link.last_seen_at = datetime.now()
-            link.connected = True
-            if link.disconnected_at is not None:
-                link.disconnected_at = None
-            self.session.add(link)
-            await self.session.commit()
-
-    async def _get_game(self, game_id: UUID) -> Game:
-        """Fetch a Game from PostgreSQL or raise GameNotFoundError."""
-        game = (await self.session.exec(select(Game).where(Game.id == game_id))).first()
-        if not game or not game.live_state:
-            raise GameNotFoundError(game_id=game_id)
-        return game
-
     def _get_player_word(self, player: dict, state: dict) -> str:
         """Get the word to display for a player based on their role."""
         if player["role"] == UndercoverRole.MR_WHITE.value:
@@ -690,15 +637,8 @@ class UndercoverGameController:
         if player["role"] == UndercoverRole.MR_WHITE.value:
             return None
         if player["role"] == UndercoverRole.UNDERCOVER.value:
-            return self._resolve_hint(state.get("undercover_word_hint"), lang)
-        return self._resolve_hint(state.get("civilian_word_hint"), lang)
-
-    @staticmethod
-    def _resolve_hint(hint_dict: dict | None, lang: str) -> str | None:
-        """Resolve a multilingual hint dict to a single string for the given language."""
-        if not hint_dict:
-            return None
-        return hint_dict.get(lang) or hint_dict.get("en") or next(iter(hint_dict.values()), None)
+            return self._resolve_multilingual(state.get("undercover_word_hint"), lang)
+        return self._resolve_multilingual(state.get("civilian_word_hint"), lang)
 
     async def record_hint_view(self, game_id: UUID, user_id: UUID, word: str) -> HintRecordResponse:
         """Record that a player viewed a hint for a word (deduplicated)."""
@@ -837,10 +777,3 @@ class UndercoverGameController:
             )
 
         return history
-
-    async def _check_is_host(self, room_id: UUID, user_id: UUID) -> bool:
-        """Check if the user is the host of the room."""
-        room = (await self.session.exec(select(Room).where(Room.id == room_id))).first()
-        if room:
-            return room.owner_id == user_id
-        return False

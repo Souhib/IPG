@@ -19,6 +19,7 @@ from ipg.api.schemas.room import (
     RoomSettings,
     RoomSettingsRequest,
     RoomState,
+    ShareLinkResponse,
     UpdateRoomSettingsResponse,
 )
 from ipg.api.ws.notify import notify_room_changed, notify_user_kicked
@@ -76,6 +77,17 @@ async def get_room_state(
 ) -> RoomState:
     """Get room state with player connection status. Updates heartbeat."""
     return await room_controller.get_room_state(room_id, current_user.id)
+
+
+@router.get("/{room_id}/share-link")
+async def get_share_link(
+    room_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    room_controller: RoomController = Depends(get_room_controller),
+) -> ShareLinkResponse:
+    """Get room share link data (public_id + password for URL construction)."""
+    data = await room_controller.get_share_link(room_id, current_user.id)
+    return ShareLinkResponse(**data)
 
 
 @router.patch("/join", response_model=RoomView)

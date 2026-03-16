@@ -506,6 +506,26 @@ class RoomController:
             message="Invite sent",
         )
 
+    async def get_share_link(self, room_id: UUID, user_id: UUID) -> dict:
+        """Generate a share link for the room. Only room members can get the link."""
+        room = await self.get_room_by_id(room_id)
+        # Verify user is in the room
+        link = (
+            await self.session.exec(
+                select(RoomUserLink).where(
+                    RoomUserLink.room_id == room_id,
+                    RoomUserLink.user_id == user_id,
+                    RoomUserLink.connected == True,  # noqa: E712
+                )
+            )
+        ).first()
+        if not link:
+            raise UserNotInRoomError(user_id=user_id, room_id=room_id)
+        return {
+            "public_id": room.public_id,
+            "password": room.password,
+        }
+
     async def create_room_activity(self, room_id: UUID, activity_create: EventCreate) -> Activity:
         """Create an activity."""
         try:

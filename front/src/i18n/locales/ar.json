@@ -146,7 +146,10 @@
     "wordQuizRounds": "عدد الجولات",
     "wordQuizHintInterval": "فترة التلميحات (ثواني)",
     "mcqQuizTurnDuration": "الوقت لكل سؤال (ثواني)",
-    "mcqQuizRounds": "عدد الأسئلة"
+    "mcqQuizRounds": "عدد الأسئلة",
+    "shareLink": "مشاركة الرابط",
+    "linkCopied": "تم نسخ رابط الغرفة!",
+    "joiningRoom": "جاري الانضمام للغرفة..."
   },
   "toast": {
     "playerJoined": "{{username}} انضم للغرفة",
@@ -184,6 +187,7 @@
     "gameOver": "انتهت اللعبة",
     "gameOverTransition": "!انتهت اللعبة",
     "winner": "الفائز",
+    "finalScores": "النتائج النهائية",
     "playAgain": "العب مرة أخرى",
     "backToRoom": "العودة للغرفة",
     "wordExplanations": "شرح الكلمات",

@@ -20,9 +20,9 @@ import { GameErrorFallback } from "@/components/games/shared/GameErrorFallback"
 import { PhaseTimer } from "@/components/games/shared/PhaseTimer"
 import { QuestionDisplay } from "@/components/games/mcqquiz/QuestionDisplay"
 import { ChoiceButtons } from "@/components/games/mcqquiz/ChoiceButtons"
-import { PlayerScoreboard } from "@/components/games/mcqquiz/PlayerScoreboard"
+import { PlayerScoreboard } from "@/components/games/shared/PlayerScoreboard"
 import { McqRoundResults } from "@/components/games/mcqquiz/McqRoundResults"
-import { McqQuizGameOver } from "@/components/games/mcqquiz/McqQuizGameOver"
+import { QuizGameOver } from "@/components/games/shared/QuizGameOver"
 import { useSocket } from "@/hooks/use-socket"
 import { trackEvent } from "@/lib/analytics"
 import { useAuth } from "@/providers/AuthProvider"
@@ -367,11 +367,14 @@ function McqQuizGamePage() {
 
           {/* Game Over */}
           {state.round_phase === "game_over" && !showGameOverTransition && (
-            <McqQuizGameOver
+            <QuizGameOver
               winner={state.winner}
               leaderboard={state.leaderboard}
               onBackToRoom={handleBackToRoom}
               onLeaveRoom={handleLeaveRoom}
+              winnerI18nKey="game.mcqQuiz.winner"
+              finalScoresI18nKey="game.mcqQuiz.finalScores"
+              backToRoomI18nKey="game.mcqQuiz.backToRoom"
             />
           )}
 

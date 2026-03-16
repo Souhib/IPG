@@ -126,14 +126,14 @@ function HomePage() {
           <p className="text-sm text-muted-foreground leading-relaxed flex-1">
             {t("games.undercover.description")}
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
               {t("games.undercover.roles.civilian")}
             </span>
-            <span className="rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
+            <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
               {t("games.undercover.roles.undercover")}
             </span>
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
               {t("games.undercover.roles.mrWhite")}
             </span>
           </div>

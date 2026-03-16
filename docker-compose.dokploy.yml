@@ -4,6 +4,8 @@
 #   - Backend:   http://<SERVER_IP>:33648
 #   - Umami:     http://<SERVER_IP>:31200  (analytics.majlisna.app)
 #   - GlitchTip: http://<SERVER_IP>:31300  (glitchtip.majlisna.app)
+#   - Dozzle:    http://<SERVER_IP>:31400  (dozzle.majlisna.app)
+#   - Kuma:      http://<SERVER_IP>:31500  (kuma.majlisna.app)
 
 name: majlisna
 
@@ -261,10 +263,47 @@ services:
       - internal
     restart: always
 
+  # ─── Dozzle (Docker Log Viewer) ─────────────────────────────
+
+  dozzle:
+    container_name: majlisna-dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "31400:8080"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLED:-false}"
+      - "traefik.http.routers.majlisna-dozzle.rule=Host(`dozzle.${DOMAIN:-ipg.local}`)"
+      - "traefik.http.routers.majlisna-dozzle.entrypoints=web,websecure"
+      - "traefik.http.services.majlisna-dozzle.loadbalancer.server.port=8080"
+    networks:
+      - dokploy-network
+    restart: always
+
+  # ─── Uptime Kuma (Monitoring) ──────────────────────────────
+
+  uptime-kuma:
+    container_name: majlisna-uptime-kuma
+    image: louislam/uptime-kuma:1
+    volumes:
+      - uptime_kuma_data:/app/data
+    ports:
+      - "31500:3001"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLED:-false}"
+      - "traefik.http.routers.majlisna-kuma.rule=Host(`kuma.${DOMAIN:-ipg.local}`)"
+      - "traefik.http.routers.majlisna-kuma.entrypoints=web,websecure"
+      - "traefik.http.services.majlisna-kuma.loadbalancer.server.port=3001"
+    networks:
+      - dokploy-network
+    restart: always
+
 volumes:
   postgres_data:
   umami_postgres_data:
   glitchtip_postgres_data:
+  uptime_kuma_data:
 
 networks:
   internal:

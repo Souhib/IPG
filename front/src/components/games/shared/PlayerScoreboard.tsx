@@ -3,7 +3,7 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
 
-interface Player {
+interface PlayerScore {
   user_id: string
   username: string
   total_score: number
@@ -12,7 +12,7 @@ interface Player {
 }
 
 interface PlayerScoreboardProps {
-  players: Player[]
+  players: PlayerScore[]
   currentUserId?: string
 }
 

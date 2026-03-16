@@ -10,19 +10,25 @@ interface LeaderboardEntry {
   total_score: number
 }
 
-interface McqQuizGameOverProps {
+interface QuizGameOverProps {
   winner: string | null
   leaderboard: LeaderboardEntry[]
   onBackToRoom: () => void
   onLeaveRoom: () => void
+  winnerI18nKey?: string
+  finalScoresI18nKey?: string
+  backToRoomI18nKey?: string
 }
 
-export const McqQuizGameOver = memo(function McqQuizGameOver({
+export const QuizGameOver = memo(function QuizGameOver({
   winner,
   leaderboard,
   onBackToRoom,
   onLeaveRoom,
-}: McqQuizGameOverProps) {
+  winnerI18nKey = "game.winner",
+  finalScoresI18nKey = "game.finalScores",
+  backToRoomI18nKey = "game.backToRoom",
+}: QuizGameOverProps) {
   const { t } = useTranslation()
   const sorted = [...leaderboard].sort((a, b) => b.total_score - a.total_score)
 
@@ -36,13 +42,13 @@ export const McqQuizGameOver = memo(function McqQuizGameOver({
         >
           <Trophy className="h-12 w-12 mx-auto text-yellow-500 mb-3 drop-shadow-lg" />
           <h2 className="text-xl font-extrabold tracking-tight gradient-text">
-            {t("game.mcqQuiz.winner", { username: winner })}
+            {t(winnerI18nKey, { username: winner })}
           </h2>
         </motion.div>
       )}
 
       <div className="glass rounded-2xl border-border/30 p-5">
-        <h3 className="text-sm font-extrabold tracking-tight mb-4">{t("game.mcqQuiz.finalScores")}</h3>
+        <h3 className="text-sm font-extrabold tracking-tight mb-4">{t(finalScoresI18nKey)}</h3>
         <div className="space-y-2">
           {sorted.map((entry, index) => (
             <motion.div
@@ -81,7 +87,7 @@ export const McqQuizGameOver = memo(function McqQuizGameOver({
           onClick={onBackToRoom}
           className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-3 text-sm font-medium text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg transition-all duration-200"
         >
-          {t("game.mcqQuiz.backToRoom")}
+          {t(backToRoomI18nKey)}
         </button>
         <button
           type="button"

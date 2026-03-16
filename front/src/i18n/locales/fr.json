@@ -145,7 +145,10 @@
     "wordQuizRounds": "Nombre de manches",
     "wordQuizHintInterval": "Intervalle des indices (secondes)",
     "mcqQuizTurnDuration": "Temps par question (secondes)",
-    "mcqQuizRounds": "Nombre de questions"
+    "mcqQuizRounds": "Nombre de questions",
+    "shareLink": "Partager le lien",
+    "linkCopied": "Lien du salon copie !",
+    "joiningRoom": "Connexion au salon..."
   },
   "toast": {
     "playerJoined": "{{username}} a rejoint le salon",
@@ -180,6 +183,7 @@
     "yourWord": "Votre mot",
     "gameOver": "Fin de partie",
     "winner": "Gagnant",
+    "finalScores": "Scores finaux",
     "playAgain": "Rejouer",
     "backToRoom": "Retour au salon",
     "wordExplanations": "Explications des mots",

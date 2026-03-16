@@ -981,40 +981,40 @@ async def test_vote_wrong_team_cannot_vote(codenames_game_controller, setup_code
 def test_resolve_hint_exact_match():
     """When the requested lang key exists, return its value."""
     hint = {"en": "English hint", "fr": "French hint", "ar": "Arabic hint"}
-    result = CodenamesGameController._resolve_hint(hint, "fr")
+    result = CodenamesGameController._resolve_multilingual(hint, "fr")
     assert result == "French hint"
 
 
 def test_resolve_hint_fallback_to_en():
     """When requested lang missing, fall back to 'en'."""
     hint = {"en": "English hint", "ar": "Arabic hint"}
-    result = CodenamesGameController._resolve_hint(hint, "fr")
+    result = CodenamesGameController._resolve_multilingual(hint, "fr")
     assert result == "English hint"
 
 
 def test_resolve_hint_fallback_to_first_value():
     """When both requested lang and 'en' missing, return first value."""
     hint = {"ar": "Arabic hint", "de": "German hint"}
-    result = CodenamesGameController._resolve_hint(hint, "fr")
+    result = CodenamesGameController._resolve_multilingual(hint, "fr")
     assert result == "Arabic hint"
 
 
 def test_resolve_hint_none_input():
     """When hint_dict is None, return None."""
-    result = CodenamesGameController._resolve_hint(None, "en")
+    result = CodenamesGameController._resolve_multilingual(None, "en")
     assert result is None
 
 
 def test_resolve_hint_empty_dict():
     """When hint_dict is empty, return None."""
-    result = CodenamesGameController._resolve_hint({}, "en")
+    result = CodenamesGameController._resolve_multilingual({}, "en")
     assert result is None
 
 
 def test_resolve_hint_exact_en():
     """When lang='en' and 'en' key exists, return 'en' value."""
     hint = {"en": "English hint", "fr": "French hint"}
-    result = CodenamesGameController._resolve_hint(hint, "en")
+    result = CodenamesGameController._resolve_multilingual(hint, "en")
     assert result == "English hint"
 
 
