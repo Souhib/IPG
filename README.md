@@ -121,6 +121,8 @@ Two teams (Red and Blue) compete to identify their agents on a 5x5 board of Isla
 
 ## Architecture
 
+![Majlisna Production Architecture](docs/architecture.png)
+
 ### Monorepo Structure
 
 ```
