@@ -166,6 +166,7 @@ jobs:
             --exclude='.env.*' \
             --exclude='node_modules' \
             --exclude='__pycache__' \
+            --exclude='.venv' \
             --exclude='.git' \
             --exclude='e2e' \
             ./ ${{ env.DEPLOY_DIR }}/
