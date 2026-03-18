@@ -168,6 +168,23 @@ jobs:
             aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 \
             majlisna-backend:latest 2>/dev/null || true
 
+      - name: Adopt orphaned containers from Dokploy
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          # Remove containers that belong to a different compose project
+          # but have the same names we need. Only runs once after Dokploy handoff.
+          for name in $(docker compose -f docker-compose.dokploy.yml config --services); do
+            cname="majlisna-${name}"
+            existing=$(docker ps -aq --filter "name=^/${cname}$" 2>/dev/null)
+            if [ -n "$existing" ]; then
+              project=$(docker inspect "$existing" --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null)
+              if [ "$project" != "majlisna" ]; then
+                echo "Removing orphaned container $cname (project: $project)"
+                docker rm -f "$existing" 2>/dev/null || true
+              fi
+            fi
+          done
+
       - name: Deploy all services
         working-directory: ${{ env.DEPLOY_DIR }}
         run: docker compose -f docker-compose.dokploy.yml up -d
