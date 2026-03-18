@@ -391,7 +391,9 @@ page.locator('text=Discuss and vote')
 
 ### Infrastructure
 
-**The CI/CD pipeline auto-deploys on push to `main`.** GitHub Actions detects which components changed and only rebuilds what's needed. The pipeline ensures infrastructure (db, pgbouncer, redis) is healthy before deploying the backend.
+**GitHub Actions owns CI + deploy.** On push to `main`, the pipeline detects changed components, runs CI checks (lint, format, test) in parallel, and only deploys if all checks pass. Deploy uses a single `docker compose up -d` — Compose is idempotent and handles creating/recreating/leaving containers as needed. Two self-hosted runners (`majlisna-1`, `majlisna-2`) on the VPS enable backend + frontend CI to run in parallel. **Dokploy is for monitoring/logs/manual redeploy only** — its autodeploy trigger is disabled to avoid conflicts with GitHub Actions.
+
+**CI is a real quality gate.** No `continue-on-error` on any CI step. Backend tests run with `--use-postgres`. Deploy job uses `if: always() && !failure() && !cancelled()` so it runs when CI is skipped (no changes) but blocks on failures.
 
 **E2E docker-compose is separate from production.** `docker-compose.e2e.yml` runs the backend with `IPG_ENV=development` and a dedicated PostgreSQL. Never mix E2E and production compose files.
 

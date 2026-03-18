@@ -6,8 +6,6 @@ on:
     paths:
       - "backend/**"
       - "front/**"
-      - "docker-compose.dokploy.yml"
-      - ".github/workflows/**"
   pull_request:
     branches: [main]
     paths:
@@ -26,7 +24,7 @@ jobs:
   # ── Detect which paths changed ──────────────────────────────
 
   changes:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -44,14 +42,14 @@ jobs:
             echo "frontend=true" >> $GITHUB_OUTPUT
           else
             DIFF=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD)
-            echo "$DIFF" | grep -q '^backend/\|^docker-compose.dokploy.yml' && echo "backend=true" >> $GITHUB_OUTPUT || echo "backend=false" >> $GITHUB_OUTPUT
-            echo "$DIFF" | grep -q '^front/\|^docker-compose.dokploy.yml' && echo "frontend=true" >> $GITHUB_OUTPUT || echo "frontend=false" >> $GITHUB_OUTPUT
+            echo "$DIFF" | grep -q '^backend/' && echo "backend=true" >> $GITHUB_OUTPUT || echo "backend=false" >> $GITHUB_OUTPUT
+            echo "$DIFF" | grep -q '^front/' && echo "frontend=true" >> $GITHUB_OUTPUT || echo "frontend=false" >> $GITHUB_OUTPUT
           fi
 
   # ── Security Scan (Trivy) ───────────────────────────────────
 
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: changes
     if: (needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true') && github.event_name == 'pull_request'
     steps:
@@ -70,9 +68,9 @@ jobs:
   # ── Backend CI ──────────────────────────────────────────────
 
   backend:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: changes
-    if: needs.changes.outputs.backend == 'true' && github.event_name == 'pull_request'
+    if: needs.changes.outputs.backend == 'true'
     defaults:
       run:
         working-directory: backend
@@ -81,41 +79,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          version: "latest"
-
       - name: Install dependencies
         run: uv sync --frozen
 
       - name: Lint (ruff check)
-        continue-on-error: true
         run: uv run ruff check ipg/ tests/
 
       - name: Format check (ruff format)
-        continue-on-error: true
         run: uv run ruff format --check ipg/ tests/
 
-      - name: Type check (mypy)
-        continue-on-error: true
-        run: uv run mypy ipg/ --ignore-missing-imports
-
-      - name: Test (pytest)
-        continue-on-error: true
-        run: uv run pytest --tb=short -q
+      - name: Test (pytest with PostgreSQL)
+        run: uv run pytest --use-postgres --tb=short -q --no-cov
 
   # ── Frontend CI ─────────────────────────────────────────────
 
   frontend:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: changes
-    if: needs.changes.outputs.frontend == 'true' && github.event_name == 'pull_request'
+    if: needs.changes.outputs.frontend == 'true'
     defaults:
       run:
         working-directory: front
@@ -124,39 +105,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Lint (oxlint)
-        continue-on-error: true
         run: bun run lint
 
       - name: Type check (tsc)
-        continue-on-error: true
         run: bun run typecheck
 
       - name: Test (vitest)
-        continue-on-error: true
         run: bun run test
 
   # ── Deploy to VPS ───────────────────────────────────────────
 
   deploy:
     runs-on: self-hosted
-    needs: changes
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: [changes, backend, frontend]
+    if: always() && !failure() && !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Sync code to deploy directory
         run: |
@@ -171,13 +142,24 @@ jobs:
             --exclude='e2e' \
             ./ ${{ env.DEPLOY_DIR }}/
 
-      - name: Build backend image (with layer caching)
-        if: needs.changes.outputs.backend == 'true'
+      - name: Build changed images
         working-directory: ${{ env.DEPLOY_DIR }}
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
-        run: docker compose -f docker-compose.dokploy.yml build backend
+        run: |
+          SERVICES=""
+          if [ "${{ needs.changes.outputs.backend }}" = "true" ]; then
+            SERVICES="$SERVICES backend"
+          fi
+          if [ "${{ needs.changes.outputs.frontend }}" = "true" ]; then
+            SERVICES="$SERVICES frontend"
+          fi
+          if [ -n "$SERVICES" ]; then
+            docker compose -f docker-compose.dokploy.yml build $SERVICES
+          else
+            echo "No services to build"
+          fi
 
       - name: Scan backend image with Trivy
         if: needs.changes.outputs.backend == 'true'
@@ -186,72 +168,11 @@ jobs:
             aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 \
             majlisna-backend:latest 2>/dev/null || true
 
-      - name: Build frontend image (with layer caching)
-        if: needs.changes.outputs.frontend == 'true'
+      - name: Deploy all services
         working-directory: ${{ env.DEPLOY_DIR }}
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
-        run: docker compose -f docker-compose.dokploy.yml build frontend
+        run: docker compose -f docker-compose.dokploy.yml up -d
 
-      - name: Ensure infrastructure is running
-        if: needs.changes.outputs.backend == 'true'
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: |
-          output=$(docker compose -f docker-compose.dokploy.yml up -d db pgbouncer redis 2>&1) && exit 0
-          if echo "$output" | grep -q "is already in use"; then
-            echo "Infrastructure containers already running (managed by Dokploy)"
-          else
-            echo "$output"
-            exit 1
-          fi
-
-      - name: Wait for PgBouncer health
-        if: needs.changes.outputs.backend == 'true'
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: |
-          echo "Waiting for PgBouncer to be healthy..."
-          for i in $(seq 1 12); do
-            if docker compose -f docker-compose.dokploy.yml exec -T pgbouncer pg_isready -h 127.0.0.1 -p 6432 > /dev/null 2>&1; then
-              echo "PgBouncer is healthy"
-              # Check Redis (non-blocking — only for Socket.IO pub/sub)
-              if docker compose -f docker-compose.dokploy.yml exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; then
-                echo "Redis is healthy"
-              else
-                echo "WARNING: Redis is not healthy. Socket.IO cross-worker pub/sub will be degraded."
-              fi
-              exit 0
-            fi
-            echo "Attempt $i/12: PgBouncer not ready, waiting 5s..."
-            sleep 5
-          done
-          echo "PgBouncer not healthy after 60s"
-          docker compose -f docker-compose.dokploy.yml ps
-          exit 1
-
-      - name: Deploy backend
-        if: needs.changes.outputs.backend == 'true'
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: docker compose -f docker-compose.dokploy.yml up -d --no-deps backend
-
-      - name: Deploy frontend
-        if: needs.changes.outputs.frontend == 'true'
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: docker compose -f docker-compose.dokploy.yml up -d --no-deps frontend
-
-      - name: Ensure monitoring tools are running
-        working-directory: ${{ env.DEPLOY_DIR }}
-        run: |
-          output=$(docker compose -f docker-compose.dokploy.yml up -d dozzle uptime-kuma beszel beszel-agent watchtower crowdsec 2>&1) && exit 0
-          if echo "$output" | grep -q "is already in use"; then
-            echo "Monitoring containers already running (managed by Dokploy)"
-          else
-            echo "$output"
-            exit 1
-          fi
-
-      - name: Health check
+      - name: Health check (backend)
         if: needs.changes.outputs.backend == 'true'
         run: |
           echo "Waiting for backend to start..."
@@ -264,7 +185,21 @@ jobs:
             echo "Attempt $i/6 failed, waiting 10s..."
             sleep 10
           done
-          echo "Health check failed after 60s"
+          echo "Health check failed after 70s"
+          exit 1
+
+      - name: Health check (frontend)
+        if: needs.changes.outputs.frontend == 'true'
+        run: |
+          for i in $(seq 1 6); do
+            if curl -sf http://localhost:30819 > /dev/null 2>&1; then
+              echo "Frontend health check passed"
+              exit 0
+            fi
+            echo "Attempt $i/6 failed, waiting 5s..."
+            sleep 5
+          done
+          echo "Frontend health check failed after 30s"
           exit 1
 
       # ── Failure diagnostics ─────────────────────────────────
@@ -274,7 +209,7 @@ jobs:
         run: docker compose -f docker-compose.dokploy.yml logs --tail=50 backend
 
       - name: Show infrastructure logs on failure
-        if: failure() && needs.changes.outputs.backend == 'true'
+        if: failure()
         working-directory: ${{ env.DEPLOY_DIR }}
         run: |
           echo "=== PgBouncer ===" && docker compose -f docker-compose.dokploy.yml logs --tail=20 pgbouncer

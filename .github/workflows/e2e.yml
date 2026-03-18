@@ -83,7 +83,6 @@ jobs:
 
       - name: Run E2E tests
         run: bunx playwright test --reporter=html,github
-        continue-on-error: true
         env:
           CI: true
 
