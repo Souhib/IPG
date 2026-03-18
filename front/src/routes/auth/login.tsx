@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { getApiErrorMessage } from "@/api/client"
 import { useLoginApiV1AuthLoginPost } from "@/api/generated"
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton"
 import { trackEvent } from "@/lib/analytics"
 import { useAuth } from "@/providers/AuthProvider"
 
@@ -109,6 +110,8 @@ function LoginPage() {
               {isLoading ? t("common.loading") : t("auth.login")}
             </button>
           </form>
+
+          <GoogleLoginButton />
 
           <p className="text-center text-sm text-muted-foreground">
             {t("auth.noAccount")}{" "}

@@ -55,7 +55,12 @@
     "verifyingEmail": "جاري التحقق من بريدك الإلكتروني...",
     "emailVerified": "تم التحقق من البريد الإلكتروني",
     "emailVerifiedDescription": "تم التحقق من بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
-    "verificationFailed": "فشل التحقق"
+    "verificationFailed": "فشل التحقق",
+    "orContinueWith": "أو تابع عبر",
+    "continueWithGoogle": "تابع مع جوجل",
+    "socialLoginFailed": "فشل تسجيل الدخول الاجتماعي. يرجى المحاولة مرة أخرى.",
+    "socialWelcomeNew": "مرحباً! تم إنشاء حسابك.",
+    "socialWelcomeBack": "مرحباً بعودتك!"
   },
   "home": {
     "learnAndPlay": "تعلّم والعب",

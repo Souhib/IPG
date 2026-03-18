@@ -28,6 +28,7 @@ from ipg.api.controllers.wordquiz_game import WordQuizGameController
 from ipg.api.models.table import User
 from ipg.api.schemas.error import InvalidTokenError
 from ipg.api.services.email import EmailService
+from ipg.api.services.social_auth import SocialAuthService
 from ipg.database import get_engine as _get_engine
 from ipg.settings import Settings
 
@@ -219,3 +220,10 @@ def get_email_service(
 ) -> EmailService:
     """Get EmailService with injected settings."""
     return EmailService(settings)
+
+
+def get_social_auth_service(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> SocialAuthService:
+    """Get SocialAuthService with injected settings."""
+    return SocialAuthService(settings)

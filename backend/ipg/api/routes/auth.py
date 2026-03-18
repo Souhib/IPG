@@ -20,8 +20,16 @@ from ipg.api.schemas.auth import (
 )
 from ipg.api.schemas.common import StatusMessageResponse, StatusResponse
 from ipg.api.schemas.error import InvalidTokenError
+from ipg.api.schemas.social_auth import SocialLoginRequest, SocialLoginResponse
 from ipg.api.services.email import EmailService
-from ipg.dependencies import get_auth_controller, get_current_user, get_email_service, get_settings
+from ipg.api.services.social_auth import SocialAuthService
+from ipg.dependencies import (
+    get_auth_controller,
+    get_current_user,
+    get_email_service,
+    get_settings,
+    get_social_auth_service,
+)
 from ipg.settings import Settings
 
 limiter = Limiter(
@@ -185,3 +193,23 @@ async def resend_verification(
     return StatusMessageResponse(
         status="ok", message="If the email exists and is unverified, a verification link has been sent."
     )
+
+
+@router.post("/social/login", response_model=SocialLoginResponse)
+@limiter.limit("10/minute")
+async def social_login(
+    request: Request,  # noqa: ARG001
+    response: Response,
+    *,
+    body: SocialLoginRequest,
+    auth_controller: Annotated[AuthController, Depends(get_auth_controller)],
+    social_auth_service: Annotated[SocialAuthService, Depends(get_social_auth_service)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> SocialLoginResponse:
+    """Authenticate via Google OAuth2."""
+    result = await auth_controller.social_login(
+        social_auth_service=social_auth_service,
+        access_token=body.access_token,
+    )
+    _set_auth_cookies(response, result.access_token, result.refresh_token, settings)
+    return result

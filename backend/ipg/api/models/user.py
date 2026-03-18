@@ -12,6 +12,9 @@ class UserBase(DBModel):
     country: str | None = None
     email_verified: bool = Field(default=False)
     bio: str | None = Field(default=None, max_length=200)
+    google_sub: str | None = Field(default=None, max_length=255, index=True, unique=True)
+    auth_provider: str = Field(default="email", max_length=20)
+    profile_picture_url: str | None = Field(default=None)
 
     @pydantic.field_validator("country")
     @classmethod

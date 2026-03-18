@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router"
 import { AnimatePresence, motion } from "motion/react"
 import React, { Suspense, useEffect } from "react"
@@ -10,6 +11,8 @@ import { Toaster } from "sonner"
 import { AuthProvider, QueryProvider, ThemeProvider } from "@/providers"
 
 import { LanguageWelcomeModal } from "@/components/language/LanguageWelcomeModal"
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ""
 
 const TanStackRouterDevtools =
   import.meta.env.PROD
@@ -37,6 +40,7 @@ function RootLayout() {
   }, [i18n.language])
 
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <ThemeProvider defaultTheme="system">
       <QueryProvider>
         <AuthProvider>
@@ -82,5 +86,6 @@ function RootLayout() {
         </AuthProvider>
       </QueryProvider>
     </ThemeProvider>
+    </GoogleOAuthProvider>
   )
 }

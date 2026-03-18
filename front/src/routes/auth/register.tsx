@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { getApiErrorMessage } from "@/api/client"
 import { useRegisterApiV1AuthRegisterPost } from "@/api/generated"
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton"
 import { trackEvent } from "@/lib/analytics"
 import { useAuth } from "@/providers/AuthProvider"
 
@@ -114,6 +115,8 @@ function RegisterPage() {
               {isLoading ? t("common.loading") : t("auth.register")}
             </button>
           </form>
+
+          <GoogleLoginButton />
 
           <p className="text-center text-sm text-muted-foreground">
             {t("auth.hasAccount")}{" "}

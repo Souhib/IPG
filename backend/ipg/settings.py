@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     resend_api_key: str = ""
     from_email: str = "IPG <noreply@ipg.app>"
 
+    # Google OAuth
+    google_client_id_web: str = ""
+
     # CORS
     cors_origins: str = ""
 

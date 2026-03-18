@@ -55,7 +55,12 @@
     "verifyingEmail": "Vérification de votre e-mail...",
     "emailVerified": "E-mail vérifié",
     "emailVerifiedDescription": "Votre e-mail a été vérifié avec succès. Vous pouvez maintenant vous connecter.",
-    "verificationFailed": "Échec de la vérification"
+    "verificationFailed": "Échec de la vérification",
+    "orContinueWith": "Ou continuer avec",
+    "continueWithGoogle": "Continuer avec Google",
+    "socialLoginFailed": "Échec de la connexion sociale. Veuillez réessayer.",
+    "socialWelcomeNew": "Bienvenue ! Votre compte a été créé.",
+    "socialWelcomeBack": "Bon retour !"
   },
   "home": {
     "learnAndPlay": "Apprendre & Jouer",

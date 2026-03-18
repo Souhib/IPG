@@ -1,3 +1,4 @@
+import re
 import secrets
 from datetime import UTC, datetime, timedelta
 
@@ -6,7 +7,12 @@ from loguru import logger
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ipg.api.constants import EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS, PASSWORD_RESET_TOKEN_EXPIRE_HOURS
+from ipg.api.constants import (
+    AUTH_PROVIDER_EMAIL,
+    AUTH_PROVIDER_GOOGLE,
+    EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS,
+    PASSWORD_RESET_TOKEN_EXPIRE_HOURS,
+)
 from ipg.api.controllers.shared import (
     async_get_password_hash,
     async_verify_password,
@@ -24,7 +30,9 @@ from ipg.api.schemas.error import (
     TokenExpiredError,
     UserNotFoundError,
 )
+from ipg.api.schemas.social_auth import SocialLoginResponse, SocialLoginUserData, SocialTokenPayload
 from ipg.api.services.email import EmailService
+from ipg.api.services.social_auth import SocialAuthService
 from ipg.settings import Settings
 
 
@@ -128,6 +136,9 @@ class AuthController:
         """
         user = await self.get_user_by_email(email)
         if user is None:
+            raise InvalidCredentialsError(email=email)
+
+        if user.auth_provider != AUTH_PROVIDER_EMAIL:
             raise InvalidCredentialsError(email=email)
 
         if not await async_verify_password(password, user.password):
@@ -246,3 +257,115 @@ class AuthController:
         if not user or user.email_verified:
             return True  # Don't reveal info
         return await self.send_verification_email(user, email_service)
+
+    async def social_login(
+        self,
+        social_auth_service: SocialAuthService,
+        access_token: str,
+    ) -> SocialLoginResponse:
+        """Authenticate a user via Google OAuth2.
+
+        Flow:
+        1. Verify access token with Google's userinfo API
+        2. Look up user by google_sub (fast path for returning users)
+        3. If not found, look up by email and link google_sub
+        4. If email not found, create new user (auto-verified, sentinel password)
+        5. Return JWT pair + is_new_user flag
+
+        :param social_auth_service: Service to verify tokens.
+        :param access_token: OAuth2 access token from Google.
+        :return: SocialLoginResponse with JWT pair and is_new_user flag.
+        :raises InvalidCredentialsError: If token verification fails.
+        """
+        token_payload = await social_auth_service.verify_google_access_token(access_token)
+
+        # Fast path: look up by google_sub
+        user = await self._get_user_by_google_sub(token_payload.sub)
+        if user:
+            return await self._complete_social_login(user, is_new_user=False)
+
+        # Look up by email and link
+        user = await self.get_user_by_email(token_payload.email)
+        if user:
+            await self._link_google_sub(user, token_payload.sub)
+            return await self._complete_social_login(user, is_new_user=False)
+
+        # Create new user
+        user = await self._create_social_user(token_payload)
+        return await self._complete_social_login(user, is_new_user=True)
+
+    async def _get_user_by_google_sub(self, sub: str) -> User | None:
+        """Look up a user by their Google subject identifier."""
+        result = await self.session.exec(select(User).where(User.google_sub == sub))
+        return result.one_or_none()
+
+    async def _link_google_sub(self, user: User, sub: str) -> None:
+        """Link a Google sub to an existing user account."""
+        user.google_sub = sub
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+        logger.info("Linked Google account to existing user", user_id=str(user.id))
+
+    async def _create_social_user(self, token_payload: SocialTokenPayload) -> User:
+        """Create a new user from Google login.
+
+        Username is generated from Google name, with a random suffix if taken.
+        Password is a random sentinel that never matches real input.
+        """
+        username = self._generate_username(token_payload)
+        # Ensure uniqueness
+        existing = await self.session.exec(select(User).where(User.username == username))
+        if existing.one_or_none():
+            username = f"{username}_{secrets.token_hex(2)}"
+
+        random_password = secrets.token_urlsafe(48)[:72]
+        password_hash = await async_get_password_hash(random_password)
+
+        user = User(
+            username=username,
+            email_address=token_payload.email,
+            password=password_hash,
+            email_verified=True,
+            google_sub=token_payload.sub,
+            auth_provider=AUTH_PROVIDER_GOOGLE,
+            profile_picture_url=token_payload.picture,
+        )
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+
+        logger.info("Created new user via Google login", user_id=str(user.id), email=token_payload.email)
+        return user
+
+    @staticmethod
+    def _generate_username(token_payload: SocialTokenPayload) -> str:
+        """Generate a username from Google name or email prefix."""
+        first = token_payload.first_name or ""
+        last = token_payload.last_name or ""
+        raw = f"{first}_{last}".strip("_") if (first or last) else token_payload.email.split("@")[0]
+        # Lowercase, replace spaces with underscores, strip non-alphanumeric (except underscores)
+        username = re.sub(r"[^a-z0-9_]", "", raw.lower().replace(" ", "_"))
+        return username or "user"
+
+    async def _complete_social_login(self, user: User, is_new_user: bool) -> SocialLoginResponse:
+        """Complete social login: generate tokens and return response."""
+        tokens = self.create_token_pair(str(user.id), user.email_address)
+
+        logger.info(
+            "Social login successful",
+            user_id=str(user.id),
+            is_new_user=is_new_user,
+        )
+
+        return SocialLoginResponse(
+            access_token=tokens.access_token,
+            refresh_token=tokens.refresh_token,
+            expires_in=self.settings.access_token_expire_minutes * 60,
+            is_new_user=is_new_user,
+            user=SocialLoginUserData(
+                id=str(user.id),
+                username=user.username,
+                email=user.email_address,
+            ),
+        )
