@@ -15,8 +15,6 @@ from ipg.api.ws.state import fetch_game_state, fetch_room_state
 from ipg.database import get_engine
 from ipg.settings import Settings
 
-_settings = Settings()  # type: ignore
-
 # Track user→sid mapping for multi-tab deduplication
 _user_sids: dict[str, str] = {}
 
@@ -33,7 +31,7 @@ async def connect(sid, environ, auth):  # noqa: ARG001
     try:
         engine = await get_engine()
         async with AsyncSession(engine) as session:
-            auth_controller = AuthController(session, _settings)
+            auth_controller = AuthController(session, Settings())  # type: ignore
             payload = auth_controller.decode_token(token)
             user = await auth_controller.get_user_by_email(payload.email)
             if user is None:
