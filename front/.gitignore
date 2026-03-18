@@ -30,5 +30,5 @@ coverage
 *.local
 *.tsbuildinfo
 
-# Generated (route tree regenerated on dev server start)
-src/routeTree.gen.ts
+# Generated
+# Note: routeTree.gen.ts is committed so CI typecheck works without running vite
