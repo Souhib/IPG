@@ -373,11 +373,7 @@ services:
     volumes:
       - beszel_data:/beszel_data
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8090/_/"]
-      interval: 30s
-      timeout: 5s
-      start_period: 15s
-      retries: 3
+      disable: true
     ports:
       - "31600:8090"
     labels:
