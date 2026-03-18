@@ -31,7 +31,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ipg"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      start_period: 30s
+      retries: 10
     ports:
       - "127.0.0.1:5432:5432"
     networks:
@@ -181,7 +182,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U umami"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      start_period: 30s
+      retries: 10
     networks:
       - internal
     logging: *default-logging
@@ -230,7 +232,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U glitchtip"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      start_period: 30s
+      retries: 10
     networks:
       - internal
     logging: *default-logging
