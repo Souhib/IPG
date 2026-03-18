@@ -866,7 +866,7 @@ async def test_remove_expired_users(session):
     await session.commit()
 
     # Act
-    affected_rooms = await _remove_expired_users(session)
+    affected_rooms, _affected_games = await _remove_expired_users(session)
 
     # Assert — link should be deleted
     remaining = (
@@ -892,7 +892,7 @@ async def test_remove_expired_ignores_within_grace(session):
     await session.commit()
 
     # Act
-    affected_rooms = await _remove_expired_users(session)
+    affected_rooms, _affected_games = await _remove_expired_users(session)
 
     # Assert — link should still exist
     remaining = (

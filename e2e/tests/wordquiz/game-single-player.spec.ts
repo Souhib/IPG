@@ -64,8 +64,10 @@ test.describe("Word Quiz Single Player", () => {
       state = await apiGetWordQuizState(gameId, token);
       if (state.round_phase === "game_over") break;
 
-      // Wait for the 1s timer to expire server-side
-      await setup.players[0].page.waitForTimeout(2000);
+      const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+      // Wait for the 1s server-side timer to expire
+      await sleep(2000);
 
       // Force timer expired to go to results
       if (state.round_phase === "playing") {
@@ -73,13 +75,11 @@ test.describe("Word Quiz Single Player", () => {
       }
 
       // Wait for results phase
-      let attempts = 0;
+      await expect.poll(
+        async () => (await apiGetWordQuizState(gameId, token)).round_phase,
+        { timeout: 10_000, intervals: [500] },
+      ).not.toBe("playing");
       state = await apiGetWordQuizState(gameId, token);
-      while (state.round_phase !== "results" && state.round_phase !== "game_over" && attempts < 10) {
-        await setup.players[0].page.waitForTimeout(500);
-        state = await apiGetWordQuizState(gameId, token);
-        attempts++;
-      }
 
       if (state.round_phase === "game_over") break;
 

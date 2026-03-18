@@ -97,10 +97,17 @@ test.describe("Room Management", () => {
 
   test("host starts game and all players navigate to game page", async ({ browser }) => {
     const accounts = await generateTestAccounts(3);
-    const setup = await setupRoomWithPlayersViaUI(browser, accounts);
 
-    // Host starts game
-    const startButton = setup.players[0].page.locator('button:has-text("Start")');
+    const setup = await setupRoomWithPlayersViaUI(browser, accounts);
+    const hostPage = setup.players[0].page;
+
+    // All 3 players should be visible (verified by setupRoomWithPlayersViaUI)
+    await expect(hostPage.locator("text=Players (3)")).toBeVisible({ timeout: 15_000 });
+
+    // Wait for "player joined" toasts to auto-dismiss so they don't cause layout shifts
+    await expect(hostPage.locator('[data-sonner-toast]')).toHaveCount(0, { timeout: 10_000 });
+
+    const startButton = hostPage.locator('button:has-text("Start Game")');
     await expect(startButton).toBeEnabled({ timeout: 10_000 });
     await startButton.click();
 

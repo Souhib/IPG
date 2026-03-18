@@ -49,6 +49,12 @@ class RoomJoin(DBModel):
     public_room_id: str
     password: str
 
+    @field_validator("password", mode="before")
+    @classmethod
+    def coerce_password_to_str(cls, v: object) -> str:
+        """Coerce numeric PINs from URL params to strings."""
+        return str(v)
+
 
 class RoomLeave(DBModel):
     room_id: UUID

@@ -285,6 +285,17 @@ class MyController:
 - Always verify both **return values** and **database state** (re-fetch from DB after mutations)
 - No external services to mock — game locks use in-process `asyncio.Lock`
 
+### Root-Cause-First Testing Philosophy
+
+When a test fails, the goal is NEVER to make the test pass — it's to have a working app.
+
+**Process**:
+1. **Understand the failure deeply** — read error messages, check screenshots, trace the data flow
+2. **Identify multiple possible root causes** — don't jump to the first theory
+3. **Fix the application, not the test** — if the frontend crashes, fix the frontend. If the backend returns bad data, fix the backend. The test is correct if it exposes a real bug.
+4. **Never add workarounds to tests** — no page reloads to recover from crashes, no `force: true` clicks, no retry loops around flaky operations, no `.catch(() => {})` to swallow errors
+5. **If the test itself has a bug** (wrong selector, missing wait, logic error), fix the test — but verify the app works first
+
 ## Key Patterns
 
 - **Route -> Controller -> Model**: No business logic in routes
@@ -310,6 +321,8 @@ class MyController:
 ## Lessons Learned
 
 ### Backend — Game Logic
+
+**`get_room_state()` includes ALL room members, not just connected ones.** The room state query must NOT filter by `connected == True`. Players who briefly disconnect (Socket.IO reconnection) must still appear in the player list. They are only removed when permanently disconnected (RoomUserLink deleted after 60s grace period). Filtering by connection status causes the player count to flicker during brief disconnections, breaking game start flows.
 
 **All game state mutations use `get_game_lock(game_id, session)`.** This uses PostgreSQL **transaction-level** advisory locks (`pg_try_advisory_xact_lock`) in production — they auto-release on commit/rollback, preventing lock leaks. Falls back to in-process `asyncio.Lock` for SQLite (tests). Vote submission, description submission, and disconnect handling ALL acquire the same lock. If you add a new game mutation endpoint, wrap it in `get_game_lock(str(game_id), self.session)`. **Never use session-level advisory locks** (`pg_advisory_lock`) — they leak when connections are recycled by the pool.
 
@@ -353,7 +366,9 @@ await session.commit()
 
 **Phase transitions detected by comparing refs to previous state.** `previousPhaseRef` and `previousRoundRef` track changes to trigger animations (e.g., voting transition overlay).
 
-**Socket.IO is a NOTIFICATION LAYER, not a game engine.** Mutations go through REST POST. Route handlers **await** Socket.IO notifications so events are guaranteed to be emitted before the HTTP response returns. Game start routes call `auto_join_game_room()` to pre-join all room members into the game's Socket.IO room, eliminating the race condition where `game_updated` fires before clients call `join_game`. The client's `useSocket` hook invalidates queries on reconnect to catch up on any events missed during disconnection.
+**Socket.IO is a NOTIFICATION LAYER, not a game engine.** Mutations go through REST POST. Route handlers **await** Socket.IO notifications so events are guaranteed to be emitted before the HTTP response returns. Game start routes call `await auto_join_game_room()` to pre-join all room members into the game's Socket.IO room, eliminating the race condition where `game_updated` fires before clients call `join_game`. The client's `useSocket` hook invalidates queries on reconnect to catch up on any events missed during disconnection.
+
+**`sio.enter_room()` MUST be awaited.** It is an async coroutine in python-socketio. Calling without `await` silently fails — the SID never joins the room.
 
 **Route handlers MUST `await notify_*()`, never `fire_notify_*()`** in route code. The `fire_*` variants are reserved for background tasks only (disconnect checker loop, Socket.IO event handlers).
 

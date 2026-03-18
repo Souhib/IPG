@@ -33,14 +33,13 @@ from ipg.api.models.error import (
     GameNotInProgressError,
     InvalidCardIndexError,
     NoClueGivenError,
-    NotEnoughPlayersError,
     NotOperativeError,
     NotSpymasterError,
     NotYourTurnError,
 )
 from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.table import Game, Room, User
+from ipg.api.models.table import Game, Room
 from ipg.api.schemas.codenames import (
     CodenamesBoardState,
     CodenamesPlayerView,
@@ -71,38 +70,9 @@ class CodenamesGameController(BaseGameController):
     ) -> GameStartResponse:
         """Start a new Codenames game in the given room."""
         async with get_game_lock(f"room:{room_id}", self.session):
-            db_room = await self._room_controller.get_room_by_id(room_id)
+            db_room, player_users = await self._prepare_game_start(room_id, min_players=4)
 
-            if db_room.active_game_id:
-                raise BaseError(
-                    message=f"Room {room_id} already has an active game",
-                    frontend_message="A game is already in progress.",
-                    status_code=400,
-                )
-
-            # Get non-spectator players in the room (don't filter by connected —
-            # heartbeat may be stale after a game ends and the player stays on the page)
-            links = (
-                await self.session.exec(
-                    select(RoomUserLink).where(
-                        RoomUserLink.room_id == db_room.id,
-                        RoomUserLink.is_spectator == False,  # noqa: E712
-                    )
-                )
-            ).all()
-
-            if len(links) < 4:
-                raise NotEnoughPlayersError(player_count=len(links))
-
-            # Get user info for each linked player
-            room_user_dicts = []
-            for link in links:
-                u = (await self.session.exec(select(User).where(User.id == link.user_id))).first()
-                if u:
-                    room_user_dicts.append({"user_id": str(u.id), "username": u.username})
-
-            if len(room_user_dicts) < 4:
-                raise NotEnoughPlayersError(player_count=len(room_user_dicts))
+            room_user_dicts = [{"user_id": str(u.id), "username": u.username} for u in player_users]
 
             random_words = await self._codenames_controller.get_random_words(
                 count=CODENAMES_BOARD_SIZE,

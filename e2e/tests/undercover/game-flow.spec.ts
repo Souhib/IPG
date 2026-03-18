@@ -86,14 +86,13 @@ test.describe("Undercover Game Flow", () => {
 
     // Vote for the first player (who isn't the voter)
     const voteTarget = activePlayers[1].login.user.username;
-    const fallback = activePlayers[0].login.user.username;
 
     for (const voter of activePlayers) {
       if (!isPageAlive(voter.page)) continue;
       if (voter.login.user.username === voteTarget) continue;
       await voteForPlayer(voter.page, voteTarget);
     }
-    await verifyAllPlayersVoted(activePlayers, voteTarget, fallback);
+    await verifyAllPlayersVoted(activePlayers, voteTarget, activePlayers[0].login.user.username);
 
     // Should see elimination or game over
     const observerPage = activePlayers.find((p) => isPageAlive(p.page))?.page;

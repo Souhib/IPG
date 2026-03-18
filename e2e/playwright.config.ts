@@ -52,6 +52,7 @@ export default defineConfig({
         "**/profile/**",
         "**/challenges/**",
         "**/friends/**",
+        "**/accessibility/**",
       ],
     },
     {

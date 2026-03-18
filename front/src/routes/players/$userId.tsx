@@ -9,9 +9,9 @@ import {
   useGetFriendshipStatusApiV1FriendsStatusUserIdGet,
   useSendFriendRequestApiV1FriendsRequestPost,
   useRemoveFriendApiV1FriendsFriendshipIdDelete,
-  getFriendshipStatusApiV1FriendsStatusUserIdGetQueryKey,
 } from "@/api/generated"
 import type { PublicProfile } from "@/api/generated"
+import { queryKeys } from "@/api/queryKeys"
 import { useAuth } from "@/providers/AuthProvider"
 
 export const Route = createFileRoute("/players/$userId")({
@@ -48,7 +48,7 @@ function PlayerProfilePage() {
 
   const invalidateFriendshipStatus = () => {
     queryClient.invalidateQueries({
-      queryKey: getFriendshipStatusApiV1FriendsStatusUserIdGetQueryKey({ user_id: userId }),
+      queryKey: queryKeys.friends.status(userId),
     })
   }
 

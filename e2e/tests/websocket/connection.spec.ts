@@ -85,22 +85,13 @@ test.describe("WebSocket Real-time Updates", () => {
       setup.players[0].page.locator("text=Players (3)")
     ).toBeVisible({ timeout: 15_000 });
 
-    // Host (player 0) kicks player 2 — find the X button next to their name
-    const kickButton = setup.players[0].page
-      .locator("div", {
-        hasText: setup.players[2].login.user.username,
-      })
-      .locator('button[title="Kick"]')
-      .or(
-        setup.players[0].page
-          .locator("div", {
-            hasText: setup.players[2].login.user.username,
-          })
-          .locator("button svg.lucide-x")
-          .locator("..")
-      );
-
-    await kickButton.first().click();
+    // Host (player 0) kicks player 2 — find the player row containing their exact name
+    const playerRow = setup.players[0].page.locator(
+      `div.flex.items-center.justify-between:has(span:text-is("${setup.players[2].login.user.username}"))`,
+    );
+    await playerRow.waitFor({ state: "visible", timeout: 10_000 });
+    const kickButton = playerRow.locator("button").last();
+    await kickButton.click();
 
     // Host and player 1 should see "Players (2)" via Socket.IO
     await expect(

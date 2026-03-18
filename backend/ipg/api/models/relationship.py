@@ -1,12 +1,18 @@
 from datetime import datetime
 from uuid import UUID
 
+from sqlalchemy import Index
 from sqlmodel import Field
 
 from ipg.api.models.shared import DBModel
 
 
 class RoomUserLink(DBModel, table=True):
+    __table_args__ = (
+        Index("ix_roomuserlink_room_connected", "room_id", "connected"),
+        Index("ix_roomuserlink_room_last_seen", "room_id", "last_seen_at"),
+    )
+
     id: int | None = Field(default=None, primary_key=True)
     room_id: UUID | None = Field(default=None, foreign_key="room.id", index=True)
     user_id: UUID | None = Field(default=None, foreign_key="user.id", index=True)

@@ -48,7 +48,7 @@ async def start_codenames_game(
 ) -> GameStartResponse:
     word_pack_ids = body.word_pack_ids if body else None
     result = await controller.create_and_start(room_id, current_user.id, word_pack_ids=word_pack_ids)
-    auto_join_game_room(result.game_id, str(room_id))
+    await auto_join_game_room(result.game_id, str(room_id))
     await notify_room_changed(str(room_id))
     await notify_game_changed(result.game_id, str(room_id))
     return result

@@ -12,7 +12,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ipg.api.constants import DISCONNECT_CHECK_INTERVAL_SECONDS, GRACE_PERIOD_SECONDS, HEARTBEAT_STALE_SECONDS
 from ipg.api.controllers.codenames_helpers import CodenamesGameStatus
 from ipg.api.controllers.game_lock import get_game_lock
-from ipg.api.models.game import GameStatus
+from ipg.api.models.game import GameStatus, GameType
 from ipg.api.models.relationship import RoomUserLink
 from ipg.api.models.room import RoomType
 from ipg.api.models.table import Game, Room
@@ -60,8 +60,11 @@ async def _mark_stale_users(session: AsyncSession) -> set[str]:
     return room_ids
 
 
-async def _remove_expired_users(session: AsyncSession) -> set[str]:
-    """Permanently remove users whose grace period has expired. Returns affected room IDs."""
+async def _remove_expired_users(session: AsyncSession) -> tuple[set[str], set[str]]:
+    """Permanently remove users whose grace period has expired.
+
+    Returns (affected_room_ids, affected_game_ids).
+    """
     grace_threshold = datetime.fromtimestamp(datetime.now().timestamp() - GRACE_PERIOD_SECONDS)
 
     expired = (
@@ -74,24 +77,37 @@ async def _remove_expired_users(session: AsyncSession) -> set[str]:
     ).all()
 
     room_ids: set[str] = set()
+    game_ids: set[str] = set()
     for link in expired:
         if link.room_id:
             room_ids.add(str(link.room_id))
+            # Check if room has an active game before disconnect removes the link
+            room = (await session.exec(select(Room).where(Room.id == link.room_id))).first()
+            if room and room.active_game_id:
+                game_ids.add(str(room.active_game_id))
         await _handle_permanent_disconnect(session, link)
-    return room_ids
+    return room_ids, game_ids
 
 
-async def disconnect_checker_loop(engine: AsyncEngine, on_room_changed: Callable[[str], None] | None = None) -> None:
+async def disconnect_checker_loop(
+    engine: AsyncEngine,
+    on_room_changed: Callable[[str], None] | None = None,
+    on_game_changed: Callable[[str], None] | None = None,
+) -> None:
     """Background task that checks for stale heartbeats periodically."""
     while True:
         try:
             async with AsyncSession(engine, expire_on_commit=False) as session:
                 stale_rooms = await _mark_stale_users(session)
-                expired_rooms = await _remove_expired_users(session)
+                expired_rooms, expired_games = await _remove_expired_users(session)
 
                 if on_room_changed:
                     for rid in stale_rooms | expired_rooms:
                         on_room_changed(rid)
+
+                if on_game_changed:
+                    for gid in expired_games:
+                        on_game_changed(gid)
 
         except asyncio.CancelledError:
             raise
@@ -183,11 +199,11 @@ async def _handle_game_disconnect(session: AsyncSession, game: Game, user_id: st
     if not state:
         return
 
-    if game.type.value == "undercover":
+    if game.type == GameType.UNDERCOVER:
         await _handle_undercover_disconnect(session, game, user_id, room)
-    elif game.type.value == "codenames":
+    elif game.type == GameType.CODENAMES:
         await _handle_codenames_disconnect(session, game, user_id, room)
-    elif game.type.value == "word_quiz":
+    elif game.type == GameType.WORD_QUIZ:
         await _handle_wordquiz_disconnect(session, game, user_id, room)
 
 

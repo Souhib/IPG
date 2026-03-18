@@ -27,9 +27,7 @@ def test_share_link_endpoint_returns_200(test_app: FastAPI, client: TestClient) 
         password="securepassword",
     )
 
-    mock_controller.get_share_link = AsyncMock(
-        return_value={"public_id": "ABC12", "password": "1234"}
-    )
+    mock_controller.get_share_link = AsyncMock(return_value={"public_id": "ABC12", "password": "1234"})
 
     test_app.dependency_overrides[get_current_user] = lambda: mock_user
     test_app.dependency_overrides[get_room_controller] = lambda: mock_controller

@@ -20,14 +20,13 @@ from ipg.api.models.error import (
     NoMcqQuestionsAvailableError,
     NotHostError,
     PlayerRemovedFromGameError,
-    RoomNotFoundError,
     RoundNotPlayingError,
     SpectatorCannotAnswerError,
 )
 from ipg.api.models.game import GameCreate, GameStatus, GameType
 from ipg.api.models.mcqquiz import McqQuestion
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.table import Room, User
+from ipg.api.models.table import Room
 from ipg.api.schemas.common import GameStartResponse, TimerExpiredResponse
 from ipg.api.schemas.error import BaseError
 from ipg.api.schemas.mcqquiz import (
@@ -52,34 +51,7 @@ class McqQuizGameController(BaseGameController):
     async def create_and_start(self, room_id: UUID, user_id: UUID) -> GameStartResponse:
         """Start a new MCQ Quiz game in the given room."""
         async with get_game_lock(f"room:{room_id}", self.session):
-            db_room = await self._room_controller.get_room_by_id(room_id)
-
-            if db_room.active_game_id:
-                raise BaseError(
-                    message=f"Room {room_id} already has an active game",
-                    frontend_message="A game is already in progress.",
-                    status_code=400,
-                )
-
-            # Get non-spectator players in the room (don't filter by connected —
-            # heartbeat may be stale after a game ends and the player stays on the page)
-            links = (
-                await self.session.exec(
-                    select(RoomUserLink).where(
-                        RoomUserLink.room_id == db_room.id,
-                        RoomUserLink.is_spectator == False,  # noqa: E712
-                    )
-                )
-            ).all()
-
-            if not links:
-                raise RoomNotFoundError(room_id=room_id)
-
-            player_users = []
-            for link in links:
-                u = (await self.session.exec(select(User).where(User.id == link.user_id))).first()
-                if u:
-                    player_users.append(u)
+            db_room, player_users = await self._prepare_game_start(room_id)
 
             num_players = len(player_users)
 

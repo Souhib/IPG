@@ -68,20 +68,18 @@ test.describe("Codenames Game Gameplay", () => {
     const teamCardWord = teamCard!.word;
     const teamCardIndex = spymasterBoard.board.indexOf(teamCard!);
 
-    // Wait for operative to see the clue before guessing
-    await operative.page.waitForTimeout(3000);
-
     // Operative guesses via UI
+    // guessCard() waits up to 30s for the card to be enabled (clue delivered via Socket.IO)
     await guessCard(operative.page, teamCardWord);
 
-    // Wait for polling to update
-    await operative.page.waitForTimeout(3000);
-
-    // Verify the card is now revealed via API
-    const updatedBoard = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
-    expect(updatedBoard.board[teamCardIndex].revealed).toBe(true);
+    // Verify the card is now revealed via API (poll until server processes)
+    await expect.poll(async () => {
+      const b = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
+      return b.board[teamCardIndex].revealed;
+    }, { timeout: 15_000 }).toBe(true);
 
     // Remaining count should have decreased
+    const updatedBoard = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
     if (currentTeam === "red") {
       expect(updatedBoard.red_remaining).toBe(board.red_remaining - 1);
     } else {
@@ -114,14 +112,9 @@ test.describe("Codenames Game Gameplay", () => {
     expect(assassinCard).toBeTruthy();
     const assassinWord = assassinCard!.word;
 
-    // Wait for operative to see the clue
-    await operative.page.waitForTimeout(3000);
-
     // Operative guesses the assassin via UI
+    // guessCard() waits up to 30s for the card to be enabled (clue delivered via Socket.IO)
     await guessCard(operative.page, assassinWord);
-
-    // Wait for UI to update via polling
-    await setup.players[0].page.waitForTimeout(3000);
 
     // At least one player should see "Game Over"
     const anyPage = setup.players.find((p) => isPageAlive(p.page))?.page;
@@ -159,18 +152,15 @@ test.describe("Codenames Game Gameplay", () => {
     // Spymaster gives clue via UI
     await giveClue(spymaster.page, "pass", 1);
 
-    // Wait for operative to see the clue
-    await operative.page.waitForTimeout(3000);
-
     // Operative ends turn via UI
+    // endTurnViaUI() waits for the End Turn button to be visible (clue delivered via Socket.IO)
     await endTurnViaUI(operative.page);
 
-    // Wait for polling to update
-    await operative.page.waitForTimeout(3000);
-
-    // Verify team switched via API
-    const updatedBoard = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
-    expect(updatedBoard.current_team).toBe(otherTeam);
+    // Verify team switched via API (poll until server processes)
+    await expect.poll(async () => {
+      const b = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
+      return b.current_team;
+    }, { timeout: 15_000 }).toBe(otherTeam);
 
     await setup.cleanup();
   });
@@ -202,8 +192,15 @@ test.describe("Codenames Game Gameplay", () => {
         break;
       }
 
-      // Give clue via UI (longer timeout for multi-turn games under concurrent load)
-      await giveClue(spymaster.page, `clue${turn}`, 1);
+      // Give clue via UI — may fail if game ended between API check and UI action
+      try {
+        await giveClue(spymaster.page, `clue${turn}`, 1);
+      } catch {
+        // Game likely ended — check and break
+        const check = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
+        if (check.status === "finished") break;
+        throw new Error("giveClue failed but game is not finished");
+      }
 
       // Read spymaster's board to find a team card word
       const smBoard = await apiGetCodenamesBoard(gameId!, spymaster.login.access_token);
@@ -214,11 +211,18 @@ test.describe("Codenames Game Gameplay", () => {
       );
 
       if (teamCard) {
-        // guessCard() waits for the card to be enabled (polling delivers clue)
-        await guessCard(operative.page, teamCard.word);
+        // Check if game ended on this player's UI before attempting to guess
+        const uiFinished = await operative.page
+          .locator('h2:has-text("Game Over")').isVisible().catch(() => false);
+        if (uiFinished) break;
 
-        // Wait for guess to process
-        await operative.page.waitForTimeout(1000);
+        try {
+          await guessCard(operative.page, teamCard.word);
+        } catch {
+          const check = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
+          if (check.status === "finished") break;
+          throw new Error("guessCard failed but game is not finished");
+        }
       }
 
       // Check if game ended or turn already switched after guess
@@ -228,7 +232,11 @@ test.describe("Codenames Game Gameplay", () => {
       // Only end turn if the current team hasn't changed (guess didn't auto-end turn)
       if (afterGuess.current_team === currentTeam) {
         await endTurnViaUI(operative.page).catch(() => {});
-        await operative.page.waitForTimeout(1000);
+        // Wait for turn to actually switch or game to finish before next iteration
+        await expect.poll(async () => {
+          const b = await apiGetCodenamesBoard(gameId!, setup.players[0].login.access_token);
+          return b.status === "finished" || b.current_team !== currentTeam;
+        }, { timeout: 15_000 }).toBe(true);
       }
     }
 

@@ -67,6 +67,16 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str = ""
 
+    @field_validator("jwt_secret_key")
+    @classmethod
+    def validate_jwt_secret(cls, v: str, info) -> str:
+        """Reject the default dev secret in production."""
+        env = info.data.get("environment", "development")
+        if env == "production" and v == "dev-secret-key-change-in-production":
+            msg = "JWT_SECRET_KEY must be changed from the default value in production"
+            raise ValueError(msg)
+        return v
+
     @field_validator("cors_origins")
     @classmethod
     def parse_cors_origins(cls, v: str) -> list[str]:

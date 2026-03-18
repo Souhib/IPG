@@ -51,7 +51,7 @@
   --info-foreground: oklch(0.98 0.005 240);
 
   /* Glass surface */
-  --surface: oklch(0.99 0.004 85 / 0.7);
+  --surface: oklch(0.985 0.006 85);
   --surface-foreground: oklch(0.2 0.03 155);
 
   /* Hover glow */

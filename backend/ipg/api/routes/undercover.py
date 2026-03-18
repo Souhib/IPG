@@ -41,7 +41,7 @@ async def start_undercover_game(
     controller: Annotated[UndercoverGameController, Depends(get_undercover_game_controller)],
 ) -> GameStartResponse:
     result = await controller.create_and_start(room_id, current_user.id)
-    auto_join_game_room(result.game_id, str(room_id))
+    await auto_join_game_room(result.game_id, str(room_id))
     await notify_room_changed(str(room_id))
     await notify_game_changed(result.game_id, str(room_id))
     return result

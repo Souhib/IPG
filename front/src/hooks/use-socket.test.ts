@@ -25,6 +25,8 @@ vi.mock("@/api/generated", () => ({
   getRoomStateApiV1RoomsRoomIdStateGetQueryKey: ({ room_id }: { room_id: string }) => [{ url: '/api/v1/rooms/:room_id/state', params: { room_id } }],
   getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryKey: ({ game_id }: { game_id: string }) => [{ url: '/api/v1/undercover/games/:game_id/state', params: { game_id } }],
   getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryKey: ({ game_id }: { game_id: string }) => [{ url: '/api/v1/codenames/games/:game_id/board', params: { game_id } }],
+  getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey: ({ game_id }: { game_id: string }) => [{ url: '/api/v1/wordquiz/games/:game_id/state', params: { game_id } }],
+  getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey: ({ game_id }: { game_id: string }) => [{ url: '/api/v1/mcqquiz/games/:game_id/state', params: { game_id } }],
 }))
 
 // Mock TanStack Query
@@ -124,5 +126,27 @@ describe("useSocket", () => {
     mockSocket.connected = true
     renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "undercover", enabled: true }))
     expect(mockEmit).toHaveBeenCalledWith("join_game", { game_id: "game-1" })
+  })
+
+  it("game_updated handler invalidates game query cache", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "undercover", enabled: true }))
+    const gameUpdatedHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "game_updated")?.[1]
+
+    gameUpdatedHandler({ game_id: "game-1" })
+
+    expect(mockInvalidateQueries).toHaveBeenCalledWith({
+      queryKey: [{ url: '/api/v1/undercover/games/:game_id/state', params: { game_id: "game-1" } }],
+    })
+  })
+
+  it("you_were_kicked handler fires onKicked callback", () => {
+    const onKicked = vi.fn()
+    renderHook(() => useSocket({ roomId: "room-1", enabled: true, onKicked }))
+    const kickHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "you_were_kicked")?.[1]
+
+    kickHandler({ room_id: "room-1" })
+
+    expect(onKicked).toHaveBeenCalledWith("room-1")
   })
 })

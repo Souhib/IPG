@@ -306,12 +306,11 @@ class RoomController:
                     self.session.add(link)
                     await self.session.commit()
 
-        # Get connected users in the room (bulk fetch to avoid N+1)
-        all_links = (
-            await self.session.exec(
-                select(RoomUserLink).where(RoomUserLink.room_id == room_id).where(RoomUserLink.connected == True)  # noqa: E712
-            )
-        ).all()
+        # Get ALL users in the room (including temporarily disconnected).
+        # Users are only removed from this list when permanently disconnected
+        # (RoomUserLink deleted after grace period). This keeps the player count
+        # stable during brief Socket.IO reconnections.
+        all_links = (await self.session.exec(select(RoomUserLink).where(RoomUserLink.room_id == room_id))).all()
 
         user_ids = [rul.user_id for rul in all_links]
         users = (await self.session.exec(select(User).where(User.id.in_(user_ids)))).all() if user_ids else []
@@ -325,8 +324,8 @@ class RoomController:
                     RoomPlayerState(
                         user_id=str(u.id),
                         username=u.username,
-                        is_connected=True,
-                        is_disconnected=False,
+                        is_connected=rul.connected,
+                        is_disconnected=not rul.connected,
                         is_host=room.owner_id == u.id,
                         is_spectator=rul.is_spectator,
                     )

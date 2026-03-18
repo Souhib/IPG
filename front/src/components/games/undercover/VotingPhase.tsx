@@ -157,6 +157,8 @@ export const VotingPhase = memo(function VotingPhase({
                 <button
                   key={player.id}
                   type="button"
+                  aria-pressed={selectedVote === player.id}
+                  aria-label={t("game.undercover.voteFor", { username: player.username, defaultValue: `Vote for ${player.username}` })}
                   onClick={() => onSelectPlayer(player.id)}
                   className={cn(
                     "flex items-center gap-3 glass rounded-2xl p-4 transition-all duration-200",

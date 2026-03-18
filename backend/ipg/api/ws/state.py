@@ -8,6 +8,7 @@ from ipg.api.controllers.mcqquiz_game import McqQuizGameController
 from ipg.api.controllers.room import RoomController
 from ipg.api.controllers.undercover_game import UndercoverGameController
 from ipg.api.controllers.wordquiz_game import WordQuizGameController
+from ipg.api.models.game import GameType
 from ipg.api.models.table import Game
 from ipg.database import get_engine
 
@@ -20,7 +21,7 @@ async def fetch_room_state(room_id: str, user_id: str | None = None) -> dict:
         # Pass a dummy user_id if none provided — get_room_state only uses it for heartbeat
         uid = UUID(user_id) if user_id else UUID("00000000-0000-0000-0000-000000000000")
         result = await controller.get_room_state(room_id=UUID(room_id), user_id=uid, update_heartbeat=False)
-        return result.model_dump()
+        return result.model_dump(mode="json")
 
 
 async def fetch_game_state(game_id: str, user_id: str) -> dict:
@@ -34,21 +35,21 @@ async def fetch_game_state(game_id: str, user_id: str) -> dict:
         if not game:
             return {}
         try:
-            if game.type.value == "undercover":
+            if game.type == GameType.UNDERCOVER:
                 controller = UndercoverGameController(session)
                 result = await controller.get_state(UUID(game_id), UUID(user_id), update_heartbeat=False)
-                return result.model_dump()
-            elif game.type.value == "word_quiz":
+                return result.model_dump(mode="json")
+            elif game.type == GameType.WORD_QUIZ:
                 controller = WordQuizGameController(session)
                 result = await controller.get_state(UUID(game_id), UUID(user_id), update_heartbeat=False)
-                return result.model_dump()
-            elif game.type.value == "mcq_quiz":
+                return result.model_dump(mode="json")
+            elif game.type == GameType.MCQ_QUIZ:
                 controller = McqQuizGameController(session)
                 result = await controller.get_state(UUID(game_id), UUID(user_id), update_heartbeat=False)
-                return result.model_dump()
+                return result.model_dump(mode="json")
             else:
                 controller = CodenamesGameController(session)
                 result = await controller.get_board(UUID(game_id), UUID(user_id), update_heartbeat=False)
-                return result.model_dump()
+                return result.model_dump(mode="json")
         except Exception:
             return {}

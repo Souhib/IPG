@@ -7,8 +7,8 @@ import { useTranslation } from "react-i18next"
 
 export const Route = createFileRoute("/_auth/rooms/join")({
   validateSearch: (search: Record<string, unknown>) => ({
-    code: (search.code as string) || "",
-    pin: (search.pin as string) || "",
+    code: String(search.code ?? ""),
+    pin: String(search.pin ?? ""),
   }),
   component: JoinByLink,
 })

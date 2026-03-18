@@ -9,6 +9,12 @@
 
 name: majlisna
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "100m"
+    max-file: "5"
+
 services:
   # ─── Databases (internal only) ───────────────────────────────
 
@@ -30,6 +36,7 @@ services:
       - "127.0.0.1:5432:5432"
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   # ─── PgBouncer ───────────────────────────────────────────────
@@ -54,6 +61,7 @@ services:
       retries: 5
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   # ─── Redis ─────────────────────────────────────────────────
@@ -69,6 +77,7 @@ services:
       retries: 5
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   # ─── Backend API ─────────────────────────────────────────────
@@ -101,6 +110,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
     ports:
       - "33648:5000"
     labels:
@@ -111,6 +126,7 @@ services:
     networks:
       - internal
       - dokploy-network
+    logging: *default-logging
     restart: always
 
   # ─── Frontend SPA ────────────────────────────────────────────
@@ -130,6 +146,12 @@ services:
         VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
     ports:
       - "30819:80"
     labels:
@@ -140,6 +162,7 @@ services:
     networks:
       - internal
       - dokploy-network
+    logging: *default-logging
     restart: always
 
   # ─── Umami Analytics ─────────────────────────────────────────
@@ -160,16 +183,23 @@ services:
       retries: 5
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   umami:
     container_name: majlisna-umami
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    image: ghcr.io/umami-software/umami:postgresql-v2.15.1
     environment:
       DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami
     depends_on:
       umami-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/api/heartbeat"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     ports:
       - "31200:3000"
     labels:
@@ -177,9 +207,11 @@ services:
       - "traefik.http.routers.majlisna-umami.rule=Host(`analytics.${DOMAIN:-ipg.local}`)"
       - "traefik.http.routers.majlisna-umami.entrypoints=web,websecure"
       - "traefik.http.services.majlisna-umami.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - internal
       - dokploy-network
+    logging: *default-logging
     restart: always
 
   # ─── GlitchTip Error Tracking ──────────────────────────────
@@ -200,6 +232,7 @@ services:
       retries: 5
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   glitchtip-redis:
@@ -213,11 +246,12 @@ services:
       retries: 5
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   glitchtip:
     container_name: majlisna-glitchtip
-    image: glitchtip/glitchtip:latest
+    image: glitchtip/glitchtip:v4.1
     environment:
       DATABASE_URL: postgresql://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip
       REDIS_URL: redis://glitchtip-redis:6379/0
@@ -232,6 +266,12 @@ services:
         condition: service_healthy
       glitchtip-redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8000/_health/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     ports:
       - "31300:8000"
     labels:
@@ -242,11 +282,12 @@ services:
     networks:
       - internal
       - dokploy-network
+    logging: *default-logging
     restart: always
 
   glitchtip-worker:
     container_name: majlisna-glitchtip-worker
-    image: glitchtip/glitchtip:latest
+    image: glitchtip/glitchtip:v4.1
     command: bin/run-celery-with-beat.sh
     environment:
       DATABASE_URL: postgresql://glitchtip:${GLITCHTIP_DB_PASSWORD}@glitchtip-db:5432/glitchtip
@@ -261,17 +302,30 @@ services:
         condition: service_healthy
       glitchtip-redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A glitchtip inspect ping --timeout 5 || exit 1"]
+      interval: 60s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     networks:
       - internal
+    logging: *default-logging
     restart: always
 
   # ─── Dozzle (Docker Log Viewer) ─────────────────────────────
 
   dozzle:
     container_name: majlisna-dozzle
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v8.12.8
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
     ports:
       - "31400:8080"
     labels:
@@ -279,17 +333,25 @@ services:
       - "traefik.http.routers.majlisna-dozzle.rule=Host(`dozzle.${DOMAIN:-ipg.local}`)"
       - "traefik.http.routers.majlisna-dozzle.entrypoints=web,websecure"
       - "traefik.http.services.majlisna-dozzle.loadbalancer.server.port=8080"
+      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - dokploy-network
+    logging: *default-logging
     restart: always
 
   # ─── Uptime Kuma (Monitoring) ──────────────────────────────
 
   uptime-kuma:
     container_name: majlisna-uptime-kuma
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma:1.23.16
     volumes:
       - uptime_kuma_data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "extra/healthcheck"]
+      interval: 60s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     ports:
       - "31500:3001"
     labels:
@@ -297,8 +359,86 @@ services:
       - "traefik.http.routers.majlisna-kuma.rule=Host(`kuma.${DOMAIN:-ipg.local}`)"
       - "traefik.http.routers.majlisna-kuma.entrypoints=web,websecure"
       - "traefik.http.services.majlisna-kuma.loadbalancer.server.port=3001"
+      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - dokploy-network
+    logging: *default-logging
+    restart: always
+
+  # ─── Beszel (Server & Container Monitoring) ────────────────
+
+  beszel:
+    container_name: majlisna-beszel
+    image: henrygd/beszel:0.9.1
+    volumes:
+      - beszel_data:/beszel_data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8090/_/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    ports:
+      - "31600:8090"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLED:-false}"
+      - "traefik.http.routers.majlisna-beszel.rule=Host(`beszel.${DOMAIN:-ipg.local}`)"
+      - "traefik.http.routers.majlisna-beszel.entrypoints=web,websecure"
+      - "traefik.http.services.majlisna-beszel.loadbalancer.server.port=8090"
+    networks:
+      - dokploy-network
+    logging: *default-logging
+    restart: always
+
+  beszel-agent:
+    container_name: majlisna-beszel-agent
+    image: henrygd/beszel-agent:0.9.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      PORT: 45876
+      KEY: ${BESZEL_AGENT_KEY:-}
+    network_mode: host
+    logging: *default-logging
+    restart: always
+
+  # ─── Watchtower (Auto-Update Third-Party Containers) ───────
+
+  watchtower:
+    container_name: majlisna-watchtower
+    image: containrrr/watchtower:1.7.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_SCHEDULE: "0 0 4 * * *"
+      WATCHTOWER_LABEL_ENABLE: "true"
+    logging: *default-logging
+    restart: always
+
+  # ─── CrowdSec (Collaborative Security) ──────────────────────
+
+  crowdsec:
+    container_name: majlisna-crowdsec
+    image: crowdsecurity/crowdsec:v1.6.4
+    environment:
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/whitelist-good-actors"
+      GID: "${GID-1000}"
+      BOUNCER_KEY_traefik: ${CROWDSEC_BOUNCER_KEY:-}
+    volumes:
+      - crowdsec_config:/etc/crowdsec
+      - crowdsec_data:/var/lib/crowdsec/data
+      - /var/log:/var/log/host:ro
+    healthcheck:
+      test: ["CMD", "cscli", "version"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    networks:
+      - internal
+      - dokploy-network
+    logging: *default-logging
     restart: always
 
 volumes:
@@ -306,6 +446,9 @@ volumes:
   umami_postgres_data:
   glitchtip_postgres_data:
   uptime_kuma_data:
+  beszel_data:
+  crowdsec_config:
+  crowdsec_data:
 
 networks:
   internal:

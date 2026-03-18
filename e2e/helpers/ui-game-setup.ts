@@ -106,30 +106,13 @@ export async function setupRoomWithPlayers(
     players.push({ page, login: logins[i], account: accounts[i] });
   }
 
-  // Wait for all players to see the full player count (polling)
+  // Wait for all players to see the full player count
   const expectedCount = accounts.length;
   await Promise.all(
-    players.map(async (player) => {
-      await player.page.waitForFunction(
-        (count) => {
-          const m = document.body.innerText.match(/Players \((\d+)/);
-          return m && parseInt(m[1]) >= count;
-        },
-        expectedCount,
-        { timeout: 15_000 },
-      ).catch(async () => {
-        await player.page.reload();
-        await player.page.waitForLoadState("domcontentloaded");
-        await player.page.waitForFunction(
-          (count) => {
-            const m = document.body.innerText.match(/Players \((\d+)/);
-            return m && parseInt(m[1]) >= count;
-          },
-          expectedCount,
-          { timeout: 15_000 },
-        ).catch(() => {});
-      });
-    }),
+    players.map((player) =>
+      expect(player.page.locator(`text=Players (${expectedCount})`))
+        .toBeVisible({ timeout: 30_000 })
+    ),
   );
 
   return {
@@ -182,12 +165,17 @@ export async function setupRoomWithPlayersViaUI(
     accounts[0].email,
     accounts[0].password,
   );
+  hostPage.on('pageerror', err => console.error(`[E2E] Host pageerror: ${err.message}\n${err.stack}`));
+  hostPage.on('console', msg => {
+    if (msg.type() === 'error' && msg.text().includes('ErrorBoundary')) {
+      console.error(`[E2E] Host ErrorBoundary: ${msg.text()}`);
+    }
+  });
   await hostPage.goto(ROUTES.room(room.id));
   await hostPage.waitForLoadState("domcontentloaded");
-  await hostPage.waitForFunction(
-    () => /Players \(\d+/.test(document.body.innerText),
-    { timeout: 10_000 },
-  ).catch(() => {});
+  await expect(
+    hostPage.locator('text=/Players \\(\\d+/')
+  ).toBeVisible({ timeout: 10_000 });
 
   const players: PlayerContext[] = [
     { page: hostPage, login: logins[0], account: accounts[0] },
@@ -200,6 +188,12 @@ export async function setupRoomWithPlayersViaUI(
       accounts[i].email,
       accounts[i].password,
     );
+    page.on('pageerror', err => console.error(`[E2E] Player ${i} pageerror: ${err.message}\n${err.stack}`));
+    page.on('console', msg => {
+      if (msg.type() === 'error' && msg.text().includes('ErrorBoundary')) {
+        console.error(`[E2E] Player ${i} ErrorBoundary: ${msg.text()}`);
+      }
+    });
 
     await page.goto(ROUTES.rooms);
     await page.waitForLoadState("domcontentloaded");
@@ -224,27 +218,10 @@ export async function setupRoomWithPlayersViaUI(
   // Verify all players see full count
   const expectedCount = accounts.length;
   await Promise.all(
-    players.map(async (player) => {
-      await player.page.waitForFunction(
-        (count) => {
-          const m = document.body.innerText.match(/Players \((\d+)/);
-          return m && parseInt(m[1]) >= count;
-        },
-        expectedCount,
-        { timeout: 15_000 },
-      ).catch(async () => {
-        await player.page.reload();
-        await player.page.waitForLoadState("domcontentloaded");
-        await player.page.waitForFunction(
-          (count) => {
-            const m = document.body.innerText.match(/Players \((\d+)/);
-            return m && parseInt(m[1]) >= count;
-          },
-          expectedCount,
-          { timeout: 15_000 },
-        ).catch(() => {});
-      });
-    }),
+    players.map((player) =>
+      expect(player.page.locator(`text=Players (${expectedCount})`))
+        .toBeVisible({ timeout: 30_000 })
+    ),
   );
 
   return {
@@ -337,18 +314,9 @@ export async function startGameViaUI(
 
   // Wait for all players to appear in the lobby before starting
   const playerCountText = `Players (${players.length})`;
-  let playersVisible = await hostPage
-    .locator(`text=${playerCountText}`)
-    .waitFor({ state: "visible", timeout: 10_000 })
-    .then(() => true)
-    .catch(() => false);
-  if (!playersVisible) {
-    await hostPage.reload();
-    await hostPage.waitForLoadState("domcontentloaded");
-  }
   await expect(
     hostPage.locator(`text=${playerCountText}`),
-  ).toBeVisible({ timeout: 15_000 });
+  ).toBeVisible({ timeout: 30_000 });
 
   // Select game type (undercover is default)
   if (gameType === "codenames") {
@@ -374,57 +342,27 @@ export async function startGameViaUI(
   };
   const urlPattern = urlPatternMap[gameType];
 
-  // Wait for host to navigate first
+  // Wait for all players to auto-navigate via polling/Socket.IO
+  await Promise.all(
+    players.map((player) =>
+      expect(player.page).toHaveURL(urlPattern, { timeout: 20_000 })
+    ),
+  );
+
+  // Fallback: force-navigate any stuck players (log as warning)
   let gameUrl = "";
-  const hostNavigated = await hostPage
-    .waitForURL(urlPattern, { timeout: 15_000 })
-    .then(() => true)
-    .catch(() => false);
-  if (hostNavigated) {
-    gameUrl = hostPage.url();
-  } else {
-    // Check other players
-    for (const player of players) {
-      if (player.page === hostPage) continue;
-      const navigated = await player.page
-        .waitForURL(urlPattern, { timeout: 5_000 })
-        .then(() => true)
-        .catch(() => false);
-      if (navigated) {
-        gameUrl = player.page.url();
-        break;
-      }
+  for (const player of players) {
+    if (urlPattern.test(player.page.url())) {
+      gameUrl = player.page.url();
+      break;
     }
   }
 
-  if (!gameUrl) {
-    throw new Error("No player navigated to the game page after start");
-  }
-
-  // Navigate stuck players to the game URL
   for (const player of players) {
-    const onGamePage = urlPattern.test(player.page.url());
-    if (!onGamePage) {
+    if (!urlPattern.test(player.page.url()) && gameUrl) {
+      console.warn(`[E2E] Player did not auto-navigate; forcing to ${gameUrl}`);
       await player.page.goto(gameUrl);
-      await player.page.waitForLoadState("domcontentloaded");
-
-      // Verify player is on game page
-      if (!urlPattern.test(player.page.url())) {
-        await player.page.goto(gameUrl);
-        await player.page.waitForLoadState("domcontentloaded");
-      }
       await expect(player.page).toHaveURL(urlPattern, { timeout: 15_000 });
-
-      // Wait for game UI to load
-      if (gameType === "codenames") {
-        await expect(
-          player.page.locator(".grid-cols-5 button").first(),
-        ).toBeVisible({ timeout: 15_000 });
-      } else {
-        await expect(
-          player.page.locator("h1:has-text('Undercover')"),
-        ).toBeVisible({ timeout: 15_000 });
-      }
     }
   }
 }
@@ -449,7 +387,8 @@ export async function dismissRoleRevealAll(
       await dismissBtn.waitFor({ state: "visible", timeout: 15_000 });
       await dismissBtn.click();
 
-      // Wait for describing or playing phase to appear
+      // Wait for describing or playing phase to appear (best-effort —
+      // the player is confirmed active after clicking "I understand")
       await player.page
         .locator('text=turn to describe')
         .or(player.page.locator('text=is describing'))
@@ -457,7 +396,9 @@ export async function dismissRoleRevealAll(
         .or(player.page.locator('text=Discuss and vote'))
         .or(player.page.locator('h2:has-text("Game Over")'))
         .waitFor({ state: "visible", timeout: 10_000 })
-        .catch(() => {});
+        .catch(() => {
+          // Phase text may not appear instantly — player is still active
+        });
 
       activePlayers.push(player);
     } catch {
@@ -490,7 +431,10 @@ export async function submitDescriptionViaUI(
 ): Promise<void> {
   const input = page.locator("#description-input");
   await input.fill(word);
-  await input.press("Enter");
+  // Wait for React to process the input and enable the Submit button
+  const submitBtn = page.locator('button:has-text("Submit")').first();
+  await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
+  await submitBtn.click();
 }
 
 /**
@@ -520,9 +464,10 @@ export async function submitDescriptionsForAllPlayersViaUI(
     if (phaseTransitioned) break;
 
     // Find which player's page has the description input visible.
-    // Retry with increasing waits since polling may take time to update the UI.
+    // Poll with 500ms intervals for up to 20s (polling fallback is 2s).
     let describer: PlayerContext | undefined;
-    for (let attempt = 0; attempt < 5; attempt++) {
+    const deadline = Date.now() + 20_000;
+    while (Date.now() < deadline) {
       for (const player of alivePlayers) {
         if (!isPageAlive(player.page)) continue;
         const inputVisible = await player.page
@@ -536,16 +481,15 @@ export async function submitDescriptionsForAllPlayersViaUI(
       }
       if (describer) break;
 
-      // Wait for polling to deliver the updated state
-      await anyPage.waitForTimeout(2000);
-
-      // Re-check for phase transition while waiting
+      // Check for phase transition while waiting
       const transitioned = await anyPage
         .locator('text=Discuss and vote')
         .or(anyPage.locator('h2:has-text("Game Over")'))
         .isVisible()
         .catch(() => false);
       if (transitioned) break;
+
+      await anyPage.waitForTimeout(500);
     }
 
     if (!describer) break;
@@ -555,20 +499,19 @@ export async function submitDescriptionsForAllPlayersViaUI(
     await submitDescriptionViaUI(describer.page, word);
 
     // Wait for the input to disappear (server processed the description)
-    await describer.page
-      .locator("#description-input")
-      .waitFor({ state: "hidden", timeout: 10_000 })
-      .catch(() => {});
+    await expect(
+      describer.page.locator("#description-input")
+    ).toBeHidden({ timeout: 10_000 });
   }
 
   // Wait for all players to see the voting phase or game over
   for (const player of activePlayers) {
     if (!isPageAlive(player.page)) continue;
-    await player.page
-      .locator("text=Discuss and vote")
-      .or(player.page.locator('h2:has-text("Game Over")'))
-      .waitFor({ state: "visible", timeout: 30_000 })
-      .catch(() => {});
+    await expect(
+      player.page
+        .locator("text=Discuss and vote")
+        .or(player.page.locator('h2:has-text("Game Over")'))
+    ).toBeVisible({ timeout: 30_000 });
   }
 }
 
@@ -618,17 +561,18 @@ export async function submitDescriptionsForAllPlayersViaAPI(
     await apiSubmitDescription(gameId, word, describer.login.access_token);
 
     // Small delay for server processing
-    await alivePlayers[0].page.waitForTimeout(300);
+    const sleepFn = (ms: number) => new Promise(r => setTimeout(r, ms));
+    await sleepFn(300);
   }
 
   // Wait for all players to see the voting phase (polling updates the UI)
   for (const player of activePlayers) {
     if (!isPageAlive(player.page)) continue;
-    await player.page
-      .locator("text=Discuss and vote")
-      .or(player.page.locator('h2:has-text("Game Over")'))
-      .waitFor({ state: "visible", timeout: 30_000 })
-      .catch(() => {});
+    await expect(
+      player.page
+        .locator("text=Discuss and vote")
+        .or(player.page.locator('h2:has-text("Game Over")'))
+    ).toBeVisible({ timeout: 30_000 });
   }
 }
 
@@ -667,45 +611,46 @@ export async function voteForPlayer(
   await voteBtn.click();
 
   // Verify vote was submitted (UI shows waiting message or vote status)
-  await page
-    .locator("text=Waiting for")
-    .or(page.locator('h2:has-text("Game Over")'))
-    .or(page.locator(".lucide-skull"))
-    .waitFor({ state: "visible", timeout: 10_000 })
-    .catch(() => {});
+  await expect(
+    page
+      .locator("text=Waiting for")
+      .or(page.locator('h2:has-text("Game Over")'))
+      .or(page.locator(".lucide-skull"))
+  ).toBeVisible({ timeout: 10_000 });
 }
 
 /**
- * Verify all players have voted. Retry for any that haven't.
+ * Verify all players have voted. If any haven't, retry with target or fallback.
+ * fallbackUsername is needed because the vote target can't vote for themselves.
  */
 export async function verifyAllPlayersVoted(
   activePlayers: PlayerContext[],
   targetUsername: string,
-  fallbackUsername: string,
+  fallbackUsername?: string,
 ): Promise<void> {
   for (const player of activePlayers) {
     if (!isPageAlive(player.page)) continue;
 
-    const voted = await player.page
+    const done = await player.page
       .locator("text=Waiting for")
-      .isVisible()
-      .catch(() => false);
-    const gameOver = await player.page
-      .locator('h2:has-text("Game Over")')
-      .isVisible()
-      .catch(() => false);
-    const eliminated = await player.page
-      .locator(".lucide-skull")
+      .or(player.page.locator('h2:has-text("Game Over")'))
+      .or(player.page.locator(".lucide-skull"))
       .isVisible()
       .catch(() => false);
 
-    if (voted || gameOver || eliminated) continue;
+    if (done) continue;
 
-    // Player hasn't voted — retry
+    // Player hasn't voted — retry with target, fall back if they ARE the target
     try {
       await voteForPlayer(player.page, targetUsername);
     } catch {
-      await voteForPlayer(player.page, fallbackUsername).catch(() => {});
+      if (fallbackUsername) {
+        await voteForPlayer(player.page, fallbackUsername);
+      } else {
+        throw new Error(
+          `Player ${player.login.user.username} hasn't voted for ${targetUsername} and no fallback provided`,
+        );
+      }
     }
   }
 }

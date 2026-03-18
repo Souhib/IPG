@@ -8,13 +8,13 @@ import { toast } from "sonner"
 import { getApiErrorMessage } from "@/api/client"
 import {
   useGetWordquizStateApiV1WordquizGamesGameIdStateGet,
-  getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey,
   useSubmitAnswerApiV1WordquizGamesGameIdAnswerPost,
   useTimerExpiredApiV1WordquizGamesGameIdTimerExpiredPost,
   useNextRoundApiV1WordquizGamesGameIdNextRoundPost,
   useLeaveRoomApiV1RoomsLeavePatch,
-  getRoomStateApiV1RoomsRoomIdStateGetQueryKey,
 } from "@/api/generated"
+import { queryKeys } from "@/api/queryKeys"
+import { ConnectionStatus } from "@/components/ConnectionStatus"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { GameErrorFallback } from "@/components/games/shared/GameErrorFallback"
 import { PhaseTimer } from "@/components/games/shared/PhaseTimer"
@@ -189,7 +189,7 @@ function WordQuizGamePage() {
       try {
         const result = await answerMutation.mutateAsync({ game_id: gameId, data: { answer } })
         queryClient.invalidateQueries({
-          queryKey: getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+          queryKey: queryKeys.game.wordquiz(gameId),
         })
         return result as { correct: boolean; points_earned: number; hint_number: number }
       } catch (err) {
@@ -207,7 +207,7 @@ function WordQuizGamePage() {
     try {
       await timerExpiredMutation.mutateAsync({ game_id: gameId })
       queryClient.invalidateQueries({
-        queryKey: getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+        queryKey: queryKeys.game.wordquiz(gameId),
       })
     } catch {
       // Ignore — another client may have triggered it
@@ -220,7 +220,7 @@ function WordQuizGamePage() {
     try {
       await nextRoundMutation.mutateAsync({ game_id: gameId })
       queryClient.invalidateQueries({
-        queryKey: getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+        queryKey: queryKeys.game.wordquiz(gameId),
       })
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Failed to advance round"))
@@ -244,7 +244,7 @@ function WordQuizGamePage() {
   const handleBackToRoom = useCallback(() => {
     if (roomIdRef.current) {
       queryClient.removeQueries({
-        queryKey: getRoomStateApiV1RoomsRoomIdStateGetQueryKey({ room_id: roomIdRef.current }),
+        queryKey: queryKeys.room.state(roomIdRef.current),
       })
       navigate({ to: "/rooms/$roomId", params: { roomId: roomIdRef.current } })
     }
@@ -267,6 +267,7 @@ function WordQuizGamePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 min-h-screen">
+      <ConnectionStatus connected={socketConnected} />
       {/* Game Over Transition Overlay */}
       <AnimatePresence>
         {showGameOverTransition && (

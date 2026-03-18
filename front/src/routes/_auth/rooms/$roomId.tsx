@@ -1,13 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { Check, Copy, Crown, Eye, KeyRound, Link2, LogOut, UserPlus, Users, X } from "lucide-react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/api/client"
 import {
   useGetRoomStateApiV1RoomsRoomIdStateGet,
-  getRoomStateApiV1RoomsRoomIdStateGetQueryKey,
   useStartUndercoverGameApiV1UndercoverGamesRoomIdStartPost,
   useStartCodenamesGameApiV1CodenamesGamesRoomIdStartPost,
   useStartWordquizGameApiV1WordquizGamesRoomIdStartPost,
@@ -15,12 +14,14 @@ import {
   useLeaveRoomApiV1RoomsLeavePatch,
   useKickPlayerApiV1RoomsRoomIdKickPatch,
 } from "@/api/generated"
+import { ConnectionStatus } from "@/components/ConnectionStatus"
 import { ChatPanel } from "@/components/rooms/ChatPanel"
 import { InviteFriendModal } from "@/components/rooms/InviteFriendModal"
 import { RoomSettings } from "@/components/rooms/RoomSettings"
 import { useSocket } from "@/hooks/use-socket"
 import { trackEvent } from "@/lib/analytics"
 import { useAuth } from "@/providers/AuthProvider"
+import { queryKeys } from "@/api/queryKeys"
 import { cn } from "@/lib/utils"
 import { storeRoomIdForGame } from "@/lib/room-session"
 
@@ -93,36 +94,47 @@ function RoomLobbyPage() {
     },
   )
 
-  // Transform raw API data to component shape
-  const roomData: RoomData | undefined = rawRoomData ? {
-    id: (rawRoomData as Record<string, unknown>).id as string,
-    public_id: (rawRoomData as Record<string, unknown>).public_id as string,
-    owner_id: (rawRoomData as Record<string, unknown>).owner_id as string,
-    password: (rawRoomData as Record<string, unknown>).password as string,
-    active_game_id: (rawRoomData as Record<string, unknown>).active_game_id as string | null,
-    game_type: (rawRoomData as Record<string, unknown>).game_type as string | null,
-    settings: (rawRoomData as Record<string, unknown>).settings as Record<string, unknown> | null,
-    users: ((rawRoomData as Record<string, unknown>).players as { user_id: string; username: string; is_spectator: boolean }[] || []).map((p) => ({
-      id: p.user_id,
-      username: p.username,
-      is_spectator: p.is_spectator,
-    })),
-  } : undefined
+  // Transform raw API data to component shape (memoized to prevent child re-renders)
+  const roomData: RoomData | undefined = useMemo(() => {
+    if (!rawRoomData) return undefined
+    const raw = rawRoomData as Record<string, unknown>
+    // Guard against malformed Socket.IO payloads — required fields must exist
+    if (!raw.id || !raw.public_id || !raw.owner_id) return undefined
+    const playersArr = Array.isArray(raw.players) ? raw.players : []
+    return {
+      id: raw.id as string,
+      public_id: raw.public_id as string,
+      owner_id: raw.owner_id as string,
+      password: (raw.password as string) ?? "",
+      active_game_id: raw.active_game_id as string | null,
+      game_type: raw.game_type as string | null,
+      settings: raw.settings as Record<string, unknown> | null,
+      users: playersArr.map((p: { user_id?: string; username?: string; is_spectator?: boolean }) => ({
+        id: p.user_id ?? "",
+        username: p.username ?? "",
+        is_spectator: p.is_spectator,
+      })),
+    }
+  }, [rawRoomData])
 
-  // Derive players and spectators from room data
-  const allUsers: Player[] = roomData
-    ? roomData.users.map((u) => ({
-        id: u.id,
-        username: u.username,
-        is_host: u.id === roomData.owner_id,
-        is_spectator: u.is_spectator,
-      }))
-    : []
-
-  const players = allUsers.filter((u) => !u.is_spectator)
-  const spectators = allUsers.filter((u) => u.is_spectator)
-  const isHost = roomData?.owner_id === user?.id
-  const isSpectator = allUsers.some((u) => u.id === user?.id && u.is_spectator)
+  // Derive players and spectators from room data (memoized)
+  const { allUsers, players, spectators, isHost, isSpectator } = useMemo(() => {
+    const all: Player[] = roomData
+      ? roomData.users.map((u) => ({
+          id: u.id,
+          username: u.username,
+          is_host: u.id === roomData.owner_id,
+          is_spectator: u.is_spectator,
+        }))
+      : []
+    return {
+      allUsers: all,
+      players: all.filter((u) => !u.is_spectator),
+      spectators: all.filter((u) => u.is_spectator),
+      isHost: roomData?.owner_id === user?.id,
+      isSpectator: all.some((u) => u.id === user?.id && u.is_spectator),
+    }
+  }, [roomData, user?.id])
 
   // Sync game type from server on first load
   useEffect(() => {
@@ -157,6 +169,13 @@ function RoomLobbyPage() {
 
     previousPlayerIdsRef.current = currentMap
   }, [allUsers, user, t])
+
+  // Reset navigating ref when game ends (active_game_id disappears)
+  useEffect(() => {
+    if (!roomData?.active_game_id) {
+      navigatingToGameRef.current = false
+    }
+  }, [roomData?.active_game_id])
 
   // Auto-navigate when game starts (active_game_id appears)
   useEffect(() => {
@@ -277,7 +296,7 @@ function RoomLobbyPage() {
     if (!roomData) return
     try {
       await kickMutation.mutateAsync({ room_id: roomData.id, data: { user_id: userId } })
-      queryClient.invalidateQueries({ queryKey: getRoomStateApiV1RoomsRoomIdStateGetQueryKey({ room_id: roomId }) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.room.state(roomId) })
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Failed to kick player"))
     }
@@ -336,6 +355,7 @@ function RoomLobbyPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-8 animate-slide-up">
+      <ConnectionStatus connected={socketConnected} />
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-extrabold tracking-tight gradient-text">{t("room.lobby")}</h1>
         <button
@@ -510,7 +530,7 @@ function RoomLobbyPage() {
 
       {/* Game Type Selector + Start Button (host only) */}
       {isHost && !isSpectator && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-4 scroll-mt-20">
           <div className="glass rounded-2xl p-5">
             <h3 className="text-sm font-extrabold tracking-tight mb-3">{t("room.gameType")}</h3>
             <div className="flex gap-2">

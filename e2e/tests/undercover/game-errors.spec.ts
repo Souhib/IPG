@@ -29,18 +29,20 @@ test.describe("Undercover Game Errors", () => {
     // Complete description phase via API (this is error test setup, not gameplay)
     await submitDescriptionsForAllPlayersViaAPI(activePlayers);
 
-    // Wait for voting phase with retries (polling may take a moment)
-    let state;
-    for (let attempt = 0; attempt < 10; attempt++) {
-      try {
-        state = await apiGetUndercoverState(gameId!, activePlayers[0].login.access_token);
-        if (state.turn_phase === "voting") break;
-      } catch {
-        // Game might have ended via disconnect — skip this test gracefully
-        await setup.cleanup();
-        return;
-      }
-      await activePlayers[0].page.waitForTimeout(1000);
+    // Wait for voting phase (polling may take a moment)
+    let state: Awaited<ReturnType<typeof apiGetUndercoverState>> | undefined;
+    try {
+      await expect.poll(
+        async () => {
+          state = await apiGetUndercoverState(gameId!, activePlayers[0].login.access_token);
+          return state.turn_phase;
+        },
+        { timeout: 10_000, intervals: [1000] },
+      ).toBe("voting");
+    } catch {
+      // Game might have ended via disconnect — skip this test gracefully
+      await setup.cleanup();
+      return;
     }
 
     if (!state || state.turn_phase !== "voting") {

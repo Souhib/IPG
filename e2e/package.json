@@ -9,6 +9,7 @@
     "test:rooms": "playwright test tests/rooms/",
     "test:undercover": "playwright test tests/undercover/",
     "test:codenames": "playwright test tests/codenames/",
+    "test:accessibility": "playwright test tests/accessibility/",
     "test:cross-flow": "playwright test tests/cross-flow/",
     "test:profile": "playwright test tests/profile/",
     "test:parallel": "TEST_POOL=A npx playwright test --shard=1/2 & TEST_POOL=B npx playwright test --shard=2/2 & wait",
@@ -18,10 +19,10 @@
     "docker:logs": "docker compose -f docker-compose.e2e.yml logs -f"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@playwright/test": "^1.50.0",
     "@types/node": "^22.0.0",
     "dotenv": "^16.4.0",
-
     "typescript": "^5.9.3"
   }
 }

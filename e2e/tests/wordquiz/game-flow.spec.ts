@@ -82,21 +82,18 @@ test.describe("Word Quiz Game Flow", () => {
     await startGameViaAPI(setup.players, "word_quiz", setup.roomId);
     const gameId = setup.players[0].page.url().split("/").pop()!;
 
-    // Wait for the 1s timer to expire
-    await setup.players[0].page.waitForTimeout(2000);
+    // Wait for the 1s server-side timer to expire
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+    await sleep(2000);
 
     // Force timer expired
     await apiWordQuizTimerExpired(gameId, hostToken);
 
     // Verify via API that results phase was reached
-    let state = await apiGetWordQuizState(gameId, hostToken);
-    let attempts = 0;
-    while (state.round_phase !== "results" && attempts < 10) {
-      await setup.players[0].page.waitForTimeout(500);
-      state = await apiGetWordQuizState(gameId, hostToken);
-      attempts++;
-    }
-    expect(state.round_phase).toBe("results");
+    await expect.poll(
+      async () => (await apiGetWordQuizState(gameId, hostToken)).round_phase,
+      { timeout: 10_000, intervals: [500] },
+    ).toBe("results");
 
     // Host's page should show results (host's mutation invalidates query directly)
     const hostPage = setup.players[0].page;
@@ -118,21 +115,18 @@ test.describe("Word Quiz Game Flow", () => {
     await startGameViaAPI(setup.players, "word_quiz", setup.roomId);
     const gameId = setup.players[0].page.url().split("/").pop()!;
 
-    // Wait for timer to expire server-side
-    await setup.players[0].page.waitForTimeout(2000);
+    // Wait for the 1s server-side timer to expire
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+    await sleep(2000);
 
     // Force to results
     await apiWordQuizTimerExpired(gameId, hostToken);
 
     // Wait for results to be reflected in state
-    let state = await apiGetWordQuizState(gameId, hostToken);
-    let attempts = 0;
-    while (state.round_phase !== "results" && attempts < 10) {
-      await setup.players[0].page.waitForTimeout(500);
-      state = await apiGetWordQuizState(gameId, hostToken);
-      attempts++;
-    }
-    expect(state.round_phase).toBe("results");
+    await expect.poll(
+      async () => (await apiGetWordQuizState(gameId, hostToken)).round_phase,
+      { timeout: 10_000, intervals: [500] },
+    ).toBe("results");
 
     // Advance to next round
     await apiWordQuizNextRound(gameId, hostToken);

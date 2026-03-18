@@ -23,9 +23,15 @@ async def lifespan(app: FastAPI):
 
     # Start background disconnect checker loop
     from ipg.api.controllers.disconnect import disconnect_checker_loop
-    from ipg.api.ws.notify import fire_notify_room_changed
+    from ipg.api.ws.notify import fire_notify_game_changed, fire_notify_room_changed
 
-    checker_task = asyncio.create_task(disconnect_checker_loop(engine, on_room_changed=fire_notify_room_changed))
+    checker_task = asyncio.create_task(
+        disconnect_checker_loop(
+            engine,
+            on_room_changed=fire_notify_room_changed,
+            on_game_changed=lambda gid: fire_notify_game_changed(gid),
+        )
+    )
 
     yield
 

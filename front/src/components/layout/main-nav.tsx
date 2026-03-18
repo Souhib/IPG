@@ -145,7 +145,7 @@ function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-full bg-primary/10 pe-3 ps-0.5 py-0.5 text-sm font-medium text-primary hover:bg-primary/15 transition-all duration-200"
+        className="flex items-center gap-1.5 rounded-full bg-primary/10 pe-3 ps-0.5 py-0.5 text-sm font-medium text-foreground hover:bg-primary/15 transition-all duration-200"
       >
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-xs font-bold text-primary-foreground ring-2 ring-primary/20">
           {initial}

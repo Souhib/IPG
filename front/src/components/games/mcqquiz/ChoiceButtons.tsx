@@ -25,7 +25,7 @@ export const ChoiceButtons = memo(function ChoiceButtons({
   const showResults = roundPhase === "results" || roundPhase === "game_over"
 
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div role="radiogroup" aria-label="Answer choices" className="grid grid-cols-1 gap-3">
       {choices.map((choice, index) => {
         const isSelected = selectedIndex === index
         const isCorrect = correctIndex === index
@@ -48,6 +48,9 @@ export const ChoiceButtons = memo(function ChoiceButtons({
           <motion.button
             key={index}
             type="button"
+            role="radio"
+            aria-checked={isSelected}
+            aria-label={`${LABELS[index]}: ${choice}`}
             onClick={() => !disabled && onSelect(index)}
             disabled={disabled}
             initial={{ opacity: 0, y: 10 }}

@@ -2,19 +2,78 @@ import { execSync } from "child_process";
 import { waitForBackend, waitForFrontend } from "./helpers/api-client";
 import { FRONTEND_URL } from "./helpers/constants";
 
-function runDockerExec(command: string, timeout = 120_000): void {
-  try {
-    execSync(command, { stdio: "inherit", timeout });
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : String(error);
-    // If it's a timeout, retry once
-    if (msg.includes("ETIMEDOUT") || msg.includes("timed out")) {
-      console.log("[E2E Setup] Command timed out, retrying...");
-      execSync(command, { stdio: "inherit", timeout });
-    } else {
-      throw error;
+const MAX_SEED_RETRIES = 3;
+const RETRY_DELAY_MS = 3_000;
+
+const DELETE_CMD =
+  "docker exec -w /app ipg-e2e-backend " +
+  "env PYTHONPATH=/app python scripts/generate_fake_data.py --delete";
+
+const SEED_CMD =
+  "docker exec -w /app ipg-e2e-backend " +
+  "env PYTHONPATH=/app python scripts/generate_fake_data.py --create-db";
+
+function sleep(ms: number): void {
+  execSync(`sleep ${ms / 1000}`);
+}
+
+/**
+ * Restart PgBouncer + backend to clear stale prepared statement caches.
+ * PgBouncer in transaction mode caches prepared statements that reference
+ * old OIDs after tables are dropped/recreated, causing asyncpg errors like
+ * "could not resolve query result and/or argument types".
+ */
+function restartServicesAfterDDL(): void {
+  console.log("[E2E Setup] Restarting PgBouncer + backend to clear stale connections...");
+  execSync("docker restart ipg-e2e-pgbouncer", { stdio: "inherit", timeout: 15_000 });
+  execSync("docker restart ipg-e2e-backend", { stdio: "inherit", timeout: 30_000 });
+}
+
+/**
+ * Run delete + restart + seed as an atomic unit, retrying all on failure.
+ *
+ * After --delete drops/recreates tables, PgBouncer's prepared statement
+ * cache is stale. We must restart PgBouncer and the backend before seeding.
+ * If --create-db fails mid-way (partial data committed), --delete re-runs
+ * to clean up before the next attempt.
+ */
+function seedDatabase(): void {
+  for (let attempt = 1; attempt <= MAX_SEED_RETRIES; attempt++) {
+    try {
+      execSync(DELETE_CMD, { stdio: "inherit", timeout: 120_000 });
+      restartServicesAfterDDL();
+      waitForService("http://localhost:5049/health", 30_000);
+      execSync(SEED_CMD, { stdio: "inherit", timeout: 120_000 });
+      return;
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      if (attempt < MAX_SEED_RETRIES) {
+        console.log(
+          `[E2E Setup] Seed failed (attempt ${attempt}/${MAX_SEED_RETRIES}): ${msg.split("\n")[0]}`,
+        );
+        console.log(`[E2E Setup] Retrying delete + seed in ${RETRY_DELAY_MS / 1000}s...`);
+        sleep(RETRY_DELAY_MS);
+      } else {
+        throw error;
+      }
     }
   }
+}
+
+/**
+ * Synchronously poll a health endpoint until it responds 200.
+ */
+function waitForService(url: string, timeoutMs: number): void {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      execSync(`curl -sf ${url} > /dev/null 2>&1`);
+      return;
+    } catch {
+      sleep(1_000);
+    }
+  }
+  throw new Error(`Service at ${url} did not become healthy within ${timeoutMs}ms`);
 }
 
 async function globalSetup(): Promise<void> {
@@ -38,36 +97,17 @@ async function globalSetup(): Promise<void> {
   }
 
   console.log("[E2E Setup] Resetting and seeding database via docker exec...");
-  runDockerExec(
-    "docker exec -w /app ipg-e2e-backend " +
-      "env PYTHONPATH=/app python scripts/generate_fake_data.py --delete",
-  );
-  runDockerExec(
-    "docker exec -w /app ipg-e2e-backend " +
-      "env PYTHONPATH=/app python scripts/generate_fake_data.py --create-db",
-  );
+  seedDatabase();
   console.log("[E2E Setup] Database seeded.");
 
-  // Only restart backend if it can't serve requests (avoids ~30-60s delay)
-  let backendOk = false;
-  try {
-    const res = await fetch(
-      `${process.env.API_URL || "http://localhost:5049"}/api/v1/stats/leaderboard?limit=1`,
-    );
-    backendOk = res.ok;
-  } catch {}
-
-  if (backendOk) {
-    console.log("[E2E Setup] Backend already healthy, skipping restart.");
-  } else {
-    console.log("[E2E Setup] Restarting backend to refresh DB connections...");
-    execSync("docker restart ipg-e2e-backend", {
-      stdio: "inherit",
-      timeout: 30_000,
-    });
-    await waitForBackend();
-    console.log("[E2E Setup] Backend restarted and healthy.");
-  }
+  // Restart backend to ensure fresh DB connections after seeding
+  console.log("[E2E Setup] Restarting backend to refresh DB connections...");
+  execSync("docker restart ipg-e2e-backend", {
+    stdio: "inherit",
+    timeout: 30_000,
+  });
+  await waitForBackend();
+  console.log("[E2E Setup] Backend restarted and healthy.");
 }
 
 export default globalSetup;

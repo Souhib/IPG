@@ -2,6 +2,7 @@ import traceback
 from datetime import UTC, datetime
 from uuid import UUID
 
+import logfire
 import sentry_sdk
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -36,10 +37,8 @@ from ipg.database import get_engine as _get_engine
 from ipg.settings import Settings
 
 
-def create_app(lifespan) -> FastAPI:
-    """Create a FastAPI app with all routers, middleware, and exception handlers."""
-    settings = Settings()  # type: ignore
-
+def _configure_observability(settings: Settings, app: FastAPI) -> None:
+    """Set up Sentry and Logfire if configured."""
     if settings.sentry_dsn:
         sentry_sdk.init(
             dsn=settings.sentry_dsn,
@@ -47,7 +46,22 @@ def create_app(lifespan) -> FastAPI:
             environment=settings.environment,
         )
 
+    if settings.logfire_token:
+        logfire.configure(
+            service_name="majlisna-api",
+            send_to_logfire="if-token-present",
+            token=settings.logfire_token,
+            console=False,
+        )
+        logfire.instrument_fastapi(app, capture_headers=True, excluded_urls=["/health", "/scalar"])
+
+
+def create_app(lifespan) -> FastAPI:
+    """Create a FastAPI app with all routers, middleware, and exception handlers."""
+    settings = Settings()  # type: ignore
+
     app = FastAPI(title="IPG", lifespan=lifespan)
+    _configure_observability(settings, app)
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 

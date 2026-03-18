@@ -8,13 +8,13 @@ import { toast } from "sonner"
 import { getApiErrorMessage } from "@/api/client"
 import {
   useGetMcqquizStateApiV1McqquizGamesGameIdStateGet,
-  getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey,
   useSubmitAnswerApiV1McqquizGamesGameIdAnswerPost,
   useTimerExpiredApiV1McqquizGamesGameIdTimerExpiredPost,
   useNextRoundApiV1McqquizGamesGameIdNextRoundPost,
   useLeaveRoomApiV1RoomsLeavePatch,
-  getRoomStateApiV1RoomsRoomIdStateGetQueryKey,
 } from "@/api/generated"
+import { queryKeys } from "@/api/queryKeys"
+import { ConnectionStatus } from "@/components/ConnectionStatus"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { GameErrorFallback } from "@/components/games/shared/GameErrorFallback"
 import { PhaseTimer } from "@/components/games/shared/PhaseTimer"
@@ -170,7 +170,7 @@ function McqQuizGamePage() {
       try {
         await answerMutation.mutateAsync({ game_id: gameId, data: { choice_index: index } })
         queryClient.invalidateQueries({
-          queryKey: getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+          queryKey: queryKeys.game.mcqquiz(gameId),
         })
       } catch (err) {
         toast.error(getApiErrorMessage(err, "Failed to submit answer"))
@@ -187,7 +187,7 @@ function McqQuizGamePage() {
     try {
       await timerExpiredMutation.mutateAsync({ game_id: gameId })
       queryClient.invalidateQueries({
-        queryKey: getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+        queryKey: queryKeys.game.mcqquiz(gameId),
       })
     } catch {
       // Ignore — another client may have triggered it
@@ -200,7 +200,7 @@ function McqQuizGamePage() {
     try {
       await nextRoundMutation.mutateAsync({ game_id: gameId })
       queryClient.invalidateQueries({
-        queryKey: getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey({ game_id: gameId }),
+        queryKey: queryKeys.game.mcqquiz(gameId),
       })
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Failed to advance round"))
@@ -224,7 +224,7 @@ function McqQuizGamePage() {
   const handleBackToRoom = useCallback(() => {
     if (roomIdRef.current) {
       queryClient.removeQueries({
-        queryKey: getRoomStateApiV1RoomsRoomIdStateGetQueryKey({ room_id: roomIdRef.current }),
+        queryKey: queryKeys.room.state(roomIdRef.current),
       })
       navigate({ to: "/rooms/$roomId", params: { roomId: roomIdRef.current } })
     }
@@ -244,6 +244,7 @@ function McqQuizGamePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 min-h-screen">
+      <ConnectionStatus connected={socketConnected} />
       {/* Game Over Transition Overlay */}
       <AnimatePresence>
         {showGameOverTransition && (

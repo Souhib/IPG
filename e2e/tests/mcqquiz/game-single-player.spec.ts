@@ -70,13 +70,11 @@ test.describe("MCQ Quiz Single Player", () => {
 
     // With 1 player, all players have answered, so it auto-transitions to results
     // Wait for results phase
-    let attempts = 0;
+    await expect.poll(
+      async () => (await apiGetMCQQuizState(gameId, token)).round_phase,
+      { timeout: 10_000, intervals: [500] },
+    ).not.toBe("playing");
     state = await apiGetMCQQuizState(gameId, token);
-    while (state.round_phase !== "results" && state.round_phase !== "game_over" && attempts < 10) {
-      await player.page.waitForTimeout(500);
-      state = await apiGetMCQQuizState(gameId, token);
-      attempts++;
-    }
 
     // Should be in results phase now
     expect(["results", "game_over"]).toContain(state.round_phase);
@@ -116,13 +114,11 @@ test.describe("MCQ Quiz Single Player", () => {
       }
 
       // Wait for results phase
-      let attempts = 0;
+      await expect.poll(
+        async () => (await apiGetMCQQuizState(gameId, token)).round_phase,
+        { timeout: 10_000, intervals: [500] },
+      ).not.toBe("playing");
       state = await apiGetMCQQuizState(gameId, token);
-      while (state.round_phase === "playing" && attempts < 20) {
-        await setup.players[0].page.waitForTimeout(500);
-        state = await apiGetMCQQuizState(gameId, token);
-        attempts++;
-      }
 
       if (state.round_phase === "game_over") break;
 

@@ -1,11 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
-import { getRoomStateApiV1RoomsRoomIdStateGetQueryKey } from '@/api/generated'
-import { getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryKey } from '@/api/generated'
-import { getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryKey } from '@/api/generated'
-import { getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey } from '@/api/generated'
-import { getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey } from '@/api/generated'
+import { queryKeys } from '@/api/queryKeys'
 import { getStoredToken } from '@/lib/auth'
 
 interface ChatMessage {
@@ -27,16 +23,7 @@ interface UseSocketOptions {
 }
 
 function getGameQueryKeyPrefix(gameType: string, gameId: string) {
-  if (gameType === 'codenames') {
-    return getCodenamesBoardApiV1CodenamesGamesGameIdBoardGetQueryKey({ game_id: gameId })
-  }
-  if (gameType === 'word_quiz') {
-    return getWordquizStateApiV1WordquizGamesGameIdStateGetQueryKey({ game_id: gameId })
-  }
-  if (gameType === 'mcq_quiz') {
-    return getMcqquizStateApiV1McqquizGamesGameIdStateGetQueryKey({ game_id: gameId })
-  }
-  return getUndercoverStateApiV1UndercoverGamesGameIdStateGetQueryKey({ game_id: gameId })
+  return queryKeys.game.byType(gameType, gameId)
 }
 
 /**
@@ -73,7 +60,7 @@ export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked, 
     // On reconnect, invalidate queries to catch up on events missed while disconnected
     if (roomId) {
       queryClient.invalidateQueries({
-        queryKey: getRoomStateApiV1RoomsRoomIdStateGetQueryKey({ room_id: roomId }),
+        queryKey: queryKeys.room.state(roomId),
       })
     }
     if (gameIdRef.current && gameTypeRef.current) {
@@ -107,7 +94,7 @@ export function useSocket({ roomId, gameId, gameType, enabled = true, onKicked, 
 
     socket.on('room_state', (state: Record<string, unknown>) => {
       queryClient.setQueryData(
-        getRoomStateApiV1RoomsRoomIdStateGetQueryKey({ room_id: roomId }),
+        queryKeys.room.state(roomId),
         state,
       )
     })

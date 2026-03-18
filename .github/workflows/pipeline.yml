@@ -171,9 +171,12 @@ jobs:
             --exclude='e2e' \
             ./ ${{ env.DEPLOY_DIR }}/
 
-      - name: Build backend image
+      - name: Build backend image (with layer caching)
         if: needs.changes.outputs.backend == 'true'
         working-directory: ${{ env.DEPLOY_DIR }}
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
         run: docker compose -f docker-compose.dokploy.yml build backend
 
       - name: Scan backend image with Trivy
@@ -183,12 +186,14 @@ jobs:
             aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 \
             majlisna-backend:latest 2>/dev/null || true
 
-      - name: Build frontend image
+      - name: Build frontend image (with layer caching)
         if: needs.changes.outputs.frontend == 'true'
         working-directory: ${{ env.DEPLOY_DIR }}
         env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
-        run: docker compose -f docker-compose.dokploy.yml build --no-cache frontend
+        run: docker compose -f docker-compose.dokploy.yml build frontend
 
       - name: Ensure infrastructure is running
         if: needs.changes.outputs.backend == 'true'
@@ -230,7 +235,7 @@ jobs:
 
       - name: Ensure monitoring tools are running
         working-directory: ${{ env.DEPLOY_DIR }}
-        run: docker compose -f docker-compose.dokploy.yml up -d dozzle uptime-kuma
+        run: docker compose -f docker-compose.dokploy.yml up -d dozzle uptime-kuma beszel beszel-agent watchtower crowdsec
 
       - name: Health check
         if: needs.changes.outputs.backend == 'true'

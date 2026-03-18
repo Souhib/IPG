@@ -8,9 +8,10 @@ from ipg.api.controllers.achievement import AchievementController
 from ipg.api.controllers.game import GameController
 from ipg.api.controllers.room import RoomController
 from ipg.api.controllers.stats import StatsController
-from ipg.api.models.error import GameNotFoundError, PlayerRemovedFromGameError
+from ipg.api.models.error import GameNotFoundError, NotEnoughPlayersError, PlayerRemovedFromGameError, RoomNotFoundError
 from ipg.api.models.relationship import RoomUserLink
-from ipg.api.models.table import Game, Room
+from ipg.api.models.table import Game, Room, User
+from ipg.api.schemas.error import BaseError
 
 
 class BaseGameController:
@@ -22,6 +23,60 @@ class BaseGameController:
         self._game_controller = GameController(session)
         self._stats_controller = StatsController(session)
         self._achievement_controller = AchievementController(session)
+
+    async def _prepare_game_start(self, room_id: UUID, *, min_players: int = 1) -> tuple[Room, list[User]]:
+        """Shared game start preparation: validate room, check no active game, fetch players.
+
+        Handles room locking, active game validation, and bulk user fetch (avoids N+1).
+        Must be called inside a game lock context.
+
+        Returns:
+            tuple of (Room, list[User]) — the room and non-spectator player users.
+
+        Raises:
+            BaseError: if room already has an active game.
+            RoomNotFoundError: if no players found.
+            NotEnoughPlayersError: if fewer than min_players.
+        """
+        db_room = await self._room_controller.get_room_by_id(room_id)
+
+        if db_room.active_game_id:
+            raise BaseError(
+                message=f"Room {room_id} already has an active game",
+                frontend_message="A game is already in progress.",
+                status_code=400,
+            )
+
+        # Get non-spectator players in the room (don't filter by connected —
+        # heartbeat may be stale after a game ends and the player stays on the page)
+        links = (
+            await self.session.exec(
+                select(RoomUserLink).where(
+                    RoomUserLink.room_id == db_room.id,
+                    RoomUserLink.is_spectator == False,  # noqa: E712
+                )
+            )
+        ).all()
+
+        if not links:
+            raise RoomNotFoundError(room_id=room_id)
+
+        # Bulk fetch all users in one query (fixes N+1), preserving link order
+        user_ids = [link.user_id for link in links]
+        users_result = (
+            await self.session.exec(
+                select(User).where(User.id.in_(user_ids))  # type: ignore[union-attr]
+            )
+        ).all()
+
+        # Reorder to match original link order (IN clause doesn't guarantee order)
+        users_by_id = {u.id: u for u in users_result}
+        player_users = [users_by_id[uid] for uid in user_ids if uid in users_by_id]
+
+        if len(player_users) < min_players:
+            raise NotEnoughPlayersError(player_count=len(player_users))
+
+        return db_room, player_users
 
     async def _get_game(self, game_id: UUID) -> Game:
         """Fetch a Game from PostgreSQL or raise GameNotFoundError."""

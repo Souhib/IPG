@@ -5,11 +5,10 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/api/client"
+import { queryKeys } from "@/api/queryKeys"
 import {
   useGetFriendsApiV1FriendsGet,
   useGetPendingRequestsApiV1FriendsPendingGet,
-  getFriendsApiV1FriendsGetQueryKey,
-  getPendingRequestsApiV1FriendsPendingGetQueryKey,
   useAcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost,
   useRejectFriendRequestApiV1FriendsFriendshipIdRejectPost,
   useRemoveFriendApiV1FriendsFriendshipIdDelete,
@@ -48,8 +47,8 @@ function FriendsPage() {
   const queryClient = useQueryClient()
 
   const invalidateFriendQueries = () => {
-    queryClient.invalidateQueries({ queryKey: getFriendsApiV1FriendsGetQueryKey() })
-    queryClient.invalidateQueries({ queryKey: getPendingRequestsApiV1FriendsPendingGetQueryKey() })
+    queryClient.invalidateQueries({ queryKey: queryKeys.friends.list() })
+    queryClient.invalidateQueries({ queryKey: queryKeys.friends.pending() })
   }
 
   const acceptMutation = useAcceptFriendRequestApiV1FriendsFriendshipIdAcceptPost({

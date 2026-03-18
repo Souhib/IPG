@@ -118,15 +118,13 @@ test.describe("Navigation — Protected Routes", () => {
       "/game/undercover/00000000-0000-0000-0000-000000000000",
     );
     await authenticatedPage.waitForLoadState("domcontentloaded");
-    await authenticatedPage.waitForTimeout(3000);
 
-    // Should either show an error, redirect, or show loading state
-    // (not crash or show blank page)
-    const hasContent = await authenticatedPage
-      .locator("body")
-      .textContent();
-    expect(hasContent).toBeTruthy();
-    expect(hasContent!.length).toBeGreaterThan(0);
+    // Wait for error state or content to render (not crash or show blank page)
+    await expect(async () => {
+      const bodyText = await authenticatedPage.locator("body").textContent();
+      expect(bodyText).toBeTruthy();
+      expect(bodyText!.length).toBeGreaterThan(0);
+    }).toPass({ timeout: 10_000 });
   });
 
   test("navigating to non-existent room ID shows error or redirect", async ({
@@ -136,13 +134,12 @@ test.describe("Navigation — Protected Routes", () => {
       "/rooms/00000000-0000-0000-0000-000000000000",
     );
     await authenticatedPage.waitForLoadState("domcontentloaded");
-    await authenticatedPage.waitForTimeout(3000);
 
-    // Should show error state (not crash)
-    const hasContent = await authenticatedPage
-      .locator("body")
-      .textContent();
-    expect(hasContent).toBeTruthy();
+    // Wait for error state or content to render (not crash)
+    await expect(async () => {
+      const bodyText = await authenticatedPage.locator("body").textContent();
+      expect(bodyText).toBeTruthy();
+    }).toPass({ timeout: 10_000 });
   });
 });
 

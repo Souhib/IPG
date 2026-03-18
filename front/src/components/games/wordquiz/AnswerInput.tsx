@@ -64,6 +64,7 @@ export const AnswerInput = memo(function AnswerInput({ onSubmit, disabled, answe
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("game.wordQuiz.typeYourAnswer")}
+          aria-label={t("game.wordQuiz.typeYourAnswer")}
           disabled={disabled}
           enterKeyHint="send"
           autoComplete="off"
@@ -78,6 +79,7 @@ export const AnswerInput = memo(function AnswerInput({ onSubmit, disabled, answe
         <button
           type="submit"
           disabled={!input.trim() || isSubmitting || disabled}
+          aria-label={t("game.wordQuiz.submitAnswer", "Submit answer")}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-primary hover:bg-primary/10 disabled:opacity-30 transition-all duration-200"
         >
           <Send className="h-4 w-4" />

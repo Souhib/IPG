@@ -108,12 +108,12 @@ test.describe("Disconnect During Active Game", () => {
       });
     }
 
-    // Wait for Socket.IO to reconnect on game pages (heartbeats established).
-    // After startGameViaAPI navigates players from room→game page, Socket.IO
-    // needs ~2-3s to reconnect (roomId arrives from first REST poll, then
-    // WebSocket handshake completes). Without this, closing the browser may
-    // not trigger a server-side disconnect event.
-    await setup.players[0].page.waitForTimeout(5000);
+    // Wait for Socket.IO to connect on game pages (heartbeats established).
+    // The connection status indicator disappears when connected.
+    for (const player of setup.players) {
+      if (!isPageAlive(player.page)) continue;
+      await expect(player.page.locator('text=Reconnecting')).toBeHidden({ timeout: 10_000 });
+    }
 
     // Get the leaving player's username to verify they disappear from the UI
     const leavingUsername = setup.players[3].login.user.username;
@@ -131,9 +131,11 @@ test.describe("Disconnect During Active Game", () => {
     // either the player disappears from the team list, or "Game Over" appears
     // (if removing the player empties a team).
     // Wait for UI to reflect the disconnect (stale 20s + grace 60s + checker 5s ≈ 85s)
-    await expect(
-      remainingPage.getByText(leavingUsername)
-    ).toHaveCount(0, { timeout: 120_000 });
+    await expect(async () => {
+      const nameGone = (await remainingPage.getByText(leavingUsername).count()) === 0;
+      const gameOver = (await remainingPage.locator('h2:has-text("Game Over")').count()) > 0;
+      expect(nameGone || gameOver).toBe(true);
+    }).toPass({ timeout: 170_000 });
   });
 
   test("kick during active undercover game removes player from game", async ({

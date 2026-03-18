@@ -55,12 +55,12 @@ async def connect(sid, environ, auth):  # noqa: ARG001
 
     _user_sids[user_room_key] = sid
 
-    # Store session data
+    # Store session data (user_id bound for correlation logging)
     await sio.save_session(sid, {"user_id": user_id, "room_id": room_id})
 
     # Join Socket.IO rooms: room-specific + personal user room for invites
-    sio.enter_room(sid, f"room:{room_id}")
-    sio.enter_room(sid, f"user:{user_id}")
+    await sio.enter_room(sid, f"room:{room_id}")
+    await sio.enter_room(sid, f"user:{user_id}")
     logger.debug("Socket.IO connect: sid={} user={} room={}", sid, user_id, room_id)
 
     # Update heartbeat in DB — mark user as connected with fresh last_seen_at
@@ -121,8 +121,16 @@ async def join_game(sid, data):
     # Store game_id in session and join game room
     session_data["game_id"] = game_id
     await sio.save_session(sid, session_data)
-    sio.enter_room(sid, f"game:{game_id}")
+    await sio.enter_room(sid, f"game:{game_id}")
     logger.debug("Socket.IO join_game: sid={} user={} game={}", sid, user_id, game_id)
+
+    # Update heartbeat so players using only Socket.IO don't get flagged as disconnected
+    try:
+        engine = await get_engine()
+        async with AsyncSession(engine) as session:
+            await update_heartbeat(session, user_id, room_id)
+    except Exception:
+        logger.opt(exception=True).warning("Failed to update heartbeat on join_game for sid={}", sid)
 
     # Send initial game state to this client only
     try:
@@ -133,7 +141,7 @@ async def join_game(sid, data):
         logger.opt(exception=True).warning("Failed to send initial game_state to sid={}", sid)
 
 
-def auto_join_game_room(game_id: str, room_id: str) -> int:
+async def auto_join_game_room(game_id: str, room_id: str) -> int:
     """Auto-join all connected room members into the game's Socket.IO room.
 
     Called from game start routes so players are already in the game room
@@ -144,9 +152,9 @@ def auto_join_game_room(game_id: str, room_id: str) -> int:
     """
     joined = 0
     suffix = f":{room_id}"
-    for key, sid in _user_sids.items():
+    for key, sid in list(_user_sids.items()):
         if key.endswith(suffix):
-            sio.enter_room(sid, f"game:{game_id}")
+            await sio.enter_room(sid, f"game:{game_id}")
             joined += 1
     if joined:
         logger.debug("Auto-joined {} SIDs into game:{} from room:{}", joined, game_id, room_id)

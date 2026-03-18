@@ -81,7 +81,7 @@ test.describe("Undercover Game Completion", () => {
         await clickNextRound(player.page);
       }
 
-      // Small delay for state propagation
+      // Wait briefly for state propagation after clickNextRound
       await activePlayers[0].page.waitForTimeout(500);
     }
 
@@ -99,10 +99,9 @@ test.describe("Undercover Game Completion", () => {
     // At minimum, check that UI shows game over for at least one player
     const anyPage = activePlayers.find((p) => isPageAlive(p.page))?.page;
     if (anyPage) {
-      await anyPage
-        .locator('h2:has-text("Game Over")')
-        .waitFor({ state: "visible", timeout: 30_000 })
-        .catch(() => {});
+      await expect(
+        anyPage.locator('h2:has-text("Game Over")')
+      ).toBeVisible({ timeout: 30_000 });
     }
 
     expect(gameOver).toBe(true);
@@ -197,7 +196,7 @@ test.describe("Undercover Game Completion", () => {
       // If API fails, game likely ended via disconnect — still check UI
       const anyPage = activePlayers.find((p) => isPageAlive(p.page))?.page;
       if (anyPage) {
-        await anyPage.locator('h2:has-text("Game Over")').waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+        await expect(anyPage.locator('h2:has-text("Game Over")')).toBeVisible({ timeout: 30_000 });
       }
       await setup.cleanup();
       return;
@@ -215,10 +214,9 @@ test.describe("Undercover Game Completion", () => {
     // Wait for game over on any page
     const observerPage = activePlayers.find((p) => isPageAlive(p.page))?.page;
     if (observerPage) {
-      await observerPage
-        .locator('h2:has-text("Game Over")')
-        .waitFor({ state: "visible", timeout: 30_000 })
-        .catch(() => {});
+      await expect(
+        observerPage.locator('h2:has-text("Game Over")')
+      ).toBeVisible({ timeout: 30_000 });
 
       // Check for "Back to Room" button and click it
       const backBtn = observerPage.locator('button:has-text("Back to Room")');
