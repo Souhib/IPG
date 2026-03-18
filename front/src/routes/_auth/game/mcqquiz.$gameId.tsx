@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { getApiErrorMessage } from "@/api/client"
+import { cn } from "@/lib/utils"
 import {
   useGetMcqquizStateApiV1McqquizGamesGameIdStateGet,
   useSubmitAnswerApiV1McqquizGamesGameIdAnswerPost,
@@ -164,21 +165,25 @@ function McqQuizGamePage() {
   }, [queryError, navigate])
 
   const handleSelectChoice = useCallback(
-    async (index: number) => {
+    (index: number) => {
       if (state?.my_answered || state?.is_spectator) return
       setSelectedChoice(index)
-      try {
-        await answerMutation.mutateAsync({ game_id: gameId, data: { choice_index: index } })
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.game.mcqquiz(gameId),
-        })
-      } catch (err) {
-        toast.error(getApiErrorMessage(err, "Failed to submit answer"))
-        setSelectedChoice(null)
-      }
     },
-    [gameId, queryClient, answerMutation, state?.my_answered, state?.is_spectator],
+    [state?.my_answered, state?.is_spectator],
   )
+
+  const handleConfirmChoice = useCallback(async () => {
+    if (selectedChoice === null || state?.my_answered || state?.is_spectator) return
+    try {
+      await answerMutation.mutateAsync({ game_id: gameId, data: { choice_index: selectedChoice } })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.game.mcqquiz(gameId),
+      })
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Failed to submit answer"))
+      setSelectedChoice(null)
+    }
+  }, [gameId, queryClient, answerMutation, selectedChoice, state?.my_answered, state?.is_spectator])
 
   const timerExpiredRef = useRef(false)
   const handleTimerExpired = useCallback(async () => {
@@ -319,14 +324,41 @@ function McqQuizGamePage() {
                 totalRounds={state.total_rounds}
               />
               {!state.is_spectator && (
-                <ChoiceButtons
-                  choices={state.choices}
-                  onSelect={handleSelectChoice}
-                  disabled={state.my_answered || answerMutation.isPending}
-                  selectedIndex={selectedChoice}
-                  correctIndex={null}
-                  roundPhase={state.round_phase}
-                />
+                <>
+                  <ChoiceButtons
+                    choices={state.choices}
+                    onSelect={handleSelectChoice}
+                    disabled={state.my_answered || answerMutation.isPending}
+                    selectedIndex={selectedChoice}
+                    correctIndex={null}
+                    roundPhase={state.round_phase}
+                  />
+                  {!state.my_answered && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-center"
+                    >
+                      <button
+                        type="button"
+                        onClick={handleConfirmChoice}
+                        disabled={selectedChoice === null || answerMutation.isPending}
+                        className={cn(
+                          "rounded-xl px-8 py-3 text-sm font-semibold shadow-md transition-all duration-200",
+                          selectedChoice !== null && !answerMutation.isPending
+                            ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-primary/20 hover:shadow-lg hover:-translate-y-px"
+                            : "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
+                        )}
+                      >
+                        {answerMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                        ) : (
+                          t("common.confirm")
+                        )}
+                      </button>
+                    </motion.div>
+                  )}
+                </>
               )}
               {state.my_answered && (
                 <motion.p

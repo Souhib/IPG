@@ -179,12 +179,11 @@ function RoomLobbyPage() {
     }
   }, [roomData?.active_game_id])
 
-  // Auto-navigate when game starts (active_game_id appears)
+  // Auto-navigate when game starts (active_game_id appears via Socket.IO for non-host players)
   useEffect(() => {
     if (!roomData?.active_game_id || navigatingToGameRef.current) return
     navigatingToGameRef.current = true
     storeRoomIdForGame(roomData.active_game_id, roomData.id)
-    toast.success(t("toast.gameStarting"))
     const gt = roomData.game_type || gameType
     if (gt === "codenames") {
       navigate({ to: "/game/codenames/$gameId", params: { gameId: roomData.active_game_id } })
