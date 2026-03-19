@@ -40,23 +40,16 @@ from ipg.settings import Settings
 def _sentry_sink(message) -> None:
     """Loguru sink that forwards logs to Sentry/GlitchTip.
 
-    INFO+ → breadcrumbs (context trail when an error occurs).
-    WARNING+ → Sentry events (visible as issues in GlitchTip).
+    WARNING+ → captured as Sentry events (visible as issues in GlitchTip).
+    Exceptions logged via logger.exception() → captured as Sentry exceptions.
+    Breadcrumbs are handled automatically by the Sentry SDK.
     """
     record = message.record
-    level = record["level"].name
-
-    sentry_sdk.add_breadcrumb(
-        category="log",
-        message=record["message"],
-        level=level.lower(),
-        data={k: str(v) for k, v in record["extra"].items() if v},
-    )
 
     if record["level"].no >= 30:  # WARNING+
         sentry_sdk.capture_message(
             record["message"],
-            level=level.lower(),
+            level=record["level"].name.lower(),
         )
 
     if record["exception"] is not None:
@@ -73,7 +66,7 @@ def _configure_observability(settings: Settings, app: FastAPI) -> None:
             traces_sample_rate=0.1,
             environment=settings.environment,
         )
-        logger.add(_sentry_sink, level="INFO", filter=lambda record: "ipg" in record["file"].path)
+        logger.add(_sentry_sink, level="WARNING", filter=lambda record: "ipg" in record["file"].path)
 
     if settings.logfire_token:
         logfire.configure(
