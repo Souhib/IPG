@@ -149,4 +149,92 @@ describe("useSocket", () => {
 
     expect(onKicked).toHaveBeenCalledWith("room-1")
   })
+
+  it("disconnect event sets connected to false", async () => {
+    mockSocket.connected = true
+    const { result } = renderHook(() => useSocket({ roomId: "room-1", enabled: true }))
+
+    const connectHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "connect")?.[1]
+    const { act } = await import("@testing-library/react")
+    await act(() => { connectHandler() })
+    expect(result.current.connected).toBe(true)
+
+    const disconnectHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "disconnect")?.[1]
+    await act(() => { disconnectHandler() })
+    expect(result.current.connected).toBe(false)
+  })
+
+  it("reconnect invalidates room and game queries", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "undercover", enabled: true }))
+
+    const connectHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "connect")?.[1]
+    connectHandler()
+
+    // Should invalidate room state query
+    expect(mockInvalidateQueries).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: [{ url: '/api/v1/rooms/:room_id/state', params: { room_id: "room-1" } }],
+      }),
+    )
+    // Should invalidate game state query
+    expect(mockInvalidateQueries).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: [{ url: '/api/v1/undercover/games/:game_id/state', params: { game_id: "game-1" } }],
+      }),
+    )
+  })
+
+  it("reconnect re-emits join_game", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "undercover", enabled: true }))
+
+    // Clear the initial join_game emit from the gameId effect
+    mockEmit.mockClear()
+
+    const connectHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "connect")?.[1]
+    connectHandler()
+
+    expect(mockEmit).toHaveBeenCalledWith("join_game", { game_id: "game-1" })
+  })
+
+  it("game_state handler for word_quiz triggers invalidateQueries not setQueriesData", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "word_quiz", enabled: true }))
+
+    const gameStateHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "game_state")?.[1]
+    gameStateHandler({ round: 1, phase: "hints" })
+
+    expect(mockInvalidateQueries).toHaveBeenCalled()
+    expect(mockSetQueriesData).not.toHaveBeenCalled()
+  })
+
+  it("game_state handler for undercover triggers setQueriesData", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: "game-1", gameType: "undercover", enabled: true }))
+
+    const gameStateHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "game_state")?.[1]
+    gameStateHandler({ phase: "description", players: [] })
+
+    expect(mockSetQueriesData).toHaveBeenCalledWith(
+      { queryKey: [{ url: '/api/v1/undercover/games/:game_id/state', params: { game_id: "game-1" } }] },
+      { phase: "description", players: [] },
+    )
+  })
+
+  it("connect_error does not crash", () => {
+    renderHook(() => useSocket({ roomId: "room-1", enabled: true }))
+
+    const connectErrorHandler = mockOn.mock.calls.find((c: unknown[]) => c[0] === "connect_error")?.[1]
+
+    // Should not throw
+    expect(() => connectErrorHandler(new Error("test connection error"))).not.toThrow()
+  })
+
+  it("does not emit join_game when gameId is null", () => {
+    mockSocket.connected = true
+    renderHook(() => useSocket({ roomId: "room-1", gameId: null, gameType: "undercover", enabled: true }))
+
+    expect(mockEmit).not.toHaveBeenCalledWith("join_game", expect.anything())
+  })
 })

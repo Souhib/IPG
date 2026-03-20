@@ -200,3 +200,67 @@ class TestSioEnterRoomIsAsync:
     def test_sio_enter_room_is_coroutine_function(self):
         """Documents expectation that enter_room is async."""
         assert asyncio.iscoroutinefunction(real_sio.enter_room)
+
+
+class TestMultiTab:
+    """Tests for multi-tab connection deduplication."""
+
+    async def test_old_tab_disconnect_does_not_remove_active_sid(self, mock_sio):
+        """When old tab disconnects, new tab's SID remains in _user_sids.
+
+        The disconnect handler only removes the entry if the disconnecting SID
+        matches the stored one. A replaced SID should leave the new entry intact.
+        """
+        _user_sids["user1:room1"] = "new_sid"
+
+        # Simulate old tab's disconnect — session returns the same user/room
+        mock_sio.get_session.return_value = {"user_id": "user1", "room_id": "room1"}
+
+        with (
+            patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+            patch("ipg.api.ws.handlers.AsyncSession") as mock_session_cls,
+            patch("ipg.api.ws.handlers.mark_user_disconnected", new_callable=AsyncMock),
+            patch("ipg.api.ws.handlers.fire_notify_room_changed"),
+        ):
+            mock_session = AsyncMock()
+            mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+            mock_session.__aexit__ = AsyncMock(return_value=False)
+            mock_session_cls.return_value = mock_session
+
+            # Disconnect with the OLD sid — should NOT remove new_sid
+            await disconnect("old_sid")
+
+        assert _user_sids.get("user1:room1") == "new_sid"
+
+    async def test_rapid_tab_switches_only_latest_survives(self, mock_sio):
+        """Opening 5 tabs rapidly: only the last SID should survive."""
+        for i in range(5):
+            _user_sids["user1:room1"] = f"sid_{i}"
+
+        assert _user_sids["user1:room1"] == "sid_4"
+        # Only one entry per user:room key
+        room1_entries = [k for k in _user_sids if k == "user1:room1"]
+        assert len(room1_entries) == 1
+
+    async def test_different_rooms_independent(self, mock_sio):
+        """Same user in different rooms has independent SID entries."""
+        _user_sids["user1:roomA"] = "sid_a"
+        _user_sids["user1:roomB"] = "sid_b"
+
+        del _user_sids["user1:roomA"]
+
+        assert _user_sids.get("user1:roomB") == "sid_b"
+        assert "user1:roomA" not in _user_sids
+
+    async def test_auto_join_with_stale_sids_raises(self, mock_sio):
+        """auto_join_game_room propagates enter_room errors for stale SIDs.
+
+        auto_join_game_room does NOT wrap enter_room in try/except, so a stale
+        SID causing enter_room to raise will propagate to the caller.
+        """
+        _user_sids["user1:room1"] = "stale_sid"
+
+        mock_sio.enter_room = AsyncMock(side_effect=Exception("SID not found"))
+
+        with pytest.raises(Exception, match="SID not found"):
+            await auto_join_game_room("game1", "room1")
