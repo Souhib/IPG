@@ -171,11 +171,27 @@ async def test_stale_threshold_exact_boundary(session):
 async def test_grace_period_exact_boundary(session):
     """User with disconnected_at exactly at grace threshold is NOT removed (< not <=).
     User with disconnected_at 1 second before the threshold IS removed.
+    Requires an active game on the room (lobby users are never auto-removed).
     """
     # Prepare
     user_at_boundary = await _create_user(session, "boundary", "boundary@test.com")
     user_past_boundary = await _create_user(session, "past", "past@test.com")
     room = await _create_room(session, user_at_boundary)
+
+    # Create an active game so the room qualifies for permanent removal
+    game = Game(
+        room_id=room.id,
+        type=GameType.UNDERCOVER,
+        number_of_players=3,
+        game_status=GameStatus.IN_PROGRESS,
+        live_state={"players": [], "eliminated_players": [], "turns": []},
+    )
+    session.add(game)
+    await session.commit()
+    await session.refresh(game)
+    room.active_game_id = game.id
+    session.add(room)
+    await session.commit()
 
     grace_threshold_time = datetime(2026, 1, 1, 12, 0, 0) - timedelta(seconds=GRACE_PERIOD_SECONDS)
 
