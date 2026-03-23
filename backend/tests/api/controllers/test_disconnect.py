@@ -232,8 +232,8 @@ async def test_uc_disconnect_marks_dead(session):
 
 @pytest.mark.asyncio
 async def test_uc_disconnect_cancels_below_3(session):
-    """Below 3 alive players -> game cancelled."""
-    # Prepare — 3 players, disconnect one -> 2 alive -> cancel
+    """Below 3 alive players with a win condition -> game finished (win awarded before cancel check)."""
+    # Prepare — 3 players, disconnect a civilian -> 2 alive (1 UC >= 1 CIV) -> undercovers win
     users = [await _create_user(session, f"p{i}", f"p{i}@test.com") for i in range(3)]
     room = await _create_room(session, users[0])
     players_data = [
@@ -252,9 +252,9 @@ async def test_uc_disconnect_cancels_below_3(session):
     # Act
     await _handle_undercover_disconnect(session, game, str(users[2].id), room)
 
-    # Assert
+    # Assert — win condition met (UC >= CIV), so game finishes instead of cancelling
     game = (await session.exec(select(Game).where(Game.id == game.id))).first()
-    assert game.game_status == GameStatus.CANCELLED
+    assert game.game_status == GameStatus.FINISHED
 
 
 @pytest.mark.asyncio
@@ -560,8 +560,8 @@ async def test_permanent_disconnect_during_undercover_game(session):
 
 @pytest.mark.asyncio
 async def test_permanent_disconnect_during_undercover_cancels_below_3(session):
-    """Full chain: disconnect during 3-player undercover game cancels it (only 2 left)."""
-    # Prepare — exactly 3 players
+    """Full chain: disconnect during 3-player undercover game finishes it (win condition met)."""
+    # Prepare — exactly 3 players (2 civ, 1 UC), disconnect a civilian -> 1 UC >= 1 CIV -> UC wins
     users = [await _create_user(session, f"p{i}", f"p{i}@test.com") for i in range(3)]
     room = await _create_room(session, users[0])
     for u in users:
@@ -589,9 +589,9 @@ async def test_permanent_disconnect_during_undercover_cancels_below_3(session):
     # Act
     await _handle_permanent_disconnect(session, link)
 
-    # Assert — game cancelled
+    # Assert — win condition met (UC >= CIV), so game finishes
     game = (await session.exec(select(Game).where(Game.id == game.id))).first()
-    assert game.game_status == GameStatus.CANCELLED
+    assert game.game_status == GameStatus.FINISHED
 
     # Assert — room's active_game_id cleared
     room = (await session.exec(select(Room).where(Room.id == room.id))).first()

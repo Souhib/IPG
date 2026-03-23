@@ -8,9 +8,11 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from ipg.api.controllers.shared import get_password_hash
 from ipg.api.controllers.undercover_game import UndercoverGameController
 from ipg.api.models.game import GameStatus
-from ipg.api.models.table import Game, Room
+from ipg.api.models.relationship import RoomUserLink
+from ipg.api.models.table import Game, Room, User
 from ipg.api.models.undercover import UndercoverRole
 from ipg.api.schemas.error import (
     BaseError,
@@ -53,6 +55,34 @@ async def _setup_voting_phase(controller, setup_undercover_game, session):
     order = game.live_state["turns"][0]["description_order"]
     game_uuid = UUID(result.game_id)
 
+    for uid in order:
+        await controller.submit_description(game_uuid, UUID(uid), "word")
+
+    game = await _get_game(session, result.game_id)
+    return setup, result, game
+
+
+async def _setup_mr_white_voting_phase(controller, setup_undercover_game, session):
+    """Helper: start a 5-player game, force one player as Mr. White, and reach voting phase."""
+    setup = await setup_undercover_game(5)
+    result = await _start_game(controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+
+    # Force roles: player 0 = mr_white, player 1 = undercover, rest = civilian
+    state["players"][0]["role"] = UndercoverRole.MR_WHITE.value
+    state["players"][1]["role"] = UndercoverRole.UNDERCOVER.value
+    for p in state["players"][2:]:
+        p["role"] = UndercoverRole.CIVILIAN.value
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Submit all descriptions to reach voting phase
+    game = await _get_game(session, result.game_id)
+    order = game.live_state["turns"][0]["description_order"]
+    game_uuid = UUID(result.game_id)
     for uid in order:
         await controller.submit_description(game_uuid, UUID(uid), "word")
 
@@ -875,3 +905,576 @@ async def test_create_stores_hint_in_live_state(undercover_game_controller, setu
     assert "undercover_word_hint" in state
     assert "hint_usage" in state
     assert state["hint_usage"] == {}
+
+
+# ========== Timer Expiration ==========
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_describing_phase(undercover_game_controller, setup_undercover_game, session):
+    """During describing phase with a configured timer, handle_timer_expired skips to voting."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+
+    # Set a short timer and a past timer_started_at so the timer is expired
+    state = game.live_state
+    state["timer_config"]["description_seconds"] = 5
+    state["timer_started_at"] = "2020-01-01T00:00:00+00:00"
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    host_id = setup["users"][0].id
+
+    # Act
+    timer_result = await undercover_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert
+    assert timer_result.action == "skip_to_voting"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["turns"][-1]["phase"] == "voting"
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_voting_phase(undercover_game_controller, setup_undercover_game, session):
+    """During voting phase, handle_timer_expired auto-fills missing votes and triggers elimination."""
+    # Prepare
+    setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
+
+    # Set a short timer and a past timer_started_at so the timer is expired
+    state = game.live_state
+    state["timer_config"]["voting_seconds"] = 5
+    state["timer_started_at"] = "2020-01-01T00:00:00+00:00"
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    host_id = setup["users"][0].id
+
+    # Act
+    timer_result = await undercover_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert
+    assert timer_result.action == "auto_vote"
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    # All alive players should have votes
+    alive_ids = [p["user_id"] for p in state["players"] if p["is_alive"]]
+    for uid in alive_ids:
+        assert uid in state["turns"][-1]["votes"] or not next(
+            (p for p in state["players"] if p["user_id"] == uid and p["is_alive"]), None
+        )
+    # At least one player should have been eliminated
+    assert len(state["eliminated_players"]) >= 1
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_no_timer_configured(undercover_game_controller, setup_undercover_game, session):
+    """When timer is 0 (disabled), handle_timer_expired returns timer_not_expired."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+
+    # Ensure timer is disabled (0)
+    state = game.live_state
+    state["timer_config"]["description_seconds"] = 0
+    state["timer_config"]["voting_seconds"] = 0
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    host_id = setup["users"][0].id
+
+    # Act
+    timer_result = await undercover_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert — timer is disabled so _is_timer_actually_expired returns False
+    assert timer_result.action == "timer_not_expired"
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_non_host_rejected(undercover_game_controller, setup_undercover_game, session):  # noqa: ARG001
+    """Non-host player calling handle_timer_expired should be rejected."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    non_host = setup["users"][1]
+
+    # Act / Assert
+    with pytest.raises(BaseError, match="Only the host"):
+        await undercover_game_controller.handle_timer_expired(UUID(result.game_id), non_host.id)
+
+
+# ========== Vote Tie and Elimination ==========
+
+
+@pytest.mark.asyncio
+async def test_vote_tie_without_mayor(undercover_game_controller, setup_undercover_game, session):
+    """When votes are tied and no mayor exists, the first player in the tied list is eliminated."""
+    # Prepare — 4 players for a possible tie
+    setup = await setup_undercover_game(4)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game_uuid = UUID(result.game_id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    order = state["turns"][0]["description_order"]
+
+    # Submit all descriptions
+    for uid in order:
+        await undercover_game_controller.submit_description(game_uuid, UUID(uid), "word")
+
+    # Remove mayor from all players
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    for p in state["players"]:
+        p["is_mayor"] = False
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    users = setup["users"]
+    # Create a tie: users[0] and users[1] vote for users[2], users[2] and users[3] vote for users[0]
+    await undercover_game_controller.submit_vote(game_uuid, users[0].id, users[2].id)
+    await undercover_game_controller.submit_vote(game_uuid, users[1].id, users[2].id)
+    await undercover_game_controller.submit_vote(game_uuid, users[2].id, users[0].id)
+    await undercover_game_controller.submit_vote(game_uuid, users[3].id, users[0].id)
+
+    # Assert — someone got eliminated (tie broken deterministically)
+    game = await _get_game(session, result.game_id)
+    assert len(game.live_state["eliminated_players"]) == 1
+    # The eliminated player should be one of the two tied players
+    eliminated_id = game.live_state["eliminated_players"][0]["user_id"]
+    assert eliminated_id in (str(users[0].id), str(users[2].id))
+
+
+# ========== Role Distribution ==========
+
+
+@pytest.mark.asyncio
+async def test_create_4_players_mr_white_disabled(undercover_game_controller, setup_undercover_game, session):
+    """4 players with mr_white_enabled=False: 0 Mr. White, 1 undercover, 3 civilians."""
+    # Prepare
+    setup = await setup_undercover_game(4)
+    room = setup["room"]
+    # Disable Mr. White via room settings
+    room.settings = {"enable_mr_white": False}
+    session.add(room)
+    await session.commit()
+
+    # Act
+    result = await _start_game(undercover_game_controller, room.id, setup["users"][0].id)
+
+    # Assert
+    game = await _get_game(session, result.game_id)
+    players = game.live_state["players"]
+    roles = [p["role"] for p in players]
+
+    assert roles.count(UndercoverRole.MR_WHITE.value) == 0
+    assert roles.count(UndercoverRole.UNDERCOVER.value) == 1
+    assert roles.count(UndercoverRole.CIVILIAN.value) == 3
+
+
+@pytest.mark.asyncio
+async def test_create_4_players_mr_white_enabled(undercover_game_controller, setup_undercover_game, session):
+    """4 players with Mr. White enabled: 1 Mr. White, 1 undercover, 2 civilians."""
+    # Prepare
+    setup = await setup_undercover_game(4)
+    room = setup["room"]
+    room.settings = {"enable_mr_white": True}
+    session.add(room)
+    await session.commit()
+
+    # Act
+    result = await _start_game(undercover_game_controller, room.id, setup["users"][0].id)
+
+    # Assert
+    game = await _get_game(session, result.game_id)
+    players = game.live_state["players"]
+    roles = [p["role"] for p in players]
+
+    # 4 players: _compute_roles → mr_white=1, undercover=max(2,4//4)=2, civilians=1
+    # But the while loop adjusts: undercover -> 1, civilians -> 2
+    assert roles.count(UndercoverRole.MR_WHITE.value) == 1
+    assert len(players) == 4
+    assert roles.count(UndercoverRole.CIVILIAN.value) >= 1
+
+
+# ========== Spectator State ==========
+
+
+@pytest.mark.asyncio
+async def test_get_state_spectator_hides_roles(undercover_game_controller, setup_undercover_game, session):
+    """A spectator should NOT see player roles or words during an in-progress game."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+
+    spectator = User(
+        username="spectator", email_address="spectator@test.com", password=get_password_hash("password123")
+    )
+    session.add(spectator)
+    await session.commit()
+    await session.refresh(spectator)
+
+    link = RoomUserLink(
+        room_id=setup["room"].id,
+        user_id=spectator.id,
+        connected=True,
+        is_spectator=True,
+    )
+    session.add(link)
+    await session.commit()
+
+    # Act
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), spectator.id)
+
+    # Assert
+    assert player_state.is_spectator is True
+    assert player_state.my_role == "spectator"
+    assert player_state.my_word == ""
+    assert player_state.word_explanations is None  # No word explanations during in-progress game
+
+
+@pytest.mark.asyncio
+async def test_get_state_spectator_sees_roles_after_game_over(
+    undercover_game_controller, setup_undercover_game, session
+):
+    """After game ends, spectator should see word explanations."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+
+    # Force game to finished state with a winner
+    state = game.live_state
+    # Kill all undercovers to trigger civilian win condition
+    for p in state["players"]:
+        if p["role"] == UndercoverRole.UNDERCOVER.value:
+            p["is_alive"] = False
+            state["eliminated_players"].append({"user_id": p["user_id"], "username": p["username"], "role": p["role"]})
+    game.live_state = state
+    game.game_status = GameStatus.FINISHED
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Create a spectator
+    spectator = User(
+        username="spectator2", email_address="spectator2@test.com", password=get_password_hash("password123")
+    )
+    session.add(spectator)
+    await session.commit()
+    await session.refresh(spectator)
+
+    link = RoomUserLink(
+        room_id=setup["room"].id,
+        user_id=spectator.id,
+        connected=True,
+        is_spectator=True,
+    )
+    session.add(link)
+    await session.commit()
+
+    # Act
+    player_state = await undercover_game_controller.get_state(UUID(result.game_id), spectator.id)
+
+    # Assert
+    assert player_state.is_spectator is True
+    assert player_state.word_explanations is not None
+    assert player_state.word_explanations.civilian_word == state["civilian_word"]
+    assert player_state.word_explanations.undercover_word == state["undercover_word"]
+
+
+# ========== Win Conditions ==========
+
+
+@pytest.mark.asyncio
+async def test_undercovers_win_outnumber_civilians(undercover_game_controller, setup_undercover_game, session):  # noqa: ARG001
+    """When alive undercovers + mr_white >= alive civilians, undercovers win."""
+    # Prepare — use _get_winning_team directly with crafted state
+    state = {
+        "players": [
+            {"user_id": "u1", "username": "p1", "role": UndercoverRole.UNDERCOVER.value, "is_alive": True},
+            {"user_id": "u2", "username": "p2", "role": UndercoverRole.CIVILIAN.value, "is_alive": True},
+            {"user_id": "u3", "username": "p3", "role": UndercoverRole.CIVILIAN.value, "is_alive": False},
+        ],
+    }
+
+    # Act
+    winner = undercover_game_controller._get_winning_team(state)
+
+    # Assert — 1 undercover >= 1 civilian → undercovers win
+    assert winner == UndercoverRole.UNDERCOVER.value
+
+
+@pytest.mark.asyncio
+async def test_civilians_win_all_threats_eliminated(undercover_game_controller, setup_undercover_game, session):  # noqa: ARG001
+    """When all undercovers AND all Mr. White are eliminated, civilians win."""
+    # Prepare
+    state = {
+        "players": [
+            {"user_id": "u1", "username": "p1", "role": UndercoverRole.UNDERCOVER.value, "is_alive": False},
+            {"user_id": "u2", "username": "p2", "role": UndercoverRole.MR_WHITE.value, "is_alive": False},
+            {"user_id": "u3", "username": "p3", "role": UndercoverRole.CIVILIAN.value, "is_alive": True},
+            {"user_id": "u4", "username": "p4", "role": UndercoverRole.CIVILIAN.value, "is_alive": True},
+        ],
+    }
+
+    # Act
+    winner = undercover_game_controller._get_winning_team(state)
+
+    # Assert
+    assert winner == UndercoverRole.CIVILIAN.value
+
+
+@pytest.mark.asyncio
+async def test_vote_elimination_removes_last_undercover_civilians_win(
+    undercover_game_controller, setup_undercover_game, session
+):
+    """Eliminating the last undercover (no Mr. White in game) triggers civilian victory."""
+    # Prepare — 3 players: 1 undercover, 2 civilians, 0 mr_white
+    setup, result, game = await _setup_voting_phase(undercover_game_controller, setup_undercover_game, session)
+
+    game_uuid = UUID(result.game_id)
+    state = game.live_state
+    undercover_player = _find_player_by_role(state, UndercoverRole.UNDERCOVER.value)
+    users = setup["users"]
+
+    # Act — everyone votes for the undercover (except the undercover, who votes for someone else)
+    for voter in users:
+        if str(voter.id) == undercover_player["user_id"]:
+            other = next(u for u in users if str(u.id) != undercover_player["user_id"])
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, other.id)
+        else:
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(undercover_player["user_id"]))
+
+    # Assert — civilians should win
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    uc = next(p for p in state["players"] if p["role"] == UndercoverRole.UNDERCOVER.value)
+    assert uc["is_alive"] is False
+    assert game.game_status == GameStatus.FINISHED
+
+
+# ========== _auto_fill_missing_votes ==========
+
+
+def test_auto_fill_missing_votes():
+    """The _auto_fill_missing_votes static method fills votes for players who haven't voted."""
+    # Prepare
+    state = {
+        "players": [
+            {"user_id": "u1", "username": "p1", "role": "civilian", "is_alive": True},
+            {"user_id": "u2", "username": "p2", "role": "civilian", "is_alive": True},
+            {"user_id": "u3", "username": "p3", "role": "undercover", "is_alive": True},
+        ],
+        "turns": [
+            {
+                "votes": {"u1": "u3"},  # Only u1 has voted
+                "words": {},
+                "description_order": [],
+                "current_describer_index": 0,
+                "phase": "voting",
+            }
+        ],
+    }
+
+    # Act
+    UndercoverGameController._auto_fill_missing_votes(state)
+
+    # Assert — u2 and u3 should now have votes
+    votes = state["turns"][-1]["votes"]
+    assert "u1" in votes
+    assert "u2" in votes
+    assert "u3" in votes
+    # Each player's vote should not be for themselves
+    assert votes["u2"] != "u2"
+    assert votes["u3"] != "u3"
+
+
+# ========== record_hint_view edge case ==========
+
+
+@pytest.mark.asyncio
+async def test_record_hint_view_wrong_word(undercover_game_controller, setup_undercover_game, session):
+    """Recording a hint view for a word not in the game should still succeed."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game_uuid = UUID(result.game_id)
+    user = setup["users"][0]
+
+    # Act — record a hint for a word that is not in the game
+    hint_result = await undercover_game_controller.record_hint_view(game_uuid, user.id, "nonexistentword")
+
+    # Assert
+    assert hint_result.recorded is True
+    game = await _get_game(session, result.game_id)
+    assert "nonexistentword" in game.live_state["hint_usage"][str(user.id)]
+
+
+# ========== start_next_round ==========
+
+
+@pytest.mark.asyncio
+async def test_start_next_round_non_host_succeeds(undercover_game_controller, setup_undercover_game, session):
+    """Non-host calling start_next_round is not rejected (no host check in this method)."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game_uuid = UUID(result.game_id)
+    non_host = setup["users"][1]
+
+    # Act — non-host starts next round (no host validation exists)
+    round_result = await undercover_game_controller.start_next_round(game_uuid, setup["room"].id, non_host.id)
+
+    # Assert — succeeds without error
+    assert round_result.turn_number == 2
+    game = await _get_game(session, result.game_id)
+    assert len(game.live_state["turns"]) == 2
+
+
+# ========== Description validation ==========
+
+
+@pytest.mark.asyncio
+async def test_describe_word_is_stripped(undercover_game_controller, setup_undercover_game, session):
+    """A word with leading/trailing whitespace is stripped before storage."""
+    # Prepare
+    setup = await setup_undercover_game(3)
+    result = await _start_game(undercover_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    first_describer = game.live_state["turns"][0]["description_order"][0]
+
+    # Act
+    desc_result = await undercover_game_controller.submit_description(
+        UUID(result.game_id), UUID(first_describer), "  hello  "
+    )
+
+    # Assert — word is stripped
+    assert desc_result.word == "hello"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["turns"][0]["words"][first_describer] == "hello"
+
+
+# ========== Mr. White Guessing ==========
+
+
+@pytest.mark.asyncio
+async def test_mr_white_eliminated_triggers_guessing_phase(undercover_game_controller, setup_undercover_game, session):
+    """Voting that eliminates Mr. White enters mr_white_guessing phase instead of ending the game."""
+    # Prepare
+    setup, result, game = await _setup_mr_white_voting_phase(undercover_game_controller, setup_undercover_game, session)
+    game_uuid = UUID(result.game_id)
+    state = game.live_state
+    mr_white = state["players"][0]  # We forced player 0 as Mr. White
+    users = setup["users"]
+
+    # Act — everyone votes for Mr. White (Mr. White votes for someone else)
+    for voter in users:
+        if str(voter.id) == mr_white["user_id"]:
+            other = next(u for u in users if str(u.id) != mr_white["user_id"])
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, other.id)
+        else:
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(mr_white["user_id"]))
+
+    # Assert
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    assert state["turns"][-1]["phase"] == "mr_white_guessing"
+    assert state["mr_white_guesser"] == mr_white["user_id"]
+    assert game.game_status != GameStatus.FINISHED
+
+
+@pytest.mark.asyncio
+async def test_mr_white_guess_correct_undercovers_win(undercover_game_controller, setup_undercover_game, session):
+    """Mr. White guesses correctly, undercovers win."""
+    # Prepare — get to mr_white_guessing phase
+    setup, result, game = await _setup_mr_white_voting_phase(undercover_game_controller, setup_undercover_game, session)
+    game_uuid = UUID(result.game_id)
+    state = game.live_state
+    civilian_word = state["civilian_word"]
+    mr_white = state["players"][0]
+    users = setup["users"]
+
+    # Vote out Mr. White
+    for voter in users:
+        if str(voter.id) == mr_white["user_id"]:
+            other = next(u for u in users if str(u.id) != mr_white["user_id"])
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, other.id)
+        else:
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(mr_white["user_id"]))
+
+    # Act — Mr. White guesses correctly
+    guess_result = await undercover_game_controller.submit_mr_white_guess(
+        game_uuid, UUID(mr_white["user_id"]), civilian_word
+    )
+
+    # Assert
+    assert guess_result.correct is True
+    assert guess_result.winner == "undercovers"
+    game = await _get_game(session, result.game_id)
+    assert game.game_status == GameStatus.FINISHED
+
+
+@pytest.mark.asyncio
+async def test_mr_white_guess_wrong_game_continues(undercover_game_controller, setup_undercover_game, session):
+    """Mr. White guesses wrong, game continues (checks win conditions)."""
+    # Prepare — get to mr_white_guessing phase
+    setup, result, game = await _setup_mr_white_voting_phase(undercover_game_controller, setup_undercover_game, session)
+    game_uuid = UUID(result.game_id)
+    state = game.live_state
+    mr_white = state["players"][0]
+    users = setup["users"]
+
+    # Vote out Mr. White
+    for voter in users:
+        if str(voter.id) == mr_white["user_id"]:
+            other = next(u for u in users if str(u.id) != mr_white["user_id"])
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, other.id)
+        else:
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(mr_white["user_id"]))
+
+    # Act — Mr. White guesses wrong
+    guess_result = await undercover_game_controller.submit_mr_white_guess(
+        game_uuid, UUID(mr_white["user_id"]), "completely_wrong_word"
+    )
+
+    # Assert — wrong guess, game should check win conditions
+    assert guess_result.correct is False
+    game = await _get_game(session, result.game_id)
+    # Mr. White is dead but undercover (player 1) is still alive with 3 civilians
+    # So game should continue (1 undercover < 3 civilians)
+    state = game.live_state
+    assert state.get("mr_white_guesser") is None
+
+
+@pytest.mark.asyncio
+async def test_mr_white_guess_non_mr_white_rejected(undercover_game_controller, setup_undercover_game, session):
+    """Non Mr. White player trying to guess is rejected."""
+    # Prepare — get to mr_white_guessing phase
+    setup, result, game = await _setup_mr_white_voting_phase(undercover_game_controller, setup_undercover_game, session)
+    game_uuid = UUID(result.game_id)
+    state = game.live_state
+    mr_white = state["players"][0]
+    non_mr_white = state["players"][1]  # undercover player
+    users = setup["users"]
+
+    # Vote out Mr. White
+    for voter in users:
+        if str(voter.id) == mr_white["user_id"]:
+            other = next(u for u in users if str(u.id) != mr_white["user_id"])
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, other.id)
+        else:
+            await undercover_game_controller.submit_vote(game_uuid, voter.id, UUID(mr_white["user_id"]))
+
+    # Act / Assert — non-Mr. White player tries to guess
+    with pytest.raises(BaseError, match="Only the eliminated Mr. White"):
+        await undercover_game_controller.submit_mr_white_guess(game_uuid, UUID(non_mr_white["user_id"]), "some_word")

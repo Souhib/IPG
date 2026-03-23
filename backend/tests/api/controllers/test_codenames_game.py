@@ -8,6 +8,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from ipg.api.constants import CODENAMES_BOARD_SIZE
 from ipg.api.controllers.codenames_game import CodenamesGameController
 from ipg.api.controllers.codenames_helpers import (
     CodenamesCardType,
@@ -16,7 +17,8 @@ from ipg.api.controllers.codenames_helpers import (
     CodenamesTeam,
 )
 from ipg.api.models.game import GameStatus
-from ipg.api.models.table import Game, Room
+from ipg.api.models.relationship import RoomUserLink
+from ipg.api.models.table import Game, Room, User
 from ipg.api.schemas.error import (
     BaseError,
     CardAlreadyRevealedError,
@@ -1120,3 +1122,423 @@ async def test_board_includes_hint_field(codenames_game_controller, setup_codena
     # Assert — each card has a 'hint' key
     for card in board_result.board:
         assert hasattr(card, "hint")
+
+
+# ─── Timer Expired Tests ────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_clue_phase(codenames_game_controller, setup_codenames_game, session):
+    """During clue-giving phase, timer expiration should auto-end the turn."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+
+    # Set timer config with non-zero clue timer and push timer_started_at far in the past
+    state["timer_config"] = {"clue_seconds": 60, "guess_seconds": 60}
+    state["timer_started_at"] = "2020-01-01T00:00:00+00:00"
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Act — host triggers timer expiration (no clue given, so it's clue phase)
+    host_id = setup["users"][0].id
+    timer_result = await codenames_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert — turn switched
+    assert timer_result.action == "auto_end_turn"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == other_team
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_guess_phase(codenames_game_controller, setup_codenames_game, session):
+    """During guess phase, timer expiration should auto-end the turn and switch teams."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _give_clue_first(codenames_game_controller, session, result)
+    state = game.live_state
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+
+    # Set timer config with non-zero guess timer and push timer_started_at far in the past
+    state["timer_config"] = {"clue_seconds": 60, "guess_seconds": 60}
+    state["timer_started_at"] = "2020-01-01T00:00:00+00:00"
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Act — host triggers timer expiration (clue already given, so it's guess phase)
+    host_id = setup["users"][0].id
+    timer_result = await codenames_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert — turn switched
+    assert timer_result.action == "auto_end_turn"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == other_team
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_non_host_allowed(codenames_game_controller, setup_codenames_game, session):
+    """Any player can trigger timer expiration — not just host."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+
+    # Set timer config so it doesn't short-circuit
+    state["timer_config"] = {"clue_seconds": 60, "guess_seconds": 60}
+    state["timer_started_at"] = "2020-01-01T00:00:00+00:00"
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Act — non-host triggers timer expiration
+    non_host_id = setup["users"][1].id
+    timer_result = await codenames_game_controller.handle_timer_expired(UUID(result.game_id), non_host_id)
+
+    # Assert — should succeed and switch turn
+    assert timer_result.action == "auto_end_turn"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == other_team
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_no_timer_configured(codenames_game_controller, setup_codenames_game, session):
+    """When timer is 0 (disabled), timer expired should return without changing state."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    current_team = state["current_team"]
+
+    # Ensure timer is 0 (disabled) — this is the default
+    state["timer_config"] = {"clue_seconds": 0, "guess_seconds": 0}
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    # Act — host triggers timer expiration
+    host_id = setup["users"][0].id
+    timer_result = await codenames_game_controller.handle_timer_expired(UUID(result.game_id), host_id)
+
+    # Assert — no action taken, team stays the same
+    assert timer_result.action == "timer_not_expired"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == current_team
+
+
+# ─── Spectator Board Test ───────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_board_spectator_hides_unrevealed(codenames_game_controller, setup_codenames_game, session):
+    """A spectator should see the same view as an operative (no card types for unrevealed cards)."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+
+    # Create a spectator user with RoomUserLink.is_spectator = True
+    spectator = User(username="spectator_cn", email_address="spectator_cn@test.com", password="password123")
+    session.add(spectator)
+    await session.commit()
+    await session.refresh(spectator)
+
+    spectator_link = RoomUserLink(
+        room_id=setup["room"].id,
+        user_id=spectator.id,
+        connected=True,
+        is_spectator=True,
+    )
+    session.add(spectator_link)
+    await session.commit()
+
+    # Act
+    board_result = await codenames_game_controller.get_board(UUID(result.game_id), spectator.id)
+
+    # Assert — unrevealed cards should have card_type=None
+    unrevealed = [c for c in board_result.board if not c.revealed]
+    assert len(unrevealed) > 0
+    assert all(c.card_type is None for c in unrevealed)
+    assert board_result.is_spectator is True
+
+
+# ─── Single Operative Auto-Reveal Test ──────────────────────
+
+
+@pytest.mark.asyncio
+async def test_single_operative_auto_reveal(codenames_game_controller, setup_codenames_game, session):
+    """When only 1 operative on a team, guess_card should auto-reveal (skip voting)."""
+    # Prepare — 4 players means each team has 1 spymaster + 1 operative
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _give_clue_first(codenames_game_controller, session, result)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    operatives = _find_all_operatives(state, current_team)
+    assert len(operatives) == 1, "4-player game should have exactly 1 operative per team"
+
+    team_card_idx = _find_card_of_type(state["board"], current_team)
+
+    # Act — single operative guesses
+    guess_result = await codenames_game_controller.guess_card(
+        UUID(result.game_id), UUID(operatives[0]["user_id"]), team_card_idx
+    )
+
+    # Assert — card revealed immediately (no voting), result is "correct"
+    assert guess_result.result == "correct"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["board"][team_card_idx]["revealed"] is True
+
+
+# ─── Clue Case-Insensitive Board Match Test ─────────────────
+
+
+@pytest.mark.asyncio
+async def test_clue_case_insensitive_board_match(codenames_game_controller, setup_codenames_game, session):
+    """Giving a clue that matches a board word case-insensitively should be rejected."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    spymaster = _find_spymaster(state, current_team)
+    # Get a board word and change its case
+    board_word = state["board"][0]["word"]
+    case_changed = board_word.upper() if board_word[0].islower() else board_word.lower()
+
+    # Act & Assert — case-insensitive match should be rejected
+    with pytest.raises(ClueWordIsOnBoardError):
+        await codenames_game_controller.give_clue(UUID(result.game_id), UUID(spymaster["user_id"]), case_changed, 2)
+
+
+# ─── Guess Opponent Last Card Test ──────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_guess_opponent_last_card_opponent_wins(codenames_game_controller, setup_codenames_game, session):
+    """Guessing the opponent's last remaining card should make the opponent win."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _give_clue_first(codenames_game_controller, session, result)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+
+    # Set opponent remaining to 1 so guessing their card wins for them
+    other_remaining_key = f"{other_team}_remaining"
+    state[other_remaining_key] = 1
+    game.live_state = state
+    flag_modified(game, "live_state")
+    session.add(game)
+    await session.commit()
+
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    operative = _find_operative(state, current_team)
+    opponent_card_idx = _find_card_of_type(state["board"], other_team)
+
+    # Act
+    guess_result = await codenames_game_controller.guess_card(
+        UUID(result.game_id), UUID(operative["user_id"]), opponent_card_idx
+    )
+
+    # Assert — opponent wins
+    assert guess_result.result == "opponent_wins"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["status"] == CodenamesGameStatus.FINISHED.value
+    assert game.live_state["winner"] == other_team
+    assert game.game_status == GameStatus.FINISHED
+
+
+# ─── Guess Neutral Switches Turn Test ───────────────────────
+
+
+@pytest.mark.asyncio
+async def test_guess_neutral_switches_turn(codenames_game_controller, setup_codenames_game, session):
+    """Guessing a neutral card should end the turn and switch to the other team."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _give_clue_first(codenames_game_controller, session, result)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+    operative = _find_operative(state, current_team)
+    neutral_idx = _find_card_of_type(state["board"], CodenamesCardType.NEUTRAL.value)
+
+    # Act
+    guess_result = await codenames_game_controller.guess_card(
+        UUID(result.game_id), UUID(operative["user_id"]), neutral_idx
+    )
+
+    # Assert — turn switched
+    assert guess_result.result == "neutral"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == other_team
+
+
+# ─── End Turn Wrong Team Rejected Test ──────────────────────
+
+
+@pytest.mark.asyncio
+async def test_end_turn_wrong_team_rejected(codenames_game_controller, setup_codenames_game, session):
+    """An operative from the non-active team calling end_turn should be rejected."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+    wrong_operative = _find_operative(state, other_team)
+
+    # Act & Assert
+    with pytest.raises(NotYourTurnError):
+        await codenames_game_controller.end_turn(UUID(result.game_id), UUID(wrong_operative["user_id"]))
+
+
+# ─── End Turn After Assassin Rejected Test ──────────────────
+
+
+@pytest.mark.asyncio
+async def test_end_turn_after_assassin_rejected(codenames_game_controller, setup_codenames_game, session):
+    """Calling end_turn after game is finished should be rejected."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _give_clue_first(codenames_game_controller, session, result)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    operative = _find_operative(state, current_team)
+    assassin_idx = _find_card_of_type(state["board"], CodenamesCardType.ASSASSIN.value)
+
+    # Guess assassin to finish the game
+    await codenames_game_controller.guess_card(UUID(result.game_id), UUID(operative["user_id"]), assassin_idx)
+
+    # Act & Assert — end_turn on finished game
+    with pytest.raises(GameNotInProgressError):
+        await codenames_game_controller.end_turn(UUID(result.game_id), UUID(operative["user_id"]))
+
+
+# ─── Create With Word Packs Test ────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_create_with_word_packs(codenames_game_controller, setup_codenames_game, session):
+    """Creating a game with specific word pack IDs should use words from those packs."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    word_pack = setup["word_pack"]
+
+    # Act — pass word_pack_ids
+    result = await codenames_game_controller.create_and_start(
+        setup["room"].id, setup["users"][0].id, word_pack_ids=[word_pack.id]
+    )
+
+    # Assert — game created with board words from the pack
+    game = await _get_game(session, result.game_id)
+    assert len(game.live_state["board"]) == 25
+    board_words = {card["word"] for card in game.live_state["board"]}
+    pack_words = {w.word for w in setup["words"]}
+    # All board words should come from the pack
+    assert board_words.issubset(pack_words)
+    # game_configurations should record the word pack IDs
+    assert str(word_pack.id) in game.game_configurations["word_pack_ids"]
+
+
+# ─── Clue Number Zero Test ─────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_clue_number_zero_max_guesses(codenames_game_controller, setup_codenames_game, session):
+    """A clue with number=0 means unlimited guesses (max_guesses = BOARD_SIZE)."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    spymaster = _find_spymaster(state, current_team)
+
+    # Act — give clue with number=0 (unlimited)
+    await codenames_game_controller.give_clue(UUID(result.game_id), UUID(spymaster["user_id"]), "zeroclue", 0)
+
+    # Assert — max_guesses = CODENAMES_BOARD_SIZE (unlimited)
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_turn"]["clue_number"] == 0
+    assert game.live_state["current_turn"]["max_guesses"] == CODENAMES_BOARD_SIZE
+
+    # Guessing one correct card should NOT end the turn (unlimited guesses)
+    operative = _find_operative(game.live_state, current_team)
+    team_card_idx = _find_card_of_type(game.live_state["board"], current_team)
+    guess_result = await codenames_game_controller.guess_card(
+        UUID(result.game_id), UUID(operative["user_id"]), team_card_idx
+    )
+    assert guess_result.result == "correct"  # Turn continues
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == current_team  # Still same team's turn
+
+
+# ─── Guess Max Guesses Plus One Test ────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_guess_max_guesses_plus_one(codenames_game_controller, setup_codenames_game, session):
+    """After clue_number+1 correct guesses, the turn should automatically end."""
+    # Prepare
+    setup = await setup_codenames_game(4)
+    result = await _start_game(codenames_game_controller, setup["room"].id, setup["users"][0].id)
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+
+    current_team = state["current_team"]
+    other_team = CodenamesTeam.BLUE.value if current_team == CodenamesTeam.RED.value else CodenamesTeam.RED.value
+    spymaster = _find_spymaster(state, current_team)
+
+    # Give clue with number=2 → max_guesses = 3
+    await codenames_game_controller.give_clue(UUID(result.game_id), UUID(spymaster["user_id"]), "threeguess", 2)
+
+    game = await _get_game(session, result.game_id)
+    state = game.live_state
+    operative = _find_operative(state, current_team)
+
+    # Find 3 team cards
+    team_cards = [i for i, c in enumerate(state["board"]) if c["card_type"] == current_team and not c["revealed"]]
+    assert len(team_cards) >= 3, "Need at least 3 team cards"
+
+    # First guess (guesses_made=1, max=3) → correct
+    r1 = await codenames_game_controller.guess_card(UUID(result.game_id), UUID(operative["user_id"]), team_cards[0])
+    assert r1.result == "correct"
+
+    # Second guess (guesses_made=2, max=3) → correct
+    r2 = await codenames_game_controller.guess_card(UUID(result.game_id), UUID(operative["user_id"]), team_cards[1])
+    assert r2.result == "correct"
+
+    # Third guess (guesses_made=3, max=3) → max_guesses, turn switches
+    r3 = await codenames_game_controller.guess_card(UUID(result.game_id), UUID(operative["user_id"]), team_cards[2])
+    assert r3.result == "max_guesses"
+
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_team"] == other_team

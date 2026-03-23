@@ -12,7 +12,7 @@ from ipg.api.models.table import Game
 from ipg.api.schemas.error import (
     AlreadyAnsweredError,
     InvalidChoiceIndexError,
-    NotHostError,
+    NoMcqQuestionsAvailableError,
     RoundNotPlayingError,
     SpectatorCannotAnswerError,
 )
@@ -78,7 +78,7 @@ async def test_create_and_start_multiple_players(mcqquiz_game_controller, setup_
 
 @pytest.mark.asyncio
 async def test_submit_correct_answer(mcqquiz_game_controller, setup_mcqquiz_game, session):
-    """Correct answer earns 1 point."""
+    """Correct answer earns 1-3 points (1 base + up to 2 time bonus)."""
     # Prepare
     setup = await setup_mcqquiz_game(num_players=2)
     room, users = setup["room"], setup["users"]
@@ -89,9 +89,9 @@ async def test_submit_correct_answer(mcqquiz_game_controller, setup_mcqquiz_game
     # Act
     answer_result = await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, correct_index)
 
-    # Assert
+    # Assert — fast answer should earn 1-3 points (base 1 + time bonus up to 2)
     assert answer_result.correct is True
-    assert answer_result.points_earned == 1
+    assert 1 <= answer_result.points_earned <= 3
 
 
 @pytest.mark.asyncio
@@ -169,16 +169,21 @@ async def test_all_players_answered_auto_results(mcqquiz_game_controller, setup_
 
 
 @pytest.mark.asyncio
-async def test_timer_expired_non_host_rejected(mcqquiz_game_controller, setup_mcqquiz_game):
-    """Non-host cannot trigger timer expiration."""
+async def test_timer_expired_non_host_allowed(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """Any player can trigger timer expiration — not just host."""
     # Prepare
     setup = await setup_mcqquiz_game(num_players=2)
     room, users = setup["room"], setup["users"]
+    room.settings = {"mcq_quiz_turn_duration": 0}  # 0 seconds = already expired
+    session.add(room)
+    await session.commit()
     result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
 
-    # Act / Assert — users[1] is not host
-    with pytest.raises(NotHostError):
-        await mcqquiz_game_controller.handle_timer_expired(UUID(result.game_id), users[1].id)
+    # Act — non-host triggers timer expiration
+    timer_result = await mcqquiz_game_controller.handle_timer_expired(UUID(result.game_id), users[1].id)
+
+    # Assert — should succeed
+    assert timer_result.action == "results"
 
 
 # === Round Advancement ===
@@ -207,18 +212,52 @@ async def test_advance_to_next_round(mcqquiz_game_controller, setup_mcqquiz_game
 
 
 @pytest.mark.asyncio
-async def test_advance_non_host_rejected(mcqquiz_game_controller, setup_mcqquiz_game):
-    """Non-host cannot advance to next round."""
+async def test_advance_non_host_marks_ready(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """Non-host marks themselves as ready but round doesn't advance yet."""
     # Prepare
-    setup = await setup_mcqquiz_game(num_players=2)
+    setup = await setup_mcqquiz_game(num_players=2, num_questions=5)
     room, users = setup["room"], setup["users"]
     result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
     await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 0)
     await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[1].id, 1)
 
-    # Act / Assert
-    with pytest.raises(NotHostError):
-        await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[1].id)
+    # Act — non-host marks ready
+    advance_result = await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[1].id)
+
+    # Assert — not advanced, just marked ready
+    assert advance_result.advanced is False
+    assert advance_result.ready_count == 1
+    assert advance_result.total_players == 2
+    assert str(users[1].id) in advance_result.ready_players
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["round_phase"] == "results"  # Still in results
+
+
+@pytest.mark.asyncio
+async def test_advance_all_ready_advances_round(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """When all players mark ready, the round advances."""
+    # Prepare — 3 players
+    setup = await setup_mcqquiz_game(num_players=3, num_questions=5)
+    room, users = setup["room"], setup["users"]
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 0)
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[1].id, 1)
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[2].id, 0)
+
+    # Act — 2 non-host players mark ready, then host forces advance
+    result1 = await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[1].id)
+    assert result1.advanced is False
+
+    result2 = await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[2].id)
+    assert result2.advanced is False
+
+    # Host forces advance
+    result3 = await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[0].id)
+    assert result3.advanced is True
+
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["current_round"] == 2
+    assert game.live_state["round_phase"] == "playing"
 
 
 @pytest.mark.asyncio
@@ -334,3 +373,216 @@ async def test_answer_during_results_rejected(mcqquiz_game_controller, setup_mcq
     # Act / Assert
     with pytest.raises(RoundNotPlayingError):
         await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 2)
+
+
+# === Timer Expiration ===
+
+
+@pytest.mark.asyncio
+async def test_timer_expired_transitions_to_results(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """Timer expiration should transition from playing to results phase."""
+    # Prepare — use a very short turn duration so timer is expired server-side
+    setup = await setup_mcqquiz_game(num_players=2)
+    room, users = setup["room"], setup["users"]
+    room.settings = {"mcq_quiz_turn_duration": 0}  # 0 seconds = already expired
+    session.add(room)
+    await session.commit()
+
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Act
+    timer_result = await mcqquiz_game_controller.handle_timer_expired(UUID(result.game_id), users[0].id)
+
+    # Assert
+    assert timer_result.action == "results"
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["round_phase"] == "results"
+
+
+# === Choice Index Boundaries ===
+
+
+@pytest.mark.asyncio
+async def test_submit_choice_index_boundary_valid(mcqquiz_game_controller, setup_mcqquiz_game, session):  # noqa: ARG001
+    """choice_index=3 (last valid index) should be accepted."""
+    # Prepare
+    setup = await setup_mcqquiz_game(num_players=1)
+    room, users = setup["room"], setup["users"]
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Act — submit choice_index=3 (last valid)
+    answer_result = await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 3)
+
+    # Assert — should not raise, answer is accepted (may or may not be correct)
+    assert 0 <= answer_result.points_earned <= 3
+
+
+@pytest.mark.asyncio
+async def test_submit_choice_index_4_invalid(mcqquiz_game_controller, setup_mcqquiz_game):
+    """choice_index=4 should be rejected."""
+    # Prepare
+    setup = await setup_mcqquiz_game(num_players=1)
+    room, users = setup["room"], setup["users"]
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Act / Assert
+    with pytest.raises(InvalidChoiceIndexError):
+        await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 4)
+
+
+@pytest.mark.asyncio
+async def test_submit_choice_index_negative_invalid(mcqquiz_game_controller, setup_mcqquiz_game):
+    """choice_index=-1 should be rejected."""
+    # Prepare
+    setup = await setup_mcqquiz_game(num_players=1)
+    room, users = setup["room"], setup["users"]
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Act / Assert
+    with pytest.raises(InvalidChoiceIndexError):
+        await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, -1)
+
+
+# === Final Round Ends Game ===
+
+
+@pytest.mark.asyncio
+async def test_advance_final_round_ends_game(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """Advancing past final round ends game."""
+    # Prepare — 2 round game
+    setup = await setup_mcqquiz_game(num_players=1, num_questions=5)
+    room, users = setup["room"], setup["users"]
+    room.settings = {"mcq_quiz_rounds": 2}
+    session.add(room)
+    await session.commit()
+
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Round 1 — answer and advance
+    game = await _get_game(session, result.game_id)
+    correct_index = game.live_state["current_question"]["correct_answer_index"]
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, correct_index)
+    await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[0].id)
+
+    # Round 2 — answer and advance (should end game)
+    game = await _get_game(session, result.game_id)
+    correct_index = game.live_state["current_question"]["correct_answer_index"]
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, correct_index)
+    await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[0].id)
+
+    # Assert
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["game_over"] is True
+    assert game.live_state["round_phase"] == "game_over"
+    assert game.live_state["winner"] is not None
+
+
+# === Get State — Explanation During Results ===
+
+
+@pytest.mark.asyncio
+async def test_get_state_shows_explanation_during_results(mcqquiz_game_controller, setup_mcqquiz_game):
+    """During results phase, explanation should be visible."""
+    # Prepare
+    setup = await setup_mcqquiz_game(num_players=2)
+    room, users = setup["room"], setup["users"]
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Both answer → results
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, 0)
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[1].id, 1)
+
+    # Act
+    state = await mcqquiz_game_controller.get_state(UUID(result.game_id), users[0].id)
+
+    # Assert
+    assert state.round_phase == "results"
+    assert state.explanation is not None
+    assert state.explanation != ""
+    assert state.correct_answer_index is not None
+
+
+# === Score Accumulation ===
+
+
+@pytest.mark.asyncio
+async def test_multiple_rounds_score_accumulation(mcqquiz_game_controller, setup_mcqquiz_game, session):
+    """Score should accumulate correctly across multiple rounds."""
+    # Prepare — 2 round game
+    setup = await setup_mcqquiz_game(num_players=1, num_questions=5)
+    room, users = setup["room"], setup["users"]
+    room.settings = {"mcq_quiz_rounds": 2}
+    session.add(room)
+    await session.commit()
+
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Round 1 — answer correctly
+    game = await _get_game(session, result.game_id)
+    correct_index = game.live_state["current_question"]["correct_answer_index"]
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, correct_index)
+
+    # Check score after round 1 — fast answer gets 1-3 points
+    game = await _get_game(session, result.game_id)
+    score_after_r1 = game.live_state["players"][0]["total_score"]
+    assert 1 <= score_after_r1 <= 3
+
+    # Advance to round 2
+    await mcqquiz_game_controller.advance_to_next_round(UUID(result.game_id), users[0].id)
+
+    # Round 2 — answer correctly again
+    game = await _get_game(session, result.game_id)
+    correct_index = game.live_state["current_question"]["correct_answer_index"]
+    await mcqquiz_game_controller.submit_answer(UUID(result.game_id), users[0].id, correct_index)
+
+    # Assert — score should accumulate (each correct answer is 1-3 points)
+    game = await _get_game(session, result.game_id)
+    assert game.live_state["players"][0]["total_score"] > score_after_r1
+
+
+# === Get State Spectator ===
+
+
+@pytest.mark.asyncio
+async def test_get_state_spectator(mcqquiz_game_controller, setup_mcqquiz_game, session, create_user):
+    """Spectator gets state with is_spectator=True."""
+    # Prepare
+    setup = await setup_mcqquiz_game(num_players=1)
+    room, users = setup["room"], setup["users"]
+
+    spectator = await create_user(username="mcq_spec2", email="mcq_spec2@test.com")
+    link = RoomUserLink(
+        room_id=room.id,
+        user_id=spectator.id,
+        connected=True,
+        is_spectator=True,
+    )
+    session.add(link)
+    await session.commit()
+
+    result = await _start_game(mcqquiz_game_controller, room.id, users[0].id)
+
+    # Act
+    state = await mcqquiz_game_controller.get_state(UUID(result.game_id), spectator.id)
+
+    # Assert
+    assert state.is_spectator is True
+    assert state.my_answered is False
+    assert state.my_points == 0
+    assert state.round_phase == "playing"
+
+
+# === Insufficient Questions ===
+
+
+@pytest.mark.asyncio
+async def test_create_insufficient_questions(mcqquiz_game_controller, setup_mcqquiz_game, session):  # noqa: ARG001
+    """Creating game with not enough questions should raise error."""
+
+    # Prepare — 0 questions available, but need 10 rounds (default)
+    setup = await setup_mcqquiz_game(num_players=1, num_questions=0)
+    room, users = setup["room"], setup["users"]
+
+    # Act / Assert
+    with pytest.raises(NoMcqQuestionsAvailableError):
+        await _start_game(mcqquiz_game_controller, room.id, users[0].id)

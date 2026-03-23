@@ -431,7 +431,7 @@ async def test_disconnect_spectator_no_game_impact(session):
 
 @pytest.mark.asyncio
 async def test_disconnect_below_min_players_cancels(session):
-    """3-player undercover game — one disconnect leaves 2 alive — game CANCELLED."""
+    """3-player undercover game — one civilian disconnect leaves 1 UC >= 1 CIV — game FINISHED (win awarded)."""
     # Prepare — 3 players
     users = [await _create_user(session, f"p{i}", f"p{i}@test.com") for i in range(3)]
     room = await _create_room(session, users[0])
@@ -451,9 +451,9 @@ async def test_disconnect_below_min_players_cancels(session):
     # Act — disconnect one player (civilian)
     await _handle_undercover_disconnect(session, game, str(users[2].id), room)
 
-    # Assert — 2 alive < 3 → game cancelled
+    # Assert — win condition met (1 UC >= 1 CIV), so game finishes instead of cancelling
     game = (await session.exec(select(Game).where(Game.id == game.id))).first()
-    assert game.game_status == GameStatus.CANCELLED
+    assert game.game_status == GameStatus.FINISHED
     assert game.end_time is not None
 
     room = (await session.exec(select(Room).where(Room.id == room.id))).first()

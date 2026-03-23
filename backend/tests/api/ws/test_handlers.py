@@ -5,7 +5,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from ipg.api.ws.handlers import _user_sids, auto_join_game_room, connect, disconnect, join_game
+from ipg.api.schemas.error import InvalidTokenError
+from ipg.api.ws.handlers import _user_sids, auto_join_game_room, connect, disconnect, heartbeat, join_game
 from ipg.api.ws.server import sio as real_sio
 
 
@@ -272,3 +273,152 @@ async def test_auto_join_with_stale_sids_raises(mock_sio):
 
     with pytest.raises(Exception, match="SID not found"):
         await auto_join_game_room("game1", "room1")
+
+
+# ========== connect — rejection cases ==========
+
+
+async def test_connect_missing_token_rejected(mock_sio):  # noqa: ARG001
+    """connect with no auth token raises ConnectionRefusedError."""
+    with pytest.raises(ConnectionRefusedError, match="Missing auth token or room_id"):
+        await connect("sid1", {}, {"room_id": "room1"})
+
+
+async def test_connect_missing_room_id_rejected(mock_sio):  # noqa: ARG001
+    """connect with no room_id raises ConnectionRefusedError."""
+    with pytest.raises(ConnectionRefusedError, match="Missing auth token or room_id"):
+        await connect("sid1", {}, {"token": "valid"})
+
+
+async def test_connect_invalid_token_rejected(mock_sio):  # noqa: ARG001
+    """connect with expired/invalid token raises ConnectionRefusedError."""
+    mock_auth_controller = MagicMock()
+    mock_auth_controller.decode_token.side_effect = InvalidTokenError()
+
+    mock_session = AsyncMock()
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.AsyncSession", return_value=mock_session),
+        patch("ipg.api.ws.handlers.AuthController", return_value=mock_auth_controller),
+        pytest.raises(ConnectionRefusedError, match="Invalid or expired token"),
+    ):
+        await connect("sid1", {}, {"token": "expired", "room_id": "room1"})
+
+
+# ========== heartbeat ==========
+
+
+async def test_heartbeat_updates_last_seen(mock_sio):
+    """heartbeat event calls update_heartbeat with correct user_id and room_id."""
+    mock_sio.get_session.return_value = {"user_id": "u1", "room_id": "room1"}
+
+    mock_session = AsyncMock()
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.AsyncSession", return_value=mock_session),
+        patch("ipg.api.ws.handlers.update_heartbeat", new_callable=AsyncMock) as mock_heartbeat,
+    ):
+        await heartbeat("sid1")
+
+    mock_heartbeat.assert_awaited_once_with(mock_session, "u1", "room1")
+
+
+async def test_heartbeat_no_session_data_returns_early(mock_sio):
+    """heartbeat with missing session data returns without error."""
+    mock_sio.get_session.return_value = {}
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock) as mock_engine,
+        patch("ipg.api.ws.handlers.update_heartbeat", new_callable=AsyncMock) as mock_heartbeat,
+    ):
+        # Should not raise
+        await heartbeat("sid1")
+
+    mock_engine.assert_not_awaited()
+    mock_heartbeat.assert_not_awaited()
+
+
+# ========== disconnect — DB interactions ==========
+
+
+async def test_disconnect_marks_user_disconnected(mock_sio):
+    """disconnect event calls mark_user_disconnected."""
+    _user_sids["u1:room1"] = "sid1"
+    mock_sio.get_session.return_value = {"user_id": "u1", "room_id": "room1"}
+
+    mock_session = AsyncMock()
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.AsyncSession", return_value=mock_session),
+        patch("ipg.api.ws.handlers.mark_user_disconnected", new_callable=AsyncMock) as mock_mark,
+        patch("ipg.api.ws.handlers.fire_notify_room_changed"),
+    ):
+        await disconnect("sid1")
+
+    mock_mark.assert_awaited_once_with(mock_session, "u1", "room1")
+
+
+async def test_disconnect_fires_room_notification(mock_sio):
+    """disconnect fires fire_notify_room_changed."""
+    _user_sids["u1:room1"] = "sid1"
+    mock_sio.get_session.return_value = {"user_id": "u1", "room_id": "room1"}
+
+    mock_session = AsyncMock()
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.AsyncSession", return_value=mock_session),
+        patch("ipg.api.ws.handlers.mark_user_disconnected", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.fire_notify_room_changed") as mock_fire,
+    ):
+        await disconnect("sid1")
+
+    mock_fire.assert_called_once_with("room1")
+
+
+# ========== join_game — invalid game ==========
+
+
+async def test_join_game_invalid_game_returns_early(mock_sio):
+    """join_game with game not belonging to room returns without joining."""
+    room_id = "00000000-0000-0000-0000-000000000001"
+    user_id = "00000000-0000-0000-0000-000000000002"
+    game_id = "00000000-0000-0000-0000-000000000003"
+    mock_sio.get_session.return_value = {"user_id": user_id, "room_id": room_id}
+
+    mock_link = MagicMock()
+
+    # Game belongs to a different room
+    mock_game = MagicMock()
+    mock_game.room_id = "00000000-0000-0000-0000-999999999999"
+
+    mock_result = MagicMock()
+    mock_result.first.return_value = mock_link
+
+    mock_game_result = MagicMock()
+    mock_game_result.first.return_value = mock_game
+
+    mock_session = AsyncMock()
+    mock_session.exec = AsyncMock(side_effect=[mock_result, mock_game_result])
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=False)
+
+    with (
+        patch("ipg.api.ws.handlers.get_engine", new_callable=AsyncMock),
+        patch("ipg.api.ws.handlers.AsyncSession", return_value=mock_session),
+    ):
+        await join_game("sid1", {"game_id": game_id})
+
+    # Should NOT have joined the game room
+    mock_sio.enter_room.assert_not_awaited()
