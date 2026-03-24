@@ -372,6 +372,7 @@ function WordQuizGamePage() {
               explanation={state.explanation}
               roundResults={state.round_results}
               isHost={state.is_host}
+              isLastRound={state.current_round >= state.total_rounds}
               onNextRound={handleNextRound}
               isAdvancing={nextRoundMutation.isPending}
             />

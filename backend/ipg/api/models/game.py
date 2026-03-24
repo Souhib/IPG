@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID
 
-from sqlalchemy import JSON, Column
+from sqlalchemy import JSON, Column, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field
 
@@ -24,8 +24,14 @@ class GameStatus(StrEnum):
 
 
 class GameBase(DBModel):
-    start_time: datetime = Field(default_factory=datetime.now)
-    end_time: datetime | None = None
+    start_time: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+    end_time: datetime | None = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), nullable=True),
+    )
     number_of_players: int = Field(gt=0)
     type: GameType
     game_configurations: dict | None = Field(default_factory=dict, sa_column=Column(JSON))

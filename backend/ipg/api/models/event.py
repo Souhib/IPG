@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import Column, DateTime
 from sqlmodel import Field
 
 from ipg.api.models.shared import DBModel
@@ -17,6 +18,12 @@ class EventCreate(EventBase):
 
 
 class TurnBase(DBModel):
-    start_time: datetime = Field(default_factory=datetime.now)
-    end_time: datetime | None = None
+    start_time: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+    end_time: datetime | None = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), nullable=True),
+    )
     completed: bool = False

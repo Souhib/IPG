@@ -14,6 +14,7 @@ interface McqRoundResultsProps {
   explanation: string | null
   roundResults: McqRoundResult[]
   isHost: boolean
+  isLastRound?: boolean
   onNextRound: () => void
   isAdvancing: boolean
 }
@@ -22,6 +23,7 @@ export const McqRoundResults = memo(function McqRoundResults({
   explanation,
   roundResults,
   isHost,
+  isLastRound,
   onNextRound,
   isAdvancing,
 }: McqRoundResultsProps) {
@@ -82,7 +84,7 @@ export const McqRoundResults = memo(function McqRoundResults({
           disabled={isAdvancing}
           className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-3 text-sm font-extrabold text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl disabled:opacity-50 transition-all duration-200"
         >
-          {isAdvancing ? t("common.loading") : t("game.mcqQuiz.nextRound")}
+          {isAdvancing ? t("common.loading") : isLastRound ? t("game.mcqQuiz.seeResults") : t("game.mcqQuiz.nextRound")}
         </button>
       )}
     </div>

@@ -15,6 +15,7 @@ interface RoundResultsProps {
   explanation?: string | null
   roundResults: RoundResult[]
   isHost: boolean
+  isLastRound?: boolean
   onNextRound: () => void
   isAdvancing: boolean
 }
@@ -24,6 +25,7 @@ export const RoundResults = memo(function RoundResults({
   explanation,
   roundResults,
   isHost,
+  isLastRound,
   onNextRound,
   isAdvancing,
 }: RoundResultsProps) {
@@ -91,7 +93,7 @@ export const RoundResults = memo(function RoundResults({
           disabled={isAdvancing}
           className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/90 px-5 py-3 text-sm font-extrabold tracking-tight text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 transition-all duration-200"
         >
-          {isAdvancing ? t("common.loading") : t("game.wordQuiz.nextRound")}
+          {isAdvancing ? t("common.loading") : isLastRound ? t("game.wordQuiz.seeResults") : t("game.wordQuiz.nextRound")}
         </button>
       )}
     </div>

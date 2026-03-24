@@ -60,7 +60,7 @@ export const PhaseTimer = memo(function PhaseTimer({
   return (
     <div role="timer" aria-live="polite" aria-label={`${display} remaining`} className={cn("flex items-center gap-3", className)}>
       {/* Circular SVG countdown ring */}
-      <div className={cn("relative flex-shrink-0", isCritical && "animate-glow-pulse")}>
+      <div className={cn("relative flex-shrink-0 rounded-full", isCritical && "animate-glow-pulse")}>
         <svg width={size} height={size} className="-rotate-90">
           {/* Background ring */}
           <circle
