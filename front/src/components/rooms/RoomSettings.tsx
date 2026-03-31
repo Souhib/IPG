@@ -40,18 +40,18 @@ export const RoomSettings = memo(function RoomSettings({
 
   useEffect(() => {
     if (settings) {
-      if (settings.description_timer !== undefined) setDescriptionTimer(settings.description_timer as number)
-      if (settings.voting_timer !== undefined) setVotingTimer(settings.voting_timer as number)
-      if (settings.codenames_clue_timer !== undefined) setCodenamesClueTimer(settings.codenames_clue_timer as number)
-      if (settings.codenames_guess_timer !== undefined) setCodenamesGuessTimer(settings.codenames_guess_timer as number)
-      if (settings.enable_mr_white !== undefined) setEnableMrWhite(settings.enable_mr_white as boolean)
-      if (settings.word_quiz_turn_duration !== undefined) setWordQuizTurnDuration(settings.word_quiz_turn_duration as number)
-      if (settings.word_quiz_rounds !== undefined) setWordQuizRounds(settings.word_quiz_rounds as number)
-      if (settings.word_quiz_hint_interval !== undefined) setWordQuizHintInterval(settings.word_quiz_hint_interval as number)
-      if (settings.mcq_quiz_turn_duration !== undefined) setMcqQuizTurnDuration(settings.mcq_quiz_turn_duration as number)
-      if (settings.mcq_quiz_rounds !== undefined) setMcqQuizRounds(settings.mcq_quiz_rounds as number)
-      if (settings.word_quiz_difficulty !== undefined) setWordQuizDifficulty(settings.word_quiz_difficulty as string)
-      if (settings.mcq_quiz_difficulty !== undefined) setMcqQuizDifficulty(settings.mcq_quiz_difficulty as string)
+      if (settings.description_timer != null) setDescriptionTimer(settings.description_timer as number)
+      if (settings.voting_timer != null) setVotingTimer(settings.voting_timer as number)
+      if (settings.codenames_clue_timer != null) setCodenamesClueTimer(settings.codenames_clue_timer as number)
+      if (settings.codenames_guess_timer != null) setCodenamesGuessTimer(settings.codenames_guess_timer as number)
+      if (settings.enable_mr_white != null) setEnableMrWhite(settings.enable_mr_white as boolean)
+      if (settings.word_quiz_turn_duration != null) setWordQuizTurnDuration(settings.word_quiz_turn_duration as number)
+      if (settings.word_quiz_rounds != null) setWordQuizRounds(settings.word_quiz_rounds as number)
+      if (settings.word_quiz_hint_interval != null) setWordQuizHintInterval(settings.word_quiz_hint_interval as number)
+      if (settings.mcq_quiz_turn_duration != null) setMcqQuizTurnDuration(settings.mcq_quiz_turn_duration as number)
+      if (settings.mcq_quiz_rounds != null) setMcqQuizRounds(settings.mcq_quiz_rounds as number)
+      if (settings.word_quiz_difficulty != null) setWordQuizDifficulty(settings.word_quiz_difficulty as string)
+      if (settings.mcq_quiz_difficulty != null) setMcqQuizDifficulty(settings.mcq_quiz_difficulty as string)
     }
   }, [settings])
 
