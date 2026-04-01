@@ -5,7 +5,7 @@ from uuid import uuid4
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ipg.api.models.wordquiz import QuizWord
+from majlisna.api.models.wordquiz import QuizWord
 
 QUIZ_WORDS: list[dict] = [
     # === Prophets (~25) ===
@@ -4015,6 +4015,48 @@ QUIZ_WORDS: list[dict] = [
             "en": "The Tashahhud is the testimony recited while sitting in prayer. It begins with 'At-Tahiyyatu lillahi' (greetings to Allah) and includes the shahada. It is performed after every two rak'ahs and at the end of prayer with the index finger raised.",
             "ar": "التشهد الشهادة التي تُقرأ أثناء الجلوس في الصلاة. يبدأ بـ'التحيات لله' ويتضمن الشهادة. يُؤدى بعد كل ركعتين وفي نهاية الصلاة مع رفع إصبع السبابة.",
             "fr": "Le Tashahhud est le témoignage récité assis pendant la prière. Il commence par 'At-Tahiyyatu lillahi' et inclut la shahada. Il est fait après chaque deux rak'ahs.",
+        },
+    },
+    {
+        "word_en": "Shafa'ah",
+        "word_ar": "شفاعة",
+        "word_fr": "Intercession",
+        "accepted_answers": {"en": ["Shafa'ah", "Shafaah", "Shafa'a", "Intercession"], "ar": ["شفاعة", "الشفاعة"], "fr": ["Intercession", "Shafa'ah"]},
+        "category": "Islamic Concepts",
+        "difficulty": "medium",
+        "hints": {
+            "1": {"en": "A concept related to the Day of Judgment", "ar": "مفهوم يتعلق بيوم القيامة", "fr": "Un concept lié au Jour du Jugement"},
+            "2": {"en": "It involves seeking help on behalf of others", "ar": "يتضمن طلب المساعدة نيابة عن الآخرين", "fr": "Cela implique de demander de l'aide au nom d'autres"},
+            "3": {"en": "The Prophet Muhammad ﷺ is granted the greatest form of it", "ar": "النبي محمد ﷺ يُمنح أعظم صورها", "fr": "Le Prophète Muhammad ﷺ reçoit la plus grande forme de celle-ci"},
+            "4": {"en": "It requires Allah's permission to be granted", "ar": "تحتاج إذن الله لتُمنح", "fr": "Elle nécessite la permission d'Allah pour être accordée"},
+            "5": {"en": "Prophets, martyrs, and righteous people may be granted it", "ar": "الأنبياء والشهداء والصالحون قد يُمنحونها", "fr": "Les prophètes, martyrs et pieux peuvent en bénéficier"},
+            "6": {"en": "The act of pleading to Allah on behalf of sinners on Judgment Day", "ar": "التوسل إلى الله نيابة عن المذنبين يوم القيامة", "fr": "L'acte de plaider auprès d'Allah pour les pécheurs le Jour du Jugement"},
+        },
+        "explanation": {
+            "en": "Shafa'ah (intercession) is the act of pleading to Allah on behalf of others on the Day of Judgment. The greatest intercession (al-Shafa'ah al-Uzma) is granted to Prophet Muhammad ﷺ. It requires Allah's permission and His approval of the one being interceded for.",
+            "ar": "الشفاعة هي التوسل إلى الله نيابة عن الآخرين يوم القيامة. الشفاعة العظمى تُمنح للنبي محمد ﷺ. تحتاج إذن الله ورضاه عن المشفوع له.",
+            "fr": "La Shafa'ah (intercession) est l'acte de plaider auprès d'Allah pour les autres le Jour du Jugement. La plus grande intercession (al-Shafa'ah al-Uzma) est accordée au Prophète Muhammad ﷺ. Elle nécessite la permission d'Allah et Son agrément de celui pour qui on intercède.",
+        },
+    },
+    {
+        "word_en": "Tasbih",
+        "word_ar": "تسبيح",
+        "word_fr": "Glorification",
+        "accepted_answers": {"en": ["Tasbih", "Tasbeeh", "SubhanAllah"], "ar": ["تسبيح", "سبحان الله"], "fr": ["Glorification", "Tasbih"]},
+        "category": "Daily Life",
+        "difficulty": "easy",
+        "hints": {
+            "1": {"en": "A form of remembrance of Allah", "ar": "شكل من أشكال ذكر الله", "fr": "Une forme de rappel d'Allah"},
+            "2": {"en": "Often repeated 33 times after each prayer", "ar": "يُكرر غالباً 33 مرة بعد كل صلاة", "fr": "Souvent répété 33 fois après chaque prière"},
+            "3": {"en": "It declares Allah free from all imperfections", "ar": "يُعلن تنزيه الله عن كل نقص", "fr": "Il déclare Allah exempt de toute imperfection"},
+            "4": {"en": "The beads used for counting it share the same name", "ar": "المسبحة المستخدمة لعدّه تحمل نفس الاسم", "fr": "Les perles utilisées pour le compter portent le même nom"},
+            "5": {"en": "Its phrase begins with 'Subhan'", "ar": "عبارته تبدأ بـ'سبحان'", "fr": "Sa formule commence par 'Subhan'"},
+            "6": {"en": "Saying 'SubhanAllah' — glorifying Allah's perfection", "ar": "قول 'سبحان الله' — تنزيه الله وتمجيده", "fr": "Dire 'SubhanAllah' — glorifier la perfection d'Allah"},
+        },
+        "explanation": {
+            "en": "Tasbih is the glorification of Allah by saying 'SubhanAllah' (Glory be to Allah), declaring Him free from all imperfections. It is commonly repeated 33 times after each prayer as part of post-prayer dhikr. The prayer beads used for counting are also called tasbih.",
+            "ar": "التسبيح هو تنزيه الله بقول 'سبحان الله'، مُعلناً تنزّهه عن كل نقص. يُكرّر عادةً 33 مرة بعد كل صلاة كجزء من أذكار ما بعد الصلاة. المسبحة المستخدمة للعدّ تحمل نفس الاسم.",
+            "fr": "Le Tasbih est la glorification d'Allah en disant 'SubhanAllah' (Gloire à Allah), Le déclarant exempt de toute imperfection. Il est couramment répété 33 fois après chaque prière. Les perles de prière utilisées pour compter s'appellent aussi tasbih.",
         },
     },
 
