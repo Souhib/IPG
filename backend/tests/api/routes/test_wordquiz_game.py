@@ -8,7 +8,12 @@ from starlette.testclient import TestClient
 
 from majlisna.api.controllers.wordquiz_game import WordQuizGameController
 from majlisna.api.models.table import User
-from majlisna.api.schemas.common import AdvanceRoundResponse, GameStartResponse, HintRecordResponse, TimerExpiredResponse
+from majlisna.api.schemas.common import (
+    AdvanceRoundResponse,
+    GameStartResponse,
+    HintRecordResponse,
+    TimerExpiredResponse,
+)
 from majlisna.api.schemas.wordquiz import SubmitAnswerResponse, WordQuizGameState
 from majlisna.dependencies import get_current_user, get_wordquiz_game_controller
 

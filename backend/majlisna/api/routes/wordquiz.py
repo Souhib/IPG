@@ -6,7 +6,12 @@ from starlette.status import HTTP_201_CREATED
 
 from majlisna.api.controllers.wordquiz_game import WordQuizGameController
 from majlisna.api.models.table import User
-from majlisna.api.schemas.common import AdvanceRoundResponse, GameStartResponse, HintRecordResponse, TimerExpiredResponse
+from majlisna.api.schemas.common import (
+    AdvanceRoundResponse,
+    GameStartResponse,
+    HintRecordResponse,
+    TimerExpiredResponse,
+)
 from majlisna.api.schemas.wordquiz import SubmitAnswerRequest, SubmitAnswerResponse, WordQuizGameState
 from majlisna.api.ws.handlers import auto_join_game_room
 from majlisna.api.ws.notify import notify_game_changed, notify_room_changed

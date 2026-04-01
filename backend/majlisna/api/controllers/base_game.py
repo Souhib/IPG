@@ -8,7 +8,12 @@ from majlisna.api.controllers.achievement import AchievementController
 from majlisna.api.controllers.game import GameController
 from majlisna.api.controllers.room import RoomController
 from majlisna.api.controllers.stats import StatsController
-from majlisna.api.models.error import GameNotFoundError, NotEnoughPlayersError, PlayerRemovedFromGameError, RoomNotFoundError
+from majlisna.api.models.error import (
+    GameNotFoundError,
+    NotEnoughPlayersError,
+    PlayerRemovedFromGameError,
+    RoomNotFoundError,
+)
 from majlisna.api.models.relationship import RoomUserLink
 from majlisna.api.models.table import Game, Room, User
 from majlisna.api.schemas.error import BaseError

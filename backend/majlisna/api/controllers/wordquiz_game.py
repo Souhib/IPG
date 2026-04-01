@@ -29,7 +29,12 @@ from majlisna.api.models.error import (
 from majlisna.api.models.game import GameCreate, GameStatus, GameType
 from majlisna.api.models.relationship import RoomUserLink
 from majlisna.api.models.table import Game, Room
-from majlisna.api.schemas.common import AdvanceRoundResponse, GameStartResponse, HintRecordResponse, TimerExpiredResponse
+from majlisna.api.schemas.common import (
+    AdvanceRoundResponse,
+    GameStartResponse,
+    HintRecordResponse,
+    TimerExpiredResponse,
+)
 from majlisna.api.schemas.error import BaseError
 from majlisna.api.schemas.wordquiz import (
     SubmitAnswerResponse,
