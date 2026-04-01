@@ -216,6 +216,10 @@ cd e2e && npx playwright test
 
 Do not consider a task complete until ALL tests pass with zero failures AND zero flaky tests — whether or not the failures appear related to your changes. A flaky test is still a failing test. If a pre-existing flaky test blocks completion, fix it before moving on.
 
+### CI Must Pass After Every Push
+
+**After every `git push`, check that CI passes.** Use `gh run list --repo Souhib/Majlisna --limit 1` to find the run, then `gh run watch <run-id> --repo Souhib/Majlisna` to wait for completion. If CI fails, investigate and fix immediately — do not leave `main` in a broken state. Dokploy auto-deploys from `main`, so a broken CI means a broken deploy is possible.
+
 ### Debugging Test Failures
 
 **NEVER use `git stash` to check if a test failure is pre-existing.** When tests fail after your changes, investigate the failure directly:
