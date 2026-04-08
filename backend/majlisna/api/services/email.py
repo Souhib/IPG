@@ -1,5 +1,5 @@
+import resend
 from loguru import logger
-from resend import Emails
 
 from majlisna.settings import Settings
 
@@ -9,7 +9,9 @@ class EmailService:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self._emails = Emails(api_key=settings.resend_api_key) if settings.resend_api_key else None
+        if settings.resend_api_key:
+            resend.api_key = settings.resend_api_key
+        self._configured = bool(settings.resend_api_key)
 
     async def send_password_reset_email(self, to_email: str, username: str, reset_url: str) -> bool:
         """Send password reset email."""
@@ -51,11 +53,11 @@ class EmailService:
 
     async def _send(self, to_email: str, subject: str, html: str) -> bool:
         """Send an email via Resend API."""
-        if not self._emails:
+        if not self._configured:
             logger.warning("Email service not configured (no RESEND_API_KEY). Skipping email to {to}", to=to_email)
             return False
         try:
-            self._emails.send(
+            resend.Emails.send(
                 {
                     "from": self.settings.from_email,
                     "to": [to_email],
