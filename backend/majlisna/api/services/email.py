@@ -34,7 +34,7 @@ def _base_layout(content: str) -> str:
                   <td>
                     <span style="font-family:{_FONT_STACK};font-size:20px;font-weight:700;
                                  color:#10b981;letter-spacing:-0.3px;">
-                      Majlisna
+                      🎲 Majlisna
                     </span>
                   </td>
                 </tr>
@@ -52,7 +52,7 @@ def _base_layout(content: str) -> str:
             <td style="padding:24px 40px;border-top:1px solid #f4f4f5;">
               <p style="font-family:{_FONT_STACK};font-size:12px;line-height:18px;
                         color:#a1a1aa;margin:0;">
-                Majlisna &mdash; Islamic Party Games<br>
+                🕌 Majlisna &mdash; Islamic Party Games<br>
                 You received this email because an action was performed on your account.
               </p>
             </td>
@@ -109,14 +109,14 @@ class EmailService:
         content = f"""\
 <h1 style="font-family:{_FONT_STACK};font-size:18px;font-weight:600;
            color:#18181b;margin:0 0 16px;line-height:26px;">
-  Reset your password
+  🔐 Reset your password
 </h1>
 <p style="font-family:{_FONT_STACK};font-size:14px;line-height:22px;
           color:#3f3f46;margin:0 0 24px;">
   Hi {username}, we received a request to reset the password for your Majlisna account.
   Click the button below to choose a new one.
 </p>
-{_cta_button(reset_url, "Reset Password")}
+{_cta_button(reset_url, "Reset Password 🔑")}
 <p style="font-family:{_FONT_STACK};font-size:13px;line-height:20px;
           color:#71717a;margin:16px 0 0;">
   This link expires in <strong>1 hour</strong>. If you didn't request a password reset,
@@ -129,18 +129,18 @@ class EmailService:
         content = f"""\
 <h1 style="font-family:{_FONT_STACK};font-size:18px;font-weight:600;
            color:#18181b;margin:0 0 16px;line-height:26px;">
-  Verify your email
+  ✉️ Verify your email
 </h1>
 <p style="font-family:{_FONT_STACK};font-size:14px;line-height:22px;
           color:#3f3f46;margin:0 0 4px;">
-  Assalamu alaykum {username},
+  Assalamu alaykum {username} 👋
 </p>
 <p style="font-family:{_FONT_STACK};font-size:14px;line-height:22px;
           color:#3f3f46;margin:0 0 24px;">
-  Welcome to Majlisna! Please confirm your email address so you can start
+  Welcome to Majlisna! 🎉 Please confirm your email address so you can start
   playing with your friends.
 </p>
-{_cta_button(verify_url, "Verify Email")}
+{_cta_button(verify_url, "Verify Email ✅")}
 <p style="font-family:{_FONT_STACK};font-size:13px;line-height:20px;
           color:#71717a;margin:16px 0 0;">
   This link expires in <strong>24 hours</strong>. If you didn't create a
